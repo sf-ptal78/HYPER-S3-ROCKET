@@ -1,6 +1,6 @@
 # HYPER S3 ROCKET Flight Computer & Power Management Board
 
-The **HYPER S3 ROCKET** by **[STEMFORGE](https://stemforge.com.au)** is both a highly capable production-grade development board, flight computer and smart power management module. Powered by the dual-core **ESP32-S3 SoC**, this board was meticulously engineered to solve the most frustrating hardware constraints in hobby water rocketry, model aerospace tracking, and remote battery/solar-powered IoT nodes.
+The **HYPER S3 ROCKET™** by **[STEMFORGE™](https://stemforge.com.au)** is both a highly capable production-grade development board, flight computer and smart power management module. Powered by the dual-core **ESP32-S3 SoC**, this board was meticulously engineered to solve the most frustrating hardware constraints in hobby water rocketry, model aerospace tracking, and remote battery/solar-powered IoT nodes.
 
 Unlike standard development boards that rely on fragile nests of external breakout modules, the HYPER S3 ROCKET bundles a full array of motion tracking components into an ultra-compact form factor with **castellated edges**, allowing it to be used flat as a surface-mount module or with traditional breadboard pin headers and breadboards.
 
@@ -9,7 +9,7 @@ Unlike standard development boards that rely on fragile nests of external breako
 ## 🚀 Key Hardware Advantages
 
 *   **Zero-Reset Power Path (Texas Instruments BQ25188):** Standard microcontrollers (like the Seeed Studio XIAO or Raspberry Pi Pico) regularly drop voltage and reset when heavy current draw from servos suddenly activate. The HYPER S3 ROCKET manages high current spikes up to 3A without dropping system logic stability.
-*   **Hardware-Accelerated Sensor Hub Passthrough:** The high-precision **SPL07-006 Altimeter** is routed directly via the auxiliary master I2C channels of the **LSM6DSV32XTR 6-Axis IMU**. The IMU automatically polls, aggregates, and stores barometric data into its native 4.5 KB FIFO buffer completely in the background—freeing up the ESP32-S3 processor to maintain high-frequency telemetry loops and long-range wireless streaming.
+*   **Hardware-Accelerated Sensor Hub Passthrough:** The high-precision **Goertek SPL07-006 Altimeter** is routed directly via the auxiliary master I2C channels of the **STMicroelectronics LSM6DSV32XTR 6-Axis IMU**. The IMU automatically polls, aggregates, and stores barometric data into its native 4.5 KB FIFO buffer completely in the background—freeing up the ESP32-S3 processor to maintain high-frequency telemetry loops and long-range wireless streaming.
 *   **Built-in Safety 1S LiPo Charging:** Fully integrated, protected over-current battery management right on the board.
 *   **Water-Resistant Altimeter Cavity:** Upgraded to the **Goertek SPL07-006**, featuring a waterproof gel-filled cavity built to withstand high-moisture water rocket deployment bays.
 
@@ -20,26 +20,24 @@ Unlike standard development boards that rely on fragile nests of external breako
 The HYPER S3 ROCKET isolates external connectivity from internal operations using a highly organized GPIO routing schema. Use this official reference layout to configure your firmware environments:
 
 ### 1. 🎛️ External Header Connections (Thru-Hole / Castellated Rim)
-These primary 16 pins are fully exposed on the edge of the board via standard 2.54mm thru-holes and castellated rims. **Every single external GPIO pin supports native hardware PWM**, allowing unlimited mapping configuration flexibility for multi-servo arrays, brushless motor drivers, alert buzzers or LEDs.
+These primary 16 pins are fully exposed on the edge of the board via standard 2.54mm thru-holes and castellated rims. **Every single external GPIO pin supports native hardware PWM**, allowing unlimited mapping configuration flexibility for multi-servo arrays, brushless motor drivers, alert buzzers, or LEDs.
 
-| ESP32-S3 GPIO | Board Designation | Primary Hardware Function | Alternative Multiplexed Functions & Wi-Fi Constraints |
-| :--- | :--- | :--- | :--- |
-| **GPIO 1** | External Pin 1 | **General IO / PWM / Analog & Touch** | ADC1_CH0 / TOUCH1 *(Safe during Wi-Fi streaming)* |
-| **GPIO 2** | External Pin 2 | **General IO / PWM / Analog & Touch** | ADC1_CH1 / TOUCH2 *(Safe during Wi-Fi streaming)* |
-| **GPIO 3** | External Pin 3 | **General IO / PWM / Analog & Touch** | ADC1_CH2 / TOUCH3 *(Safe during Wi-Fi streaming)* |
-| **GPIO 4** | External Pin 4 | **General IO / PWM / Analog & Touch** | ADC1_CH3 / TOUCH4 *(Safe during Wi-Fi streaming)* |
-| **GPIO 5** | External Pin 5 | **General IO / PWM / Analog & Touch** | ADC1_CH4 / TOUCH5 *(Safe during Wi-Fi streaming)* |
-| **GPIO 6** | External Pin 6 | **General IO / PWM / Analog & Touch** | ADC1_CH5 / TOUCH6 *(Safe during Wi-Fi streaming)* |
-| **GPIO 7** | External Pin 7 | **General IO / PWM / Analog & Touch** | ADC1_CH6 / TOUCH7 *(Safe during Wi-Fi streaming)* |
-| **GPIO 8** | External Pin 8 | **General IO / PWM / Analog & Touch** | ADC1_CH7 / TOUCH8 *(Safe during Wi-Fi streaming)* |
-| **GPIO 9** | External Pin 11 | **General IO / PWM / Analog & Touch** | **ADC1_CH8 / TOUCH9** *(Safe during Wi-Fi streaming)* |
-| **GPIO 10** | External Pin 12 | **General IO / PWM / Analog & Touch** | **ADC1_CH9 / TOUCH10** *(Safe during Wi-Fi streaming)* |
-| **GPIO 11** | External Pin 13 | **General IO / PWM / Analog & Touch** | **ADC2_CH0 / TOUCH11** *⚠️ Analog blocked during active Wi-Fi* |
-| **GPIO 12** | External Pin 14 | **General IO / PWM / Analog & Touch** | **ADC2_CH1 / TOUCH12** *⚠️ Analog blocked during active Wi-Fi* |
-| **GPIO 13** | External Pin 15 | **General IO / PWM** | ADC2_CH2 / TOUCH13 *⚠️ I2C Pull-up / Analog & Touch not used* |
-| **GPIO 14** | External Pin 16 | **General IO / PWM** | ADC2_CH3 / TOUCH14 *⚠️ I2C Pull-up / Analog & Touch not used* |
-| **GPIO 43** | External Pin 17 - TXD | **General IO / PWM / Hardware UART TX**| U0TXD / Default System Serial Console |
-| **GPIO 44** | External Pin 18 - RXD | **General IO / PWM / Hardware UART RX**| U0RXD / Default System Serial Console |
+*   **GPIO 1** (External Pin 1): **General IO / PWM / Analog & Touch** -> ADC1_CH0 / TOUCH1 *(Safe during Wi-Fi streaming)*
+*   **GPIO 2** (External Pin 2): **General IO / PWM / Analog & Touch** -> ADC1_CH1 / TOUCH2 *(Safe during Wi-Fi streaming)*
+*   **GPIO 3** (External Pin 3): **General IO / PWM / Analog & Touch** -> ADC1_CH2 / TOUCH3 *(Safe during Wi-Fi streaming / Strapping Pin)*
+*   **GPIO 4** (External Pin 4): **General IO / PWM / Analog & Touch** -> ADC1_CH3 / TOUCH4 *(Safe during Wi-Fi streaming)*
+*   **GPIO 5** (External Pin 5): **General IO / PWM / Analog & Touch** -> ADC1_CH4 / TOUCH5 *(Safe during Wi-Fi streaming)*
+*   **GPIO 6** (External Pin 6): **General IO / PWM / Analog & Touch** -> ADC1_CH5 / TOUCH6 *(Safe during Wi-Fi streaming)*
+*   **GPIO 7** (External Pin 7): **General IO / PWM / Analog & Touch** -> ADC1_CH6 / TOUCH7 *(Safe during Wi-Fi streaming)*
+*   **GPIO 8** (External Pin 8): **General IO / PWM / Analog & Touch** -> ADC1_CH7 / TOUCH8 *(Safe during Wi-Fi streaming)*
+*   **GPIO 9** (**External Pin 11**): **General IO / PWM / Analog & Touch** -> **ADC1_CH8 / TOUCH9** *(Safe during Wi-Fi streaming)*
+*   **GPIO 10** (**External Pin 12**): **General IO / PWM / Analog & Touch** -> **ADC1_CH9 / TOUCH10** *(Safe during Wi-Fi streaming)*
+*   **GPIO 11** (**External Pin 13**): **General IO / PWM / Analog & Touch** -> **ADC2_CH0 / TOUCH11** *⚠️ Analog blocked during active Wi-Fi*
+*   **GPIO 12** (**External Pin 14**): **General IO / PWM / Analog & Touch** -> **ADC2_CH1 / TOUCH12** *⚠️ Analog blocked during active Wi-Fi*
+*   **GPIO 13** (**External Pin 15**): **General IO / PWM** -> ADC2_CH2 / TOUCH13 *⚠️ Onboard I2C Pull-up / Analog & Touch not used*
+*   **GPIO 14** (**External Pin 16**): **General IO / PWM** -> ADC2_CH3 / TOUCH14 *⚠️ Onboard I2C Pull-up / Analog & Touch not used*
+*   **GPIO 43** (External Pin 17 - TXD): **General IO / PWM / Hardware UART TX** -> U0TXD / Default System Serial Console
+*   **GPIO 44** (External Pin 18 - RXD): **General IO / PWM / Hardware UART RX** -> U0RXD / Default System Serial Console
 
 ---
 
@@ -51,19 +49,16 @@ These tracks manage internal communication to onboard coprocessors, sensors, hig
 *   **GPIO 18:** **I2C SDA Internal** (Master Serial Data Line / ADC2_CH7)
 
 #### Integrated System Components
-
-| Component Model Number | System Function | Address / Pin Association |
-| :--- | :--- | :--- |
-| **STMicroelectronics LSM6DSV32XTR** | 6-Axis Motion IMU | Primary I2C Address: **`0x6B`** |
-| **Goertek SPL07-006** | Gel-Filled Altimeter | **`0x76`** (Routed via LSM6DSV32X Hub) |
-| **MEMSIC MMC5603NJ** | 3-Axis Digital Compass | Primary I2C Address: **`0x30`** |
-| **Texas Instruments BQ25188** | Power Management IC | Primary I2C Address: **`0x6A`** |
-| **GPIO 0** | User Switch / BOOT | Hardware Bootloader Selection Trigger / ADC2_CH1 |
-| **GPIO 15** | Real-Time Clock (RTC) | Independent System Hardware Timestamping / ADC2_CH4 |
-| **GPIO 16** | Voltage Sensing | Analog Input tied to internal battery divider / ADC2_CH5 |
-| **GPIO 19** | Native USB D- | Native USB differential data line minus / ADC2_CH8 |
-| **GPIO 20** | Native USB D+ | Native USB differential data line plus / ADC2_CH9 |
-| **GPIO 26** | PSRAM Configuration | High-speed dedicated caching optimization line |
+*   **STMicroelectronics LSM6DSV32XTR IMU**: Primary I2C Address **`0x6B`** (6-Axis Motion IMU)
+*   **Goertek SPL07-006 Altimeter**: Primary I2C Address **`0x76`** (Gel-Filled Altimeter routed via LSM6DSV32X Hub)
+*   **MEMSIC MMC5603NJ Compass**: Primary I2C Address **`0x30`** (3-Axis Digital Compass)
+*   **Texas Instruments BQ25188 PMIC**: Primary I2C Address **`0x6A`** (Power Management IC)
+*   **GPIO 0**: User Switch / BOOT -> Hardware Bootloader Selection Trigger / ADC2_CH1
+*   **GPIO 15**: Real-Time Clock (RTC) -> Independent System Hardware Timestamping / ADC2_CH4
+*   **GPIO 16**: Voltage Sensing -> Analog Input tied to internal battery divider / ADC2_CH5
+*   **GPIO 19**: Native USB D- -> Native USB differential data line minus / ADC2_CH8
+*   **GPIO 20**: Native USB D+ -> Native USB differential data line plus / ADC2_CH9
+*   **GPIO 26**: **PSRAM Configuration** -> **Dedicated High-Speed External PSRAM Caching Rail**
 
 #### Native 4-Bit MicroSD Interface (SDMMC Mode)
 *   **GPIO 33:** µSD Card DAT2
@@ -74,10 +69,10 @@ These tracks manage internal communication to onboard coprocessors, sensors, hig
 *   **GPIO 38:** µSD Card DAT1
 
 #### Visual Status Diagnostic LEDs
-*   **GPIO 21:** Interrupt (INT) / Red LED
-*   **GPIO 45:** Green LED — Battery Charging Complete Status
-*   **GPIO 46:** Red LED — MicroSD Card Activity / Error State Indicator
-*   **GPIO 48:** Blue LED — User Program Custom Programmable Status
+*   **GPIO 21:** Top Layer Red LED / Hardware Interrupt — User Programmable LED (Suggested Battery Charging Progress Status) / IMU & Battery Charger Notification of Data/Error
+*   **GPIO 45:** Top Layer Green LED — User Programmable LED (Suggested Battery Charging Complete Status)
+*   **GPIO 46:** Bottom Layer Red LED — User Programmable LED (Suggested MicroSD Card Activity Indicator)
+*   **GPIO 48:** Top Layer Blue LED — User Program LED
 
 ---
 
@@ -110,7 +105,7 @@ void setup() {
   while (!Serial) { delay(10); } // Wait for native USB connection
   
   Serial.println("\n=======================================================");
-  Serial.println("🛸 STEM FORGE HYPER S3 ROCKET: INITIALIZATION");
+  Serial.println("🛸 STEMFORGE HYPER S3 ROCKET: INITIALIZATION");
   Serial.println("=======================================================");
 
   // Activate the native internal I2C bus
@@ -153,5 +148,6 @@ void checkDevice(const char* name, uint8_t addr) {
 
 ## ⚖️ License & Copyright
 
-*   **Software / Firmware Examples:** All source code, libraries, and script examples in this repository are licensed under the **Apache 2.0 License**. You are free to modify, deploy, and distribute this software framework in your own custom flight builds.
-*   **Physical Hardware Design:** The circuit layouts, component placement, schematic traces, layer stackups, and physical PCB architecture of the **HYPER S3 ROCKET** and all trademark are proprietary intellectual property. Copyright © 2026 by **STEMFORGE**. All rights reserved. Commercial replication, hardware cloning, or unauthorized reverse engineering of the physical board layout is strictly prohibited.
+*   **Software / Firmware Examples:** Licensed under the **Apache License, Version 2.0** (the "License"); you may not use these files except in compliance with the License. You may obtain a copy of the License at `http://www.apache.org/licenses/LICENSE-2.0`. Unless required by applicable law or agreed to in writing, software distributed under the License is distributed on an "AS IS" BASIS, WITHOUT WARRANTIES OR CONDITIONS OF ANY KIND, either express or implied. See the License for the specific language governing permissions and limitations under the License.
+*   **Physical Hardware Design:** The circuit layouts, component placement, schematic traces, layer stackups, and physical PCB architecture of the **HYPER S3 ROCKET** are proprietary intellectual property. Copyright © 2026 by **STEMFORGE**. All rights reserved. Commercial replication, hardware cloning, or unauthorized reverse engineering of the physical board layout is strictly prohibited.
+*   **Trademarks:** **STEMFORGE™**, **HYPER S3 ROCKET™**, and their associated product brand logos are proprietary trademarks of **STEMFORGE**. Unauthorized commercial use of these brand marks or names to market unauthorized derivative hardware modules is strictly prohibited.

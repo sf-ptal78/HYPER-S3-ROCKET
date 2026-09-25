@@ -153,5 +153,5 @@ void checkDevice(const char* name, uint8_t addr) {
 
 ## ⚖️ License & Copyright
 
-*   **Software / Firmware Examples:** All source code, libraries, and script examples in this repository are licensed under the **MIT License**. You are free to modify, deploy, and distribute this software framework in your own custom flight builds.
-*   **Physical Hardware Design:** The circuit layouts, component placement, schematic traces, layer stackups, and physical PCB architecture of the **HYPER S3 ROCKET** are proprietary intellectual property. Copyright © 2026 by **Stem Forge**. All rights reserved. Commercial replication, hardware cloning, or unauthorized reverse engineering of the physical board layout is strictly prohibited.
+*   **Software / Firmware Examples:** All source code, libraries, and script examples in this repository are licensed under the **Apache 2.0 License**. You are free to modify, deploy, and distribute this software framework in your own custom flight builds.
+*   **Physical Hardware Design:** The circuit layouts, component placement, schematic traces, layer stackups, and physical PCB architecture of the **HYPER S3 ROCKET** and all trademark are proprietary intellectual property. Copyright © 2026 by **STEMFORGE**. All rights reserved. Commercial replication, hardware cloning, or unauthorized reverse engineering of the physical board layout is strictly prohibited.

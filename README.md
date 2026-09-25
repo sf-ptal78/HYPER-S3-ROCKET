@@ -12,6 +12,7 @@ Unlike standard development boards that rely on fragile nests of external breako
 *   **Hardware-Accelerated Sensor Hub Passthrough:** The high-precision **SPL07-006 Altimeter** is routed directly via the auxiliary master I2C channels of the **LSM6DSV32XTR 6-Axis IMU**. The IMU automatically polls, aggregates, and stores barometric data into its native 4.5 KB FIFO buffer completely in the background—freeing up the ESP32-S3 processor to maintain high-frequency telemetry loops and long-range wireless streaming.
 *   **Built-in Safety 1S LiPo Charging:** Fully integrated, protected over-current battery management right on the board.
 *   **Water-Resistant Altimeter Cavity:** Upgraded to the **Goertek SPL07-006**, featuring a waterproof gel-filled cavity built to withstand high-moisture water rocket deployment bays.
+*   **Rugged Industrial Layout:** Fabricated on a rigid **6-layer PCB** with advanced **EMI mitigation** trace shielding, comprehensive **ESD protection** on external pins, and **reverse polarity hardware hardening**.
 
 ---
 
@@ -37,11 +38,11 @@ Unlike standard development boards that rely on fragile nests of external breako
 | **GPIO 14** | External Pin 16 | General-Purpose IO |
 | **GPIO 43** | External Pin 17 - TXD | Dedicated Hardware UART TX |
 | **GPIO 44** | External Pin 18 - RXD | Dedicated Hardware UART RX |
-| **GPIO 39** | SMD Pad External | Flat Surface-Mount Only Pin |
-| **GPIO 40** | SMD Pad External | Flat Surface-Mount Only Pin |
-| **GPIO 41** | SMD Pad External | Flat Surface-Mount Only Pin |
-| **GPIO 42** | SMD Pad External | Flat Surface-Mount Only Pin |
-| **GPIO 47** | SMD Pad External | Flat Surface-Mount Only Pin |
+| **GPIO 39** | SMD Pad External | Flat Surface-Mount Only Pin (MODULE Footprint Optimized) |
+| **GPIO 40** | SMD Pad External | Flat Surface-Mount Only Pin (MODULE Footprint Optimized) |
+| **GPIO 41** | SMD Pad External | Flat Surface-Mount Only Pin (MODULE Footprint Optimized) |
+| **GPIO 42** | SMD Pad External | Flat Surface-Mount Only Pin (MODULE Footprint Optimized) |
+| **GPIO 47** | SMD Pad External | Flat Surface-Mount Only Pin (MODULE Footprint Optimized) |
 
 ### 🧠 System Peripherals & Internal Bus Layout
 
@@ -76,66 +77,83 @@ Unlike standard development boards that rely on fragile nests of external breako
 
 ---
 
-## 💻 Sample Code Block: Initializing the Hardware Bus
+## 📊 Family Ecosystem Variations
 
-```cpp
-#include <Wire.h>
+The HYPER S3 platform scales dynamically across four production configurations to fit varied industrial requirements and spatial constraints:
 
-#define INTERNAL_I2C_SDA 18
-#define INTERNAL_I2C_SCL 17
-#define BATTERY_SENSE_PIN 16
-
-#define IMU_ADDR  0x6B  // LSM6DSV32XTR Primary Address
-#define MAG_ADDR  0x30  // MMC5603NJ Magnetometer Address
-#define PMIC_ADDR 0x6A  // BQ25188 PMIC Address
-
-void setup() {
-  Serial.begin(115200);
-  while (!Serial) { delay(10); } // Wait for native USB connection
-  
-  Serial.println("\n=======================================================");
-  Serial.println("🛸 STEM FORGE HYPER S3 ROCKET: INITIALIZATION");
-  Serial.println("=======================================================");
-
-  // Activate the native internal I2C bus
-  bool i2c_bus = Wire.begin(INTERNAL_I2C_SDA, INTERNAL_I2C_SCL);
-  if (!i2c_bus) {
-    Serial.println("❌ CRITICAL: System Master I2C Interface Bus Failed!");
-    while(1);
-  }
-  Serial.println("✅ Master I2C Bus Online (GPIO 18/17).");
-
-  // Ping internal system architectures
-  checkDevice("LSM6DSV32XTR IMU", IMU_ADDR);
-  checkDevice("MMC5603NJ Magnetometer", MAG_ADDR);
-  checkDevice("BQ25188 Battery Charger", PMIC_ADDR);
-  
-  Serial.println("\n🚀 System Ready for Flight Sensor Hub Programming.");
-  Serial.println("=======================================================\n");
-}
-
-void loop() {
-  int rawVolts = analogRead(BATTERY_SENSE_PIN);
-  float voltage = (rawVolts / 4095.0) * 2.0 * 3.3; // Calibrate ratio for internal divider
-  Serial.print("🔋 Launchpad Battery System Power: ");
-  Serial.print(voltage);
-  Serial.println(" V");
-  delay(1000);
-}
-
-void checkDevice(const char* name, uint8_t addr) {
-  Wire.beginTransmission(addr);
-  if (Wire.endTransmission() == 0) {
-    Serial.print("  [✅ ONLINE]  "); Serial.println(name);
-  } else {
-    Serial.print("  [❌ OFFLINE] "); Serial.println(name);
-  }
-}
-```
+1. **Hyper S3 MODULE:** Ultra-narrow **17.78mm (0.7")** layout. Strictly castellated pads without through-holes. Engineered explicitly as an SMT drop-in component for high-density commercial automated pick-and-place lines.
+2. **Hyper S3 LOGGER:** Complete **20.00mm** hybrid footprint (castellated edges + 2.54mm pin headers). Outfitted with the full 10DoF ±32g sensor array, micro SD socket, and solar harvesting power path management.
+3. **Hyper S3 DATA:** Cost-optimized **20.00mm** hybrid layout. Maintains the high-speed SDMMC MicroSD storage, solar charging, and hardware safety layers but strips the 10DoF sensor array for pure environmental, agricultural, or remote structural data-logging.
+4. **Hyper S3 CHARGE:** Dedicated **20.00mm** power node layout. Strips sensory infrastructure to maximize efficiency layouts for advanced remote solar energy harvesting, off-grid battery management arrays, and battery-critical remote power setups.
 
 ---
 
-## ⚖️ License & Copyright
+## 💻 Production Firmware Framework
 
-*   **Software / Firmware Examples:** All source code, libraries, and script examples in this repository are licensed under the **MIT License**. You are free to modify, deploy, and distribute this software framework in your own custom flight builds.
-*   **Physical Hardware Design:** The circuit layouts, component placement, schematic traces, layer stackups, and physical PCB architecture of the **HYPER S3 ROCKET** are proprietary intellectual property. Copyright © 2026 by **Stem Forge**. All rights reserved. Commercial replication, hardware cloning, or unauthorized reverse engineering of the physical board layout is strictly prohibited.
+The following production code demonstrates a high-reliability aerospace implementation. It initializes the **HYPER S3 ROCKET** internal bus lines, samples the 10DoF cluster at a high-frequency clock interval over fast I2C, streams data out using a double-transmission **Temporal Redundancy** protocol over ESP-NOW to bypass signal drops, and maintains a local **Wi-Fi Access Point Web Server** that outputs raw logs directly as a `.CSV` file for Mac/Safari or Windows clients upon recovery.
+
+```cpp
+#include <Wire.h>
+#include <WiFi.h>
+#include <WebServer.h>
+#include <esp_now.h>
+#include <FS.h>
+#include <SD_MMC.h> 
+
+// Hardware Layer Register Mappings
+#define INTERNAL_I2C_SDA     18
+#define INTERNAL_I2C_SCL     17
+#define BATTERY_SENSE_PIN    16
+#define I2C_BUS_SPEED        400000 
+
+// Standardized 10DoF Data Logging Struct
+struct __attribute__((packed)) SensorSample {
+  uint32_t ms;         // Master internal clock tracking (millis)
+  int16_t ax, ay, az;   // Real-time LSM6DSV32XTR Accel Data (Up to ±32g)
+  int16_t gx, gy, gz;   // Real-time LSM6DSV32XTR Gyro Data (Up to ±2000 dps)
+  int16_t mx, my, mz;   // Real-time MMC5603NJ Magnetometer Heading
+  float pressure;       // Real-time SPL07-006 Atmospheric Pressure Data
+  uint16_t battery;     // Real-time Raw ADC Battery Track
+};
+
+// Redundant ESP-NOW Structural Payload 
+struct __attribute__((packed)) EspNowPayload {
+  uint32_t packetId;         // Incremental index used to locate skipped transmission frames
+  SensorSample historical;   // Retained RAM frame transmitted for its second pass
+  SensorSample current;      // Newly sampled frame transmitted for its first pass
+};
+
+const char* ssid = "HyperS3-Rocket";
+const char* password = "launchcontrol";
+WebServer server(80);
+
+File logFile;
+SensorSample lastSample;
+bool hasHistory = false;
+uint32_t packetCounter = 0;
+unsigned long lastSampleTime = 0;
+const int sampleInterval = 4; // Configures rigid ~250Hz sampling loop
+
+// Converts binary data stored on the SD card into a text CSV for your browser
+void handleCSVDownload() {
+  File binFile = SD_MMC.open("/flight_log.bin", FILE_READ);
+  if (!binFile) {
+    server.send(404, "text/plain", "No flight log discovered on SD architecture.");
+    return;
+  }
+
+  server.setContentLength(CONTENT_LENGTH_UNKNOWN);
+  server.send(200, "text/csv", "");
+
+  // Print Standard CSV Headings
+  server.sendContent("Time_ms,Ax,Ay,Az,Gx,Gy,Gz,Mx,My,Mz,Pressure,Voltage\n");
+
+  SensorSample tempPacket;
+  String row = "";
+  row.reserve(128); // Optimize system memory allocation to maximize parsing throughput
+
+  while (binFile.read((uint8_t*)&tempPacket, sizeof(SensorSample)) == sizeof(SensorSample)) {
+    float voltage = (tempPacket.battery / 4095.0) * 2.0 * 3.3; // Convert raw ADC to true Voltage
+    row = String(tempPacket.ms) + "," +
+          String(tempPacket.ax) + "," + String(tempPacket.ay) + "," + String(tempPacket.az) + "," +
+          String(tempPacket.gx) + "," + String(tempPacket.gy) + "," + String(tempPacket.gz) + "," +

@@ -1,6 +1,6 @@
 # HYPER S3 ROCKET Flight Computer & Power Management Board
 
-The **HYPER S3 ROCKET** by **[Stem Forge](https://stemforge.com.au)** is a highly integrated, production-grade flight computer and smart power management module. Powered by the dual-core **ESP32-S3 SoC**, this board was meticulously engineered to solve the most frustrating hardware constraints in hobby water rocketry, model aerospace tracking, and remote battery/solar-powered IoT nodes.
+The **HYPER S3 ROCKET** by **[STEMFORGE](https://stemforge.com.au)** is a highly integrated, production-grade flight computer and smart power management module. Powered by the dual-core **ESP32-S3 SoC**, this board was meticulously engineered to solve the most frustrating hardware constraints in hobby water rocketry, model aerospace tracking, and remote battery/solar-powered IoT nodes.
 
 Unlike standard development boards that rely on fragile nests of external breakout modules, the HYPER S3 ROCKET bundles a full array of flight-grade tracking components into an ultra-compact form factor with **castellated edges**, allowing it to be used flat as a surface-mount module or with traditional breadboard pin headers.
 

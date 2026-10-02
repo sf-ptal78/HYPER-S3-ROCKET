@@ -1,0 +1,4 @@
+Copyright (c) 2026 STEMFORGE. All rights reserved.
+
+PCB manufacturing, replication, cloning, and modification of these layout files are strictly prohibited.
+Files are provided for backer review and fault-finding support only.

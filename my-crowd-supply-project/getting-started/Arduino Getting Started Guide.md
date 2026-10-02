@@ -1,14 +1,14 @@
-# 🛸 How to Setup Your Rocket Computer
+# 🛸 How to Setup Your Hyper-S3-Rocket board
 
-Follow these **3 easy steps** so you can upload your code without pressing any tricky buttons!
+Follow these **3 easy steps** so you can upload your code the easy way!
 
 ---
 
 ### ⚡ Step 1: The Magic Button Trick
-Before changing any computer settings, we need to wake up the rocket's hidden programming mode so your computer can recognize it.
+Before changing any computer settings, we need to wake up the Rocket's hidden programming mode so your computer can recognize it.
 
-1. **Plug your rocket board** into your computer with a USB-C cable.
-2. Press and **HOLD the BOOT button** on your board.
+1. **Plug your Rocket board** into your computer with a USB-C cable.
+2. Press and **HOLD the BOOT button** on your board and...
 3. Tap the **RESET button** once, then **let go of the BOOT button**. 
 
 ---
@@ -16,7 +16,7 @@ Before changing any computer settings, we need to wake up the rocket's hidden pr
 ### 📦 Step 2: Click the Board Settings
 Open the **Tools** menu at the top of your Arduino IDE screen and match these choices exactly:
 
-* 🎛️ **Board:** ➔ `esp32` ➔ **`ESP32S3 Dev Module`**
+* 🎛️ **Board:** ➔ `esp32` ➔ **`ESP32S3 Dev Module`** Need 💡 Look on.
 * ⚡ **USB CDC On Boot:** ➔ **`Enabled`**
 * 🔌 **USB Mode:** ➔ **`Hardware CDC and JTAG`**
 * 📦 **Upload Mode:** ➔ **`TinyUSB`**
@@ -30,6 +30,7 @@ Open the **Tools** menu at the top of your Arduino IDE screen and match these ch
 
 ### 🎉 Step 3: Flash and Play!
 1. Click the **Upload Arrow (➔)** button to send your code to the rocket.
-2. When the upload finishes, **just remember to press the RESET button once at the end** to wake it up!
+2. Watch the black text window at the bottom of your screen. When it is done flashing your code, the text will say **"Hard resetting via ..."**—that's your sign to step in and **press the RESET button once** on your board to wake it up!
+3. To see Rocket talking back to you, open the serial monitor - just go to **Tools** ➔ **Serial Monitor** to display any printed messages from Rocket.
 
-**That's it!** No need to toggle the buttons ever again. The rocket knows exactly what to do now. Uploading new code is fun, easy, and completely hands-free! 🚀✨
+**That's it!** No need to toggle the buttons ever again. Rocket knows exactly what to do. Uploading new code is fun, easy, and completely hands-free! 🚀✨

@@ -20,7 +20,7 @@ Open the **Tools** menu at the top of your Arduino IDE screen and match these ch
 * ⚡ **USB CDC On Boot:** ➔ **`Enabled`**
 * 🔌 **USB Mode:** ➔ **`Hardware CDC and JTAG`**
 * 📦 **Upload Mode:** ➔ **`TinyUSB`**
-* 💾 **PSRAM:** ➔ **`OPI PSRAM`**
+* 💾 **PSRAM:** ➔ **`QSPI PSRAM`**
 * 📟 **Port:** ➔ Choose the one that now says **`ESP32 Family Device`**!
 
 > 💡 **Don't see the `esp32` option?**  

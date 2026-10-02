@@ -29,8 +29,14 @@ Open the **Tools** menu at the top of your Arduino IDE screen and match these ch
 ---
 
 ### 🎉 Step 3: Flash and Play!
-1. Click the **Upload Arrow (➔)** button to send your code to the rocket.
-2. Watch the black text window at the bottom of your screen. When it is done flashing your code, the text will say **"Hard resetting via ..."**—that's your sign to step in and **press the RESET button once** on your board to wake it up!
-3. To see Rocket talking back to you, open the serial monitor - just go to **Tools** ➔ **Serial Monitor** to display any printed messages from Rocket.
+1. Click **Upload (➔)**.
+2. When the console reads **"Hard resetting via ..."**, press the **RESET button** once on your board.
+3. Open the Serial Monitor to view output.
+
+---
+
+### ⚠️ Two Golden Rules for the Serial Monitor
+* 🔒 **Close BEFORE you Upload:** Close the Serial Monitor before clicking Upload to prevent port lockouts.
+* 🛰️ **Open to Unblock the Clock:** Press **Ctrl + Shift + M** to flush the channel if any timing becomes erratic.
 
 **That's it!** No need to toggle the buttons ever again. Rocket knows exactly what to do. Uploading new code is fun, easy, and completely hands-free! 🚀✨

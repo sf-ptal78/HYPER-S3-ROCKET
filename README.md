@@ -1,4 +1,4 @@
-# HYPER S3 ROCKET Flight Computer & Power Management Board
+# HYPER S3 ROCKET (Development Board) made for Water Rockets & Multi-Project Controllers
 
 The **HYPER S3 ROCKET™** by **[STEMFORGE™](https://stemforge.com.au)** is both a highly capable production-grade development board, flight computer and smart power management module. Powered by the dual-core **ESP32-S3 SoC**, this board was meticulously engineered to solve the most frustrating hardware constraints in hobby water rocketry, model aerospace tracking, and remote battery/solar-powered IoT nodes.
 

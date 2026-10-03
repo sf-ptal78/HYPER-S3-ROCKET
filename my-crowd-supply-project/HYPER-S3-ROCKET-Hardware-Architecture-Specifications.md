@@ -21,7 +21,7 @@ The hard analog and power problems are solved on the PCB itself, so you don't ne
 | **Battery protection** | TI eFuse + supervisor + comparator, independent of firmware |
 | **GPIO** | 16 through-hole multi-role GPIOs on the RTC power domain, plus 5 SMD GPIOs |
 | **Buses** | Two isolated I²C buses (internal sensors, external expansion), 4-bit SD bus |
-| **Core Power Telemetry** | I²C address 0x6a for Vin and Battery attached/detached, Charging Status, Charging Faults, Charging Voltage Parameters), GPIO15 ADC for Battery Voltage and Current sensing (GPIO0 switched) |
+| **Battery Analytics** | I²C address 0x6a for Vin and Battery attached/detached, Charging Status, Charging Faults, Charging Voltage Parameters), GPIO15 ADC for Battery Voltage and Current sensing (GPIO0 switched) |
 | **Sensors (LOGGER)** | STM LSM6DSV32X 6-DoF IMU, Memsic MMC5603NJ 3-axis magnetometer, Goertek SPL07 barometer/temperature |
 | **Storage (DATA, LOGGER)** | MicroSD, 4-bit SDMMC, push-push holder |
 | **Switches** | User Button on GPIO0 (Labelled Boot) |
@@ -84,12 +84,12 @@ Batteries are optional. The board runs from USB or solar alone.
 
 Protection runs **independently of the ESP32-S3 firmware**. If your code freezes, the battery and power rails still protect themselves.
 
-### Two co-equal layers
+### Two Co-Equal Layers
 
-1. **TI BQ25188** handles charging safety, software-configurable voltage limits, battery overcurrent, overvoltage (it reduces or stops charging) and charge-temperature regulation through an NTC input.
+1. **TI BQ25188 charger** handles charging safety, software-configurable voltage limits, battery overcurrent, overvoltage (it reduces or stops charging) and charge-temperature regulation through an NTC input.
 2. **TI TPS259461ARPWR eFuse** sits on the battery rail as a hard-wired cutoff in both directions. If a firmware crash or bad register setting leaves the charger misconfigured, the eFuse still isolates the battery on short circuits and overcurrent.
 
-### Protection against
+### Battery Protection
 
 | Fault | Protects against |
 | --- | --- |
@@ -99,25 +99,25 @@ Protection runs **independently of the ESP32-S3 firmware**. If your code freezes
 
 Many charger ICs only protect during charging and ignore the discharge side. Here, discharge-side under-voltage lockout is handled by hardware, using the eFuse together with a TI supervisor.
 
-### Micropower preservation
+### Micropower Preservation
 
 When the hardware UVLO trips at **2.63 V**, the eFuse's parasitic leakage (**4.4 µA**) and the input divider (**1.22 µA**) total only **5.62 µA**. The circuit won't drain an exhausted cell during long shelf storage. Once USB or a 5 V solar panel is present, the BQ25188 powers the SYS rail and releases the eFuse so charging can resume.
 
-### Dual-zone thermal control
+### Dual-Zone Thermal Control
 
-- **While charging:** the BQ25188 uses its own NTC input.
-- **While discharging:** the charger can't see the battery, so the eFuse, TI supervisor and TI **TLV4021R1YKAR** comparator monitor a second, independent NTC and shut the main rail if the cell overheats.
+- **While charging:** the BQ25188 uses its own NTC input to regulate or disengage charging.
+- **While discharging:** the charger can't see the battery, so the eFuse, TI supervisor and TI **TLV4021R1YKAR** comparator monitor a second, independent NTC and shut the main rail if the cell overheats past 60 degrees celcius (140°F) .
 
-Thermistors are not supplied. Use the type that suits your cell (10k and 100k NTC support is built in).
+Note: Thermistors are not supplied as they are unique to every situation. Use the type that suits your cell placement (Both require a Beta of 3435, but one is 10k NTC for precise charging regulation and the other is 100k NTC for strict 60 degree C charging and discharging lockout. 2.0mm through-holes pads are provided). Note: Please remove the bypass resistors next to NTC1 and NTC2, before attaching your NTCs or they will read incorrectly.
 
-### Boundary protection
+### Boundary Protection
 
-- **ESD / TVS** on `Vusb`, `D+`, `D-`, `VIN` and `B+`, against positive and negative transients from cable insertion or touching exposed pins.
+- **ESD / TVS** on `Vusb`, `D+`, `D-`, `VIN`, `VOUT` and `B+`, against positive and negative transients from cable insertion or touching exposed pins.
 - **Reverse-polarity protection** on the USB and `VIN` inputs, using two onboard power Schottky diodes. They cost a small voltage drop in exchange for solid protection.
-- **Battery connector:** diodes and typical eFuses can't allow two-way battery current, so the JST-PH connector is keyed. Always check polarity before connecting. On CHARGE, DATA and LOGGER the external `B+` pin is disabled; on MODULE it is active and unprotected.
+- **Battery connector:** diodes and typical eFuses can't allow two-way battery current, so the JST-PH connector is keyed. Always check polarity before connecting. On CHARGE, DATA and LOGGER the external `B+` pin is disabled for safety so one cell is only ever connected at any one time; on MODULE it is active and unprotected.
 - **Schottky clamp** on the analog divider, keeping voltage spikes away from the ESP32-S3.
 
-### Battery analytics
+### Battery Analytics
 
 A Diodes Inc. MOSFET array switches between a Schottky-protected resistor divider (battery voltage) and the eFuse current-monitor output (battery current), so firmware can report both.
 
@@ -145,7 +145,7 @@ Many industries require more than one independent layer of battery protection. T
 
 ### 16 multi-role GPIOs on the RTC domain
 
-Every exposed through-hole GPIO is on the ESP32-S3 **RTC power domain**, so any of them can wake the chip from deep sleep. Between them they cover up to **12 capacitive-touch channels** and **16 ADC channels**, plus UART, SPI and I²C.
+Every exposed through-hole GPIO is on the ESP32-S3 **RTC power domain**, so any of them can wake the chip from deep sleep or be used by the ULP coprocessor. **12 capacitive-touch channels** and **14 ADC channels**, including dedicated UART and I²C (with the pull-ups).
 
 ### Two isolated I²C buses
 
@@ -153,17 +153,17 @@ Separate buses prevent address conflicts and bus stalls between your sensors and
 
 | Bus | Pins | Purpose |
 | --- | --- | --- |
-| **Internal sensor bus** | SDA GPIO 17, SCL GPIO 18 | Onboard 10-DoF sensor array and internal subsystems, with onboard pull-ups |
-| **External expansion bus** | SDA GPIO 13, SCL GPIO 14 | Third-party sensors, with its own pull-ups |
+| **Internal sensor bus** | SDA GPIO 17, SCL GPIO 18 | Onboard 10-DoF sensor array, temperature, and battery analytics, with onboard pull-ups |
+| **External expansion bus** | SDA GPIO 13, SCL GPIO 14 | for user defined Third-party sensors, with onboard pull-ups |
 
 ### 4-bit MicroSD storage (DATA & LOGGER)
 
-- Uses the ESP32-S3's native **4-bit SD bus** instead of slow SPI, for fast logging.
+- Uses the ESP32-S3's native **4-bit SD bus** instead of slow SPI, for faster read and write cycles such as Data Logging.
 - **Push-push holder** designed to keep the card seated through high-vibration and high-G launches.
 
 ### Status LEDs
 
-Four user-programmable LEDs (3 front, 1 back) for diagnostics and hardware checks.
+Four user-programmable LEDs (3 front - Red, Green and a Blue, 1 back - Red) for diagnostics and hardware checks.
 
 ---
 
@@ -174,17 +174,36 @@ Four user-programmable LEDs (3 front, 1 back) for diagnostics and hardware check
 
 | Group | Pins | Hardware feature | Notes |
 | --- | --- | --- | --- |
+| **Onboard Button/Switch** | GPIO 0 | User Button/Switching of GPIO16 sensing (High=Voltage, Low=Current) | Hardwired to Boot switch and to Diodes Inc. Dual Mosfet |
+| **External GPIO** | GPIO 1 - 12 | Up to 12 of Touch / ADC / deep-sleep wake / PWM  | Hardwired to external Pads 0-7 and 10-13 |
 | **External I²C SDA** | GPIO 13 | External bus, onboard pull-up | For expansion sensors; no address clashes with onboard parts |
 | **External I²C SCL** | GPIO 14 | External bus, onboard pull-up | As above |
+| **Internal Timing** | GPIO 15 | Square Wave 32.768 kHz Clock | Hardwired to the onboard SiTime chip |
+| **Internal ADC** | GPIO 16 | System Voltage (Battery Mode) and Battery Current | Hardwired to Voltage Divider circuit and eFuse (switched at GPIO0) |
 | **Internal I²C SDA** | GPIO 17 | Isolated internal bus, pull-up | Hardwired to the onboard sensors |
 | **Internal I²C SCL** | GPIO 18 | Isolated internal bus, pull-up | As above |
-| **System GPIO (×16)** | Exposed pins | All on RTC domain | Up to 12 touch channels, 16 ADC lines, deep-sleep wake |
-| **Power management** | Internal rail | 2 A buck-boost | Same on every variant |
-| **Safety analytics** | Discrete circuit | TI supervisor + comparator | Autonomous UVLO / OVLO / OCLO protection |
-| **Thermal profiling** | Analog inputs | Two NTC ports | One for charge, one for discharge |
+| **Internal D-** | GPIO 19 | Isolated internal USB | Hardwired to the ESP32-S3 internal USB & JTAG (length matched) 90 Ohm Impedance |
+| **Internal D+** | GPIO 20 | Isolated internal USB | As above |
+| **Internal Interrupt/Front Red LED-** | GPIO 21 | Fault Interrupts /Red Indicator LED | Hardwired to Battery Charger, IMU and Internal Front Red Indicator LED (Suggested use Fault Indicator) |
+| **Not Exposed** | GPIO 22 to 32 | Not exposed or Unavailable | Module Flash and PSRAM consumed GPIO Unavailable for use |
+| **MicroSD, 4-bit SDMMC** | GPIO 33 to 38 | Isolated internal bus, pull-ups on all but 36 | Hardwired to Micro SD/MMC Push/Pull Holder (DATA & LOGGER) |
+| **SMD PADs** | GPIO 39 to 42 | Exposed pads for additional GPIO | Internal Pads. May restrict Push/Pull Holder mechanism if not careful. Can be used as JTAG with eFuse burning (permanent) |
+| **External Tx Pad** | GPIO 43 | UART Transmit Control Pin / ADC / deep-sleep wake / PWM | Hardwired to external Pad 16 |
+| **External Rx Pad** | GPIO 44 | UART Receive Control Pin / ADC / deep-sleep wake / PWM | Hardwired to external Pad 17 |
+| **Front Green LED** | GPIO 45 | Green Indicator LED | Hardwired to Internal Front Green Indicator LED (Suggested use Charge Indicator with Brightness control) |
+| **Rear Red LED** | GPIO 46 | Red Indicator LED | Hardwired to Internal Rear Red Indicator LED (Suggested use SD Card Activity LED) |
+| **SMD PAD** | GPIO 47 | Exposed pad for additional GPIO | Internal Pad. May restrict Push/Pull Holder mechanism if not careful. |
+| **Front Blue LED** | GPIO 48 | Blue Indicator LED | Hardwired to Internal Front Blue Indicator LED (Suggested use User Defined) |
+| **System GPIO (×16)** | Exposed pins | All on RTC domain | Up to 12 touch channels, 14 ADC lines, deep-sleep wake, 16 PWM |
+| **Regulated Voltage Output** | Internal rail/VOUT External Pad | 2 A Max Buck-Boost | Same on every variant, VOUT on Pad 18 |
+| **Regulated Voltage Input** | Internal rail/VIN External Pad | 18.5 V max, 5 V Nominal | tolerant to 23 V but 5 V is the most efficient and thermally non-restrictive option |
+| **Battery External Input** | Internal rail/B+ External Pad | Connected for MODULE series only | eFuse limited to 4.6 V for different battery chemistries, eFuse Locks up to **18 V safe range**. **No reverse polarity protection available** |
+| **Regulated Ground** | Internal rail/External Pad | Ground connection on Pad 18 | Unbroken Ground Planes on PCB layers 2 and 5 are essential ground return paths that also provide EMI shielding and protect sensors from switching currents |
+| **Safety Limits** | Discrete circuit | TI supervisor + comparator | Autonomous UVLO / OVLO / OCLO protection |
+| **Thermal profiling** | Analog inputs | Two NTC 2.0mm through-hole ports for custom length thin-film flexible beta 3435 NTC (Sensors not provided) | One for charge regulation (10k), one for charge/discharge (100k) limit and lockout / Remove Bypass 0402 resistors before installing NTC for CHARGE, DATA and LOGGER / NTC Required for MODULE (**Bypass not available**) |
 
 ---
 
 ## Built for the Water Rocket Challenge
 
-The HYPER S3 ROCKET was designed with water-rocket flight logging in mind: a small, light board that survives launch shock, logs fast to MicroSD, timestamps accurately offline, and protects its own battery, but maybe this should be called The Little Rocket that Could - there's no excuse - don't settle for less. 
+The HYPER S3 ROCKET was designed with water-rocket flight logging in mind: a small, light board that survives launch shock, logs fast to MicroSD, timestamps accurately offline, and protects its own battery, but maybe this should be called The Little Rocket that Could - there's no excuse - don't settle for less. Coming Soon to Crowd Supply

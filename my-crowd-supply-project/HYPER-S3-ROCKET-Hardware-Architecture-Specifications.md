@@ -21,7 +21,7 @@ The hard analog and power problems are solved on the PCB itself, so you don't ne
 | **Battery protection** | TI eFuse + supervisor + comparator, independent of firmware |
 | **GPIO** | 16 through-hole multi-role GPIOs on the RTC power domain, plus 5 SMD GPIOs |
 | **Buses** | Two isolated I²C buses (internal sensors, external expansion), 4-bit SD bus |
-| **Core Power Telemetry** | I²C address 0x6a for Vin and Battery attached/detached, Charging Status, Charging Faults, Charging Voltage Parameters), GPIO15 ADC for Battery Voltage and Current sensing - GPIO0 switched |
+| **Core Power Telemetry** | I²C address 0x6a for Vin and Battery attached/detached, Charging Status, Charging Faults, Charging Voltage Parameters), GPIO15 ADC for Battery Voltage and Current sensing (GPIO0 switched) |
 | **Sensors (LOGGER)** | STM LSM6DSV32X 6-DoF IMU, Memsic MMC5603NJ 3-axis magnetometer, Goertek SPL07 barometer/temperature |
 | **Storage (DATA, LOGGER)** | MicroSD, 4-bit SDMMC, push-push holder |
 | **Switches** | User Button on GPIO0 (Labelled Boot) |

@@ -119,10 +119,9 @@ Thermistors are not supplied. Use the type that suits your cell (10k and 100k NT
 
 A Diodes Inc. MOSFET array switches between a Schottky-protected resistor divider (battery voltage) and the eFuse current-monitor output (battery current), so firmware can report both.
 
-<details>
 <summary><strong>Why two layers? Industry battery-safety context</strong></summary>
 
-Many industries require more than one independent layer of battery protection. This table is background on why the board is designed this way. It is **not** a statement that the HYPER S3 ROCKET is certified to any of these standards.
+Many industries require more than one independent layer of battery protection. This table is background on why the board is designed this way. **NOTE:** It is **not** a statement that the HYPER S3 ROCKET is certified to any of these standards. And though at STEM FORGE we aim to get you close, true understanding and determination is up to the end-user.
 
 | Industry | Primary standards | Core danger addressed | Typical secondary safeguard |
 | --- | --- | --- | --- |
@@ -137,7 +136,6 @@ Many industries require more than one independent layer of battery protection. T
 | Rail | EN 50126 / EN 50155 | Tunnel fires, brake power loss | Contactors on independent analog safety loops |
 | Defence | MIL-STD-810 | Ballistic puncture, extreme environments | Redundant isolators independent of firmware |
 
-</details>
 
 ---
 

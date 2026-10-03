@@ -24,14 +24,23 @@ Most development boards rely on basic linear charging ICs with zero automated di
     *   **UVLO** (Under-Voltage Lockout to prevent permanent LiPo cell degradation)
     *   **OVLO** (Over-Voltage Lockout against faulty, fluctuating, or noisy charging inputs)
     *   **OCLO** (Over-Current Lockout to instantaneously isolate dead shorts or motor stalls)
-*   **Dual-Zone Thermal Management:** Exposes dual hardware inputs for external **NTC thin-film thermistors**, allowing developers to map direct thermal profiles of the battery cell and the PCB layout simultaneously.
+
+*   ### 🛡️ Hardware-Enforced "Double Safety Vault" Power Path
+The HYPER S3 ROCKET enforces a strict dual-layered hardware safety architecture that operates entirely independently of the ESP32-S3's primary firmware.
+
+*   **Co-Equal Dual Defense Topology:** Primary charging safety and software-customizable voltage cutoffs are handled via the **Texas Instruments BQ25188** charging management IC. Crucially, the discrete **eFuse** runs in parallel as a vital, hard-wired safety system. If a software glitch misconfigures the BQ25188 registers, or if a firmware crash occurs, the independent eFuse acts as a non-negotiable hardware cutoff that instantaneously isolates the battery during short-circuits or over-current events.
+*   **Dual-Zone Dedicated Thermal Control:** 
+    *   **Charge-Cycle Monitoring:** The **TI BQ25188** utilizes its own thin-film NTC thermistor input to manage thermal thresholds exclusively while the battery is actively charging.
+    *   **Discharge-Cycle Protection:** Because the charger chip is functionally blind when the board is running on battery power, the **eFuse drives the vital temperature control during discharge**. It monitors its own independent NTC thermistor to shut down the main power rail instantly if the cell overheats under high operational loads or rapid depletion.
+
+
 
 <!-- PLACE DOUBLE SAFETY DIAGRAM HERE -->
 ![Double Safety Vault Flow](https://placeholders.dev)
 *Figure 2: Hardware-enforced protection topology bypassing the primary MCU firmware layer.*
 
 ### ⚡ 2A Buck-Boost Regulation & Smart Power Routing
-*   **2A Continuous Buck-Boost:** Equipped with an industrial-grade, ultra-low quiescent current Buck-Boost regulator capable of delivering up to **2A of clean, stable power**. Whether your LiPo cell drops below 3.0V under load or spikes during charging, your system rail never sags.
+*   **1.5A Continuous Buck-Boost - 2A max:** Equipped with an industrial-grade, ultra-low quiescent current Buck-Boost regulator capable of delivering up to **2A of clean, stable power**. Whether your LiPo cell drops below 3.0V under load or spikes during charging, your system rail never sags.
 *   **Dynamic Analog Power Sensing:** Features an integrated **PMOS + NMOS dynamic switching circuit**. This matrix allows the system to seamlessly cycle between high-precision voltage sensing and in-line current tracking across a single analog configuration line without introducing cross-talk or signal degradation.
 
 ### 🎛️ Dual Independent I2C Buses (Zero-Conflict Expansion)
@@ -72,5 +81,53 @@ The HYPER S3 ROCKET is designed as a castellated SMT module, ready to be utilize
 
 1. **Basic SMT Module:** Core safe power block, ESP32-S3 processor, and castellated edge pins. Optimized for embedding directly into custom PCB designs.
 2. **Breadboard Ready:** Adds pre-soldered male pin headers for instant benchtop prototyping and educational laboratory deployments.
+
+# HYPER S3 ROCKET — Hardware Architecture & Specifications
+
+The **HYPER S3 ROCKET** by Stem Forge is an industrial-grade telemetry platform and power management sensor node designed for high-G environments and remote deployments, featuring a dual-core 240MHz processor in a 20mm x 33mm footprint.
+
+---
+
+## 🛠️ Core Hardware Highlights
+
+### 🛡️ Hardware-Enforced "Double Safety Vault" Power Path
+The board features an autonomous, hardware-level protection layer guarding the system independently of the ESP32-S3 firmware, utilizing a dedicated Texas Instruments Supervisor and High-Speed Comparator array for microsecond-level cutoffs against UVLO, OVLO, and OCLO faults, alongside dual hardware inputs for NTC thermistors.
+
+### ☀️ Solar-Ready TI Charging & 2A Regulation
+*   **TI Solar-Compatible Charging:** Includes a variable solar charging path tied to a **`VIN`** pin breakout.
+*   **Dedicated Battery Breakout:** Features a robust **`B+`** pin breakout for direct battery integration.
+*   **2A Continuous Buck-Boost:** Delivers up to **2A of stable power** despite input fluctuations.
+*   **Dynamic Analog Power Sensing:** Uses a PMOS + NMOS switching circuit for voltage and current tracking.
+
+### 🎛️ Dual Independent I2C Buses (Zero-Conflict Expansion)
+The HYPER S3 ROCKET isolates your telemetry stream into two separate buses to prevent address conflicts:
+*   **Internal Sensor Bus (GPIO 17 & GPIO 18):** Dedicated to the onboard 10-DoF IMU and internal sub-systems with native hardware pull-ups.
+*   **External Expansion Bus (GPIO 13 & GPIO 14):** An isolated external bus with dedicated pull-ups for conflict-free third-party sensor integration.
+
+### 💾 Native 4-Bit MicroSD Storage Matrix
+*   **4-Bit High-Speed Bus:** Uses the rapid 4-bit native SD bus architecture of the ESP32-S3 instead of slow SPI lines for fast telemetry logging.
+*   **Push-Push Enclosure:** A secure, spring-loaded MicroSD holder designed to prevent ejection during high-vibration or high-G launches.
+
+### 🛡️ Industrial Boundary Protection Array
+*   **Multi-Rail ESD Protection:** TVS diodes shield critical boundary lines (`Vusb`, `D+`, `D-`, `VIN`, and `B+` pins) against static discharge.
+*   **Schottky Gatekeeping:** An inline Schottky diode protects the analog voltage sensing resistor divider by clamping hazardous voltage spikes away from the ESP32-S3 silicon.
+
+### 🚦 Diagnostic User Indicators
+*   **Quad Programmable LEDs:** Features four user-addressable status LEDs (3 on the front, 1 on the back) for hardware verification and diagnostics.
+## 📋 Pinout Architecture & Bus Mapping
+
+The architecture organizes GPIO allocations, native bus features, and functional notes across dedicated peripherals, system GPIOs, power inputs, and analytics. For the complete and detailed pinout allocation table, please refer to the referenced documentation.
+
+---
+
+## 📦 Hardware Configurations & Modularity
+
+The HYPER S3 ROCKET is designed as a castellated SMT module for embedding or prototyping:
+
+1. **Basic SMT Module:** Core power block, ESP32-S3 processor, and castellated edges.
+2. **Breadboard Ready:** Adds pre-soldered male pin headers for benchtop prototyping.
+3. **Data Logger Edition:** Integrates a high-speed MicroSD logging slot.
+4. **Full Telemetry Spec:** Includes both the MicroSD slot and the 10-DoF IMU sensor array.
+
 3. **Data Logger Edition:** Integrates an onboard high-speed **MicroSD logging slot** for localized data acquisition.
 4. **Full Telemetry Spec:** The flagship configuration. Includes **both** the MicroSD slot and a high-grade **10-DoF IMU sensor array** for complete, uncompromised spatial and kinetic telemetry tracking.

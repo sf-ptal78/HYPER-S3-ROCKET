@@ -1,178 +1,190 @@
 # HYPER S3 ROCKET — Hardware Architecture & Specifications
 
-The **HYPER S3 ROCKET** by Stem Forge is an industrial-grade, ultra-rugged telemetry platform and power management sensor node. Engineered to survive high-G kinetic environments, aerospace logging, and long-term remote deployments, it consolidates a dual-core 240MHz processor, space-optimized analog switching, a high-efficiency power train, and an uncompromised, hardware-enforced protection topology into a microscopic 20mm x 33mm footprint.
+The **HYPER S3 ROCKET** by Stem Forge is a rugged telemetry and power-management node built for high-G environments, aerospace logging and long-term remote deployment. A dual-core 240 MHz ESP32-S3, a 2 A buck-boost power train, a hardware-enforced battery protection chain and an optional 10-DoF sensor array all fit on a **20 mm × 33 mm** castellated board.
 
-By solving complex discrete analog engineering challenges directly on the PCB, it entirely eliminates the need for fragile, bulky multi-board breakout stacks.
+The hard analog and power problems are solved on the PCB itself, so you don't need a stack of fragile breakout boards.
 
----
-
-## 📸 System Overview
-
-<!-- PLACE HERO SHOT HERE -->
-![HYPER S3 ROCKET Hero Shot](https://placeholders.dev)
-*Figure 1: The HYPER S3 ROCKET Full Telemetry Spec variant displaying castellated SMT edges and high-density component packing.*
+![HYPER S3 ROCKET hero shot](https://placeholders.dev)
+*Figure 1: The HYPER S3 ROCKET Full Telemetry variant, showing castellated SMT edges and dense component placement.*
 
 ---
 
+## At a Glance
 
-## 🛠️ Core Hardware Highlights
-
-
-
-🚀 Production-Ready Hardware Specification
-The HYPER S3 ROCKET by Stem Forge is a compact (20mm x 33mm) telemetry platform and power management node designed for high-G and aerospace logging applications, integrating the dual-core ESP32-S3 mini module, efficient power regulation, and robust hardware protection directly onto a single PCB.
-
-• Integrated Dual-core ESP32-S3-Mini-1-N4R2 is at the heart of the Hyper S3 Rocket. With a certified module on 6-layer PCB, you get the benefit of a fast-track to EMI testing. Near Field pre-testing has passed with flying colors. With 21 external (GPIO 16 through-hole and 5 SMD) the other 17 GPIO pins are used internally for sensors and SD enable storage, every pin has been planned for and utilized to get the most from the main Xtensa LX7 microprocessor and from the ULP RTC domain using the ULP RISC-V Coprocessor or the ULP Finite State Machine.
-
-• Efficient Power Regulation: Powered by the TI TPS631000 2MHz buck-boost regulator, the Hyper S3 Rocket will supply far more current efficiently than any other mini sized controller or development board can ever dream of. Delivering continuous current up to 2A (from 3V) of 3.3V output with low ripple, this regulator is far beyond them all.
-
-• Robust Hardware Power & Protection: 
- *   **Power** Featuring a Power Path (PP) Management LiPo charger - the Texas Instruments BQ25188 can input up to 1.1A through the USB-C connector and pass this to the SYS rail or distribute the power between System and Charging duties. And though batteries are not required for the Hyper S3 Rocket, they are an asset as the BQ25188 can manage 3A of battery supply direct to the system with an internal FET in battery only mode or even supplement the incoming power from VIN with additional current from the battery direct to the system rail. For even more power options, the BQ25188 can connect to a nominal 5V Solar Panel (recommended) and it will intelligently harvest the most power possible using VINDPM and IINDPM technologies). This charger is even compatible with i2c control to update charging voltages for different battery chemistries such as Lithium-Ion (Li-Ion), Lithium-Polymer (Li-Poly), and Lithium Iron Phosphate (LiFePO4).
-*   **Protection** - For ultimate power, data and battery protection, the Hyper S3 Rocket has been developed with safety in mind. Safety is crucial whether developing toys, educational projects, industrial solutions or medical devices. The Hyper S3 Rocket has specific hardware protection layers to pass necessary battery safety regulations that other development boards and controllers can't.
-    *   **ESD and TVS** - Electrostatic discharge (ESD) can send a massive voltage spike through a circuit when connecting a USB cable or by simple touching an external pin of the pcb, instantly destroying sensitive microchips or causing hidden weaknesses that lead to failure later. Rest assured, on the Ultra S3 Rocket, every incoming USB voltage and data, incoming VIN, and outgoing VOUT has ESD protection to suppress transient voltage Spikes, whether positive or negatively charged.
-    *   **Reverse Polarity Protection** - Whether connecting a solar panel or the battery, reverse polarity by connecting power to GND will kill the regualtors, microcontrollers and even the charging chip. These integrated circuits do not natively have any reverse polarity protection. To handle reverse polarity and the dual input stage of VIN verses Vusb, Ultra S3 Rocket has two onboard power schottky diodes. These diodes do reduce the incoming charge slightly, yet the benefit far out ways the loss. The battery is not as easy to implement. Though some eFuse have reverse polarity, these cannot have two way current flow for a battery to charge and discharge. Diodes are also out for the same reason. Ultra S3 Rocket has a JST style indented locking notch on the connector. Still, always check red is on the right. For added protection, the B+ external pin is disabled though on the CHARGE, DATA, and LOGGER series. MODULE series is the only one without the PH sized connector and so the external B+ pin is active for an external battery (without reverse polarity protection).
-    *    **Dual Layer Battery Safety** The star defender for safety on the Hyper S3 Rocket is the combined finesse of the TI BQ25188 charger chip and the TI TPS259461ARPWR eFuse. Of utmost importance is Battery Under-Voltage Lockout (BUVLO). This is mandatory to prevent catastrophic and permanent damage caused by **over-discharging** of LiPo cells, yet many charger chips on other brand name controllers and development boards have none **or**, only cover the charging duties and completely ignore the safety during the **discharge stage**. Always check for BUVLO with TI for discharge to make sure its battery related and discharge related. Don't get caught out with anything less. In comparison the Hyper S3 Rocket has been developed with stringent regulation in mind where two-layer battery safety standards are legally mandated or heavily enforced in industries where a battery failure could cause mass casualties, critical infrastructure collapse, or the failure of life-saving equipment. These standards reach into the heart of Aerospace and Aviation with standard RTCA (DO-311A),  into Medical Devices with standards IEC 60601-1 and IEC 62133, into Automotive and Electric Vehicles (EVs) such as ISO 26262 (Functional Safety) and UN 38.3, Consumer Electronics & Wearables with standards like UL 2054 and IEEE 1725, Grid Energy Storage Systems (BESS) such as UL 9540 and NFPA 855, Mining and Hazardous Environments (Ex Areas) to comply with ATEX directives (in Europe) or IECEx standards globally for "Intrinsic Safety" (IEC 60079-11), Marine and Subsea Exploration with classification societies that mandate DNV or ABS, Telecommunications and Data Centres
-    *Complete Regulatory Overview
-Industry	Primary Regulatory Standards	Core Danger Addressed	Typical Secondary Safeguard
-Aerospace	RTCA DO-311A / FAA	Flight control loss, uncontainable high-altitude fire	Physical burst discs, independent hardware cell-isolation switches
-Medical	IEC 62133 / FDA Guidelines	Patient injury, life-support system shutdown	Chemical/thermal fuses embedded directly into the cell configuration
-Automotive	ISO 26262 / UN 38.3 / UL 2580	High-voltage crash shock, highway thermal runaway	Pyro-fuses (explosive disconnects) triggered by independent crash sensors
-Consumer Electronics	UL 2054 / IEEE 1725	User burns, facial injuries, residential property fires	Secondary overvoltage IC or internal PTC (Positive Temperature Coefficient) device
-Grid Storage (BESS)	UL 9540 / NFPA 855	Megawatt-scale explosions, toxic gas plumes	Independent hardware shunt-trips, automated gas/fire suppression interlocks
-Mining / Hazardous	IEC 60079-11 (Intrinsic Safety)	Igniting atmospheric gases or combustible dust	Triple-redundant current-limiting resistors, encapsulated safety fuses
-Marine	DNV-CG-0157 / ABS	Confined-space toxic gas, deep-sea pressure shorts	Independent hardwired overvoltage trip-shunts
-Telecom / Data	UL 1973	Infrastructure blackout, localized data centre fires	Hardware-managed circuit breakers entirely independent of the control software
-Rail & Transit	EN 50126 / EN 50155	Tunnel fires, passenger trapping, brake power loss	Mechanical contactors tied to independent analog backup safety loops
-Defence / Military	MIL-STD-810 / Mil-Specs	Ballistic puncture, extreme combat environments	Redundant hardware isolators completely isolated from the firmware layer
-    *
-    *   The BQ25188 also handles Battery Overcurrent protection and manages the any overvoltage by reducing or shutting down the charging. It also has charging temperature regulation with an NTC thermistor (though not supplied, NTCs can be bought readily according to your own needs). Adding to the TI charger chip, the Hyper S3 Rocket also has a Texas Instruments eFuse TPS259461ARPWR. An eFuse on the battery rail gives unique two-way control over the battery safety for both charging and discharging lockout conditions, such as OVLO, OCLO, and UVLO - UVLO also needed a Texas Instruments Supervisor for true lockout control. The Hyper S3 Rocket also has an additional NTC for Temperature regulated **charging and discharging** via a TI high-speed comparator TLV4021R1YKAR. You can tell, safety at STEM FORGE is not a game.
-
-• Compute & Timing: Built around the ESP32-S3-MINI-1-N4R2 with 4MB Flash and 2MB PSRAM, paired with the SiTime SIT1532AI nano-power MEMS oscillator for RTC precise timestamping.
-
-• Chip Layout:
-	• Top Layer (MODULE, CHARGE, DATA & LOGGER series) : Espressif ESP32-S3-MINI-1-N4R2, TI BQ25188, TI TPS631000, SiTime SiT1532 MEMS OSC, TI TLV809EA26DPWR, TI TLV4021R1YKAR, and Diodes DMC31D5UDA-7B.
-	• Bottom Layer (LOGGER series only): STM LSM6DSV32XTR (6-DoF IMU), Memsic MMC5603NJ (3-Dof Magnetometer), and Goertek SPL07-003/006 (1-Dof Barometric sensor with Temperature sensing).
-   
-• I/O & Expansion: Isolated sensors across dual independent I2C buses (internal sensor bus and external expansion bus) with 16 exposed multi-role GPIOs tied to the RTC power domain 
-
-
-### 🛡️ Hardware-Enforced "Double Safety Vault" Power Path
-The board features an autonomous, dual hardware-level protection layers guarding the system independently of the ESP32-S3 firmware, utilizing a dedicated Texas Instruments Battery Charger, Supervisor and High-Speed Comparator array for microsecond-level cutoffs against Charging and Discharging UVLO, OVLO, and OCLO faults, alongside dual hardware inputs for NTC thermistors (one each for charge and for discharge).
-*   **Complete Discrete Fault Protection:** Instantly isolates the system during critical events:
-    *   **UVLO** (Under-Voltage Lockout to prevent permanent LiPo cell degradation)
-    *   **OVLO** (Over-Voltage Lockout against faulty, fluctuating, or noisy charging inputs)
-    *   **OCLO** (Over-Current Lockout to instantaneously isolate dead shorts or motor stalls)
-
-- **Micropower Preservation (The Ultimate Safety Net):** During UVLO triggering of the eFuse, the combined parasitic leakage internally **4.4µA** and from the input resistor divider **1.22µA** is a tiny **5.62µA** at the exact moment the hardware-enforced UVLO triggers at **2.63V**, the board ensures the circuit itself won't drain an exhausted cell to death on the shelf. This low-power footprint is a critical safety feature that keeps the battery alive during extended standby after a low-voltage shutdown. After a undervoltage lockout event, power from the Vusb or a 5V nominal Solar panel will power the BQ25188 that governs the SYS rail to release the eFuse and let charging begin.
-
-- *   **Integrated analog sensing for Battery Voltage and Current Analytics:** Utilizes a dedicated Diodes Inc. Mosfet array to toggle between a schottky protected resistor divider network and the current sensing output of the TI eFuse to enable accurate battery management features in esp32-s3 firmware.
-
-
-### ☀️ Solar-Ready TI Charging & 2A Regulation
-*   **TI Solar-Compatible Charging:** Includes a variable solar charging path tied to a **`VIN`** pin breakout.
-*   **Dedicated Battery Breakout:** Features a robust **`B+`** pin breakout for direct battery integration.
-*   **2A Continuous Buck-Boost:** Delivers up to **2A of stable power** despite input fluctuations.
-*   **Dynamic Analog Power Sensing:** Uses a PMOS + NMOS switching circuit for voltage and current tracking.
-
-### 📡 Uncompromised RTC-Centric I/O & Sensor Density
-Every single millimetre of the layout is optimized for high-reliability interaction, specifically tailored for the **Water Rocket Challenge** and rigorous kinetic logging.
-*   **16 Multi-Role GPIOs:** Every single exposed pin is routed directly to the ESP32-S3's **RTC (Real-Time Clock) power domain**, enabling rapid wakeups from ultra-deep sleep. 
-*   **High-Density Analog & Touch:** The 16 I/O lines are internally mapped to handle up to **12 capacitive touch channels**, **16 high-speed Analog-to-Digital Converter (ADC) channels**, alongside dedicated UART, SPI, and I2C buses.
-*   **High-Precision Local Timestamping:** Features an internal, dedicated Real-Time Clock (RTC) architecture allowing precise timestamping on high-speed data logs even when completely disconnected from Wi-Fi or cellular networks.
-
-### 🎛️ Dual Independent I2C Buses (Zero-Conflict Expansion)
-The HYPER S3 ROCKET isolates your telemetry stream into two separate buses to prevent address conflicts:
-*   **Internal Sensor Bus (GPIO 17 & GPIO 18):** Dedicated to the onboard 10-DoF IMU and internal sub-systems with native hardware pull-ups.
-*   **External Expansion Bus (GPIO 13 & GPIO 14):** An isolated external bus with dedicated pull-ups for conflict-free third-party sensor integration.
-
-
-### 🛡️ Industrial Boundary Protection Array
-*   **Multi-Rail ESD Protection:** TVS diodes shield critical boundary lines (`Vusb`, `D+`, `D-`, `VIN`, and `B+` pins) against static discharge.
-*   **Schottky Gatekeeping:** An inline Schottky diode protects the analog voltage sensing resistor divider by clamping hazardous voltage spikes away from the ESP32-S3 silicon.
-
-### 🚦 Diagnostic User Indicators
-*   **Quad Programmable LEDs:** Features four user-addressable status LEDs (3 on the front, 1 on the back) for hardware verification and diagnostics.
-## 📋 Pinout Architecture & Bus Mapping
-
-### 🛡️ Hardware-Enforced "Double Safety Vault" Power Path
-Most development boards rely on basic linear charging ICs with zero automated discharge defense. The HYPER S3 ROCKET features a completely autonomous, hardware-level protection layer that guards your system **independently of the ESP32-S3 firmware**. If your code freezes during an active operation, your battery cells and system rails remain perfectly safe.
-
-
-*   **Co-Equal Dual Defense Topology:** Primary charging safety and software-customizable voltage cutoffs are handled via the **Texas Instruments BQ25188** charging management IC. Crucially, the discrete **eFuse** runs in parallel as a vital, hard-wired safety system. If a software glitch misconfigures the BQ25188 registers, or if a firmware crash occurs, the independent eFuse acts as a non-negotiable hardware cutoff that instantaneously isolates the battery during short-circuits or over-current events.
-*   **Dual-Zone Dedicated Thermal Control:** 
-    *   **Charge-Cycle Monitoring:** The **TI BQ25188** utilizes its own thin-film NTC thermistor input to manage thermal thresholds exclusively while the battery is actively charging.
-    *   **Discharge-Cycle Protection:** Because the charger chip is functionally blind when the board is running on battery power, the **eFuse, TI Supervisor, and TI Comparator work in conjunction** to drive the vital temperature control during discharge. This discrete hardware network monitors its own independent NTC thermistor to shut down the main power rail instantly if the cell overheats under high operational loads or rapid depletion.
- 
-    *   The architecture organizes GPIO allocations, native bus features, and functional notes across dedicated peripherals, system GPIOs, power inputs, and analytics. For the complete and detailed pinout allocation table, please refer to the referenced documentation.
+| | |
+| --- | --- |
+| **Size** | 20 mm × 33 mm, castellated SMT / breadboard-friendly |
+| **Processor** | Espressif ESP32-S3-MINI-1-N4R2 (dual-core Xtensa LX7 @ 240 MHz, 4 MB flash, 2 MB PSRAM) |
+| **Timing** | SiTime SiT1532 nano-power MEMS oscillator for RTC timestamping |
+| **Power train** | TI TPS631000 buck-boost, 3.3 V output, up to 2 A |
+| **Charging** | TI BQ25188 power-path LiPo charger, USB-C input up to 1.1 A, solar-capable |
+| **Battery protection** | TI eFuse + supervisor + comparator, independent of firmware |
+| **GPIO** | 16 through-hole multi-role GPIOs on the RTC power domain, plus 5 SMD GPIOs |
+| **Buses** | Two isolated I²C buses (internal sensors, external expansion), 4-bit SD bus |
+| **Sensors (LOGGER)** | STM LSM6DSV32X 6-DoF IMU, Memsic MMC5603NJ 3-axis magnetometer, Goertek SPL07 barometer/temperature |
+| **Storage (DATA, LOGGER)** | MicroSD, 4-bit SDMMC, push-push holder |
+| **Indicators** | 4 programmable LEDs (3 front, 1 back) |
 
 ---
 
+## Hardware Variants
 
+The board comes in four series that share the same core design.
 
+| Series | What you get | Best for |
+| --- | --- | --- |
+| **MODULE** | Core power, charging, safety and ESP32-S3 on a single side with castellated edges. No JST connector. The external `B+` pin is active for an external battery (no reverse-polarity protection on that pin). 10k and 100k NTC thermistors must be soldered in place. | Embedding in your own PCB |
+| **CHARGE** | Adds pre-soldered pin headers and a JST-PH battery connector. Supplied with NTC bypass resistors (remove before fitting a real NTC). `B+` pin disabled. | Benchtop prototyping, education |
+| **DATA** | CHARGE plus the MicroSD slot. | Data logging |
+| **LOGGER** | DATA plus the 10-DoF sensor array on the bottom layer. The flagship. | Rocketry and kinetic telemetry |
 
-<!-- PLACE DOUBLE SAFETY DIAGRAM HERE -->
-![Double Safety Vault Flow](https://placeholders.dev)
-*Figure 2: Hardware-enforced protection topology bypassing the primary MCU firmware layer.*
-
-
-*   ### ⚡ High-Density Power Train: TI TPS631000 Buck-Boost Platform
-*   **Dynamic Variable Output Delivery:** Utilizing a high-efficiency **Texas Instruments TPS631000** 2MHz switching regulator, the main power rail scales output delivery dynamically based on real-time cell state:
-    *   **2.0A Continuous Output:** Delivered seamlessly in buck/stabilizer mode while the battery cell is highly saturated or charging ($V_{IN} \geq 3.0V$).
-    *   **1.5A Continuous Output:** Maintained reliably deep into boost mode even as the battery profile sags under operational loads ($V_{IN} \geq 2.7V$).
-*   **3-Cycle Seamless Mode Transitions:** The constant frequency peak current control loop automatically modulates between buck, boost, and a highly optimized **3-cycle buck-boost crossover window**. This keeps output voltage ripple tightly bounded below **<20mV**, entirely removing analog noise artifacts from the high-G telemetry data lines.
-*   **True Load Disconnect & 8µA Deep Sleep:** Features a true shutdown configuration that physically isolates the load from the power train, paired with a minuscule **8µA quiescent current ($I_Q$)** footprint during low-power standby cycles.
-
-*   **Dynamic Analog Power Sensing:** Features an integrated **PMOS + NMOS dynamic switching circuit**. This matrix allows the system to seamlessly cycle between high-precision voltage sensing and in-line current tracking across a single analog configuration line without introducing cross-talk or signal degradation.
-
-### 🎛️ Dual Independent I2C Buses (Zero-Conflict Expansion)
-Most developer boards force internal and external sensors to share a single I2C bus, introducing massive address conflict risks and bus-stalling hazards. The HYPER S3 ROCKET completely isolates your telemetry stream:
-*   **Internal Sensor Bus (GPIO 17 & GPIO 18):** Dedicated exclusively to the onboard 10-DoF IMU and internal sub-systems. Features native, onboard hardware pull-up resistors.
-*   **External Expansion Bus (GPIO 13 & GPIO 14):** A completely isolated external bus equipped with its own dedicated hardware pull-ups. Developers can plug in any third-party sensor without risking address overlap, bus stalling, or signal impedance.
-
+**Top layer (all series):** ESP32-S3-MINI-1-N4R2, TI BQ25188, TI TPS631000, SiTime SiT1532, TI TLV809EA26DPWR supervisor, TI TLV4021R1YKAR comparator, Diodes DMC31D5UDA-7B MOSFET array.
+**Bottom layer (LOGGER only):** LSM6DSV32X IMU, MMC5603NJ magnetometer, SPL07-003/006 barometer.
 
 ---
 
-## 📋 Pinout & Bus Architecture
+## Compute & Timing
 
-<!-- PLACE INTERACTIVE PINOUT OVERLAY HERE -->
-![HYPER S3 ROCKET Graphical Pinout](https://placeholders.dev)
-*Figure 3: Color-coded functional pin mapping layout.*
-
-| Pin / Peripheral Group | GPIO Pin Allocation | Native Bus / Hardware Feature | Functional Notes & Interface Requirements |
-| :--- | :--- | :--- | :--- |
-| **External I2C SDA** | **GPIO 13** | External Bus (Onboard Pull-up) | Dedicated for user expansion sensors; prevents address clashing. |
-| **External I2C SCL** | **GPIO 14** | External Bus (Onboard Pull-up) | Dedicated for user expansion sensors; prevents address clashing. |
-| **Internal I2C SDA** | **GPIO 17** | Isolated Internal Bus (Pull-up) | Hardwired directly to the Onboard 10-DoF IMU sensor node. |
-| **Internal I2C SCL** | **GPIO 18** | Isolated Internal Bus (Pull-up) | Hardwired directly to the Onboard 10-DoF IMU sensor node. |
-| **16x System GPIO** | *Exposed Pins* | **All 16 on RTC Domain** | Natively routes 12x Touch Channels, 16x ADC lines, and Deep Sleep wake hooks. |
-| **Power Management**| *Internal Rail* | **2A Buck-Boost Regulator** | Main system rail stabilization; standard across all hardware variants. |
-| **Safety Analytics** | *Discrete Circuit*| **TI Supervisor + Comparator**| Enforces autonomous discrete hardware protection (UVLO, OVLO, OCLO). |
-| **Thermal Profiling**| *Analog Inputs* | **Dual Thin-Film NTC Ports** | Support for 2x external thermistors to monitor cell and layout thermals. |
+- **ESP32-S3-MINI-1-N4R2**: a pre-certified module on a 6-layer board, which speeds up EMC testing. Near-field pre-testing has passed.
+- Every pin is planned. 16 through-hole and 5 SMD GPIOs are exposed; the rest serve the onboard sensors and SD storage.
+- Use the main LX7 cores, or the **ULP RISC-V coprocessor / ULP FSM** in the RTC domain for ultra-low-power sensing.
+- The **SiT1532** MEMS oscillator gives precise RTC timestamps, even with no Wi-Fi or network connection.
 
 ---
 
-## 📦 Hardware Configurations & Modularity
+## Power Train: TI TPS631000 Buck-Boost
 
-The HYPER S3 ROCKET is designed as a castellated SMT module, ready to be utilized as a breadboard-friendly prototyping board or surface-mounted directly as a core sub-assembly onto a larger application baseboard.
+![Double Safety Vault flow](https://placeholders.dev)
+*Figure 2: Hardware protection topology that works independently of the MCU firmware.*
 
-1. **Basic SMT Module:** Core safe power block, ESP32-S3 processor, and castellated edge pins. Optimized for embedding directly into custom PCB designs.
-2. **Breadboard Ready:** Adds pre-soldered male pin headers for instant benchtop prototyping and educational laboratory deployments.
-
-# HYPER S3 ROCKET — Hardware Architecture & Specifications
-
-The **HYPER S3 ROCKET** by Stem Forge is an industrial-grade telemetry platform and power management sensor node designed for high-G environments and remote deployments, featuring a dual-core 240MHz processor in a 20mm x 33mm footprint.
-
-
-### 💾 4-Bit MicroSD Storage Matrix
-*   **4-Bit High-Speed Bus:** Uses the rapid 4-bit native SD bus architecture of the ESP32-S3 instead of slow SPI lines for fast telemetry logging.
-*   **Push-Push Enclosure:** A secure, spring-loaded MicroSD holder designed to prevent ejection during high-vibration or high-G launches.
+- **Up to 2 A at 3.3 V** when the input is ≥ 3.0 V, and **1.5 A** deep into boost mode with the input down to 2.7 V.
+- **Seamless mode transitions.** Constant-frequency peak-current control moves between buck, boost and a 3-cycle buck-boost window, keeping output ripple under **20 mV**. That keeps analog noise out of your telemetry data.
+- **True load disconnect** with about **8 µA** quiescent current in standby.
+- **Dynamic analog power sensing.** A PMOS + NMOS switching circuit lets a single analog line alternate between battery voltage sensing and current sensing, without cross-talk.
 
 ---
 
-The HYPER S3 ROCKET is designed as either an SMT module with castellated pins for embedding or with pin headers for prototyping:
+## Charging & Power Sources
 
-1. **Core SMT Module:** ALL Core features - charging, power and safety, ESP32-S3 processor, on a single side with castellated edges (10k NTC and 100k NTC must be soldered in place).
-2. **Breadboard Ready:** Adds pre-soldered male pin headers and a JST style connector for benchtop prototyping (supplied with NTC bypass resistors - remove before adding NTC)
-3. **Data Logger Edition:** Integrates an onboard high-speed **MicroSD logging slot** for localized data acquisition.
-4. **Full Telemetry Spec:** The flagship configuration. Includes **both** the MicroSD slot and a high-grade **10-DoF IMU sensor array** for complete, uncompromised spatial and kinetic telemetry tracking.
+The **TI BQ25188** power-path charger gives you several ways to run the board:
 
+- **USB-C** input up to 1.1 A, shared between system load and battery charging.
+- **Battery only**: up to 3 A direct to the system through the internal FET.
+- **Supplemental mode**: the battery tops up the system rail when the input can't keep up.
+- **Solar**: connect a nominal 5 V panel to `VIN`. VINDPM and IINDPM input regulation harvests as much power as the panel can give.
+- **I²C configurable** charge voltage for Li-Ion, Li-Poly and LiFePO₄ cells.
+
+Batteries are optional. The board runs from USB or solar alone.
+
+---
+
+## Hardware-Enforced "Double Safety Vault"
+
+Protection runs **independently of the ESP32-S3 firmware**. If your code freezes, the battery and power rails still protect themselves.
+
+### Two co-equal layers
+
+1. **TI BQ25188** handles charging safety, software-configurable voltage limits, battery overcurrent, overvoltage (it reduces or stops charging) and charge-temperature regulation through an NTC input.
+2. **TI TPS259461ARPWR eFuse** sits on the battery rail as a hard-wired cutoff in both directions. If a firmware crash or bad register setting leaves the charger misconfigured, the eFuse still isolates the battery on short circuits and overcurrent.
+
+### Protection against
+
+| Fault | Protects against |
+| --- | --- |
+| **UVLO**: under-voltage lockout | Permanent LiPo damage from over-discharge |
+| **OVLO**: over-voltage lockout | Faulty, fluctuating or noisy charging inputs |
+| **OCLO**: over-current lockout | Dead shorts and motor stalls |
+
+Many charger ICs only protect during charging and ignore the discharge side. Here, discharge-side under-voltage lockout is handled by hardware, using the eFuse together with a TI supervisor.
+
+### Micropower preservation
+
+When the hardware UVLO trips at **2.63 V**, the eFuse's parasitic leakage (**4.4 µA**) and the input divider (**1.22 µA**) total only **5.62 µA**. The circuit won't drain an exhausted cell during long shelf storage. Once USB or a 5 V solar panel is present, the BQ25188 powers the SYS rail and releases the eFuse so charging can resume.
+
+### Dual-zone thermal control
+
+- **While charging:** the BQ25188 uses its own NTC input.
+- **While discharging:** the charger can't see the battery, so the eFuse, TI supervisor and TI **TLV4021R1YKAR** comparator monitor a second, independent NTC and shut the main rail if the cell overheats.
+
+Thermistors are not supplied. Use the type that suits your cell (10k and 100k NTC support is built in).
+
+### Boundary protection
+
+- **ESD / TVS** on `Vusb`, `D+`, `D-`, `VIN` and `B+`, against positive and negative transients from cable insertion or touching exposed pins.
+- **Reverse-polarity protection** on the USB and `VIN` inputs, using two onboard power Schottky diodes. They cost a small voltage drop in exchange for solid protection.
+- **Battery connector:** diodes and typical eFuses can't allow two-way battery current, so the JST-PH connector is keyed. Always check polarity before connecting. On CHARGE, DATA and LOGGER the external `B+` pin is disabled; on MODULE it is active and unprotected.
+- **Schottky clamp** on the analog divider, keeping voltage spikes away from the ESP32-S3.
+
+### Battery analytics
+
+A Diodes Inc. MOSFET array switches between a Schottky-protected resistor divider (battery voltage) and the eFuse current-monitor output (battery current), so firmware can report both.
+
+<details>
+<summary><strong>Why two layers? Industry battery-safety context</strong></summary>
+
+Many industries require more than one independent layer of battery protection. This table is background on why the board is designed this way. It is **not** a statement that the HYPER S3 ROCKET is certified to any of these standards.
+
+| Industry | Primary standards | Core danger addressed | Typical secondary safeguard |
+| --- | --- | --- | --- |
+| Aerospace | RTCA DO-311A / FAA | Flight-control loss, uncontainable fire | Burst discs, independent cell-isolation switches |
+| Medical | IEC 62133 / FDA guidance | Patient injury, life-support shutdown | Thermal or chemical fuses in the cell pack |
+| Automotive | ISO 26262 / UN 38.3 / UL 2580 | Crash shock, thermal runaway | Pyro-fuses triggered by independent crash sensors |
+| Consumer electronics | UL 2054 / IEEE 1725 | Burns, property fires | Secondary overvoltage IC or PTC device |
+| Grid storage (BESS) | UL 9540 / NFPA 855 | Large-scale explosion, toxic gas | Shunt-trips, gas/fire suppression interlocks |
+| Hazardous areas | IEC 60079-11 (Intrinsic Safety) / ATEX / IECEx | Igniting gas or dust | Redundant current-limiting resistors, encapsulated fuses |
+| Marine | DNV-CG-0157 / ABS | Confined-space toxic gas, subsea shorts | Hardwired overvoltage trip-shunts |
+| Telecom / data | UL 1973 | Outages, data-centre fires | Hardware breakers independent of software |
+| Rail | EN 50126 / EN 50155 | Tunnel fires, brake power loss | Contactors on independent analog safety loops |
+| Defence | MIL-STD-810 | Ballistic puncture, extreme environments | Redundant isolators independent of firmware |
+
+</details>
+
+---
+
+## I/O & Expansion
+
+### 16 multi-role GPIOs on the RTC domain
+
+Every exposed through-hole GPIO is on the ESP32-S3 **RTC power domain**, so any of them can wake the chip from deep sleep. Between them they cover up to **12 capacitive-touch channels** and **16 ADC channels**, plus UART, SPI and I²C.
+
+### Two isolated I²C buses
+
+Separate buses prevent address conflicts and bus stalls between your sensors and the onboard ones.
+
+| Bus | Pins | Purpose |
+| --- | --- | --- |
+| **Internal sensor bus** | SDA GPIO 17, SCL GPIO 18 | Onboard 10-DoF sensor array and internal subsystems, with onboard pull-ups |
+| **External expansion bus** | SDA GPIO 13, SCL GPIO 14 | Third-party sensors, with its own pull-ups |
+
+### 4-bit MicroSD storage (DATA & LOGGER)
+
+- Uses the ESP32-S3's native **4-bit SD bus** instead of slow SPI, for fast logging.
+- **Push-push holder** designed to keep the card seated through high-vibration and high-G launches.
+
+### Status LEDs
+
+Four user-programmable LEDs (3 front, 1 back) for diagnostics and hardware checks.
+
+---
+
+## Pinout & Bus Architecture
+
+![HYPER S3 ROCKET graphical pinout](https://placeholders.dev)
+*Figure 3: Colour-coded functional pin map.*
+
+| Group | Pins | Hardware feature | Notes |
+| --- | --- | --- | --- |
+| **External I²C SDA** | GPIO 13 | External bus, onboard pull-up | For expansion sensors; no address clashes with onboard parts |
+| **External I²C SCL** | GPIO 14 | External bus, onboard pull-up | As above |
+| **Internal I²C SDA** | GPIO 17 | Isolated internal bus, pull-up | Hardwired to the onboard sensors |
+| **Internal I²C SCL** | GPIO 18 | Isolated internal bus, pull-up | As above |
+| **System GPIO (×16)** | Exposed pins | All on RTC domain | Up to 12 touch channels, 16 ADC lines, deep-sleep wake |
+| **Power management** | Internal rail | 2 A buck-boost | Same on every variant |
+| **Safety analytics** | Discrete circuit | TI supervisor + comparator | Autonomous UVLO / OVLO / OCLO protection |
+| **Thermal profiling** | Analog inputs | Two NTC ports | One for charge, one for discharge |
+
+---
+
+## Built for the Water Rocket Challenge
+
+The HYPER S3 ROCKET was designed with water-rocket flight logging in mind: a small, light board that survives launch shock, logs fast to MicroSD, timestamps accurately offline, and protects its own battery.

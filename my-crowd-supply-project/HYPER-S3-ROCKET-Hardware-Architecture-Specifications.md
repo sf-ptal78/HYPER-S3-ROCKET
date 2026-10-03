@@ -2,7 +2,7 @@
 
 The **HYPER S3 ROCKET** by Stem Forge is a tough, tiny board for logging data and managing power. It is built for fast, shaky, high-G flights, long outdoor deployments and any job where a sensor board must keep working when conditions get rough.
 
-It packs a dual-core 240 MHz processor, a 2 A power supply, battery protection and (on some versions) a full sensor set into a **20 mm × 33 mm** board. You don't need a stack of loose breakout boards.
+It packs a dual-core 240 MHz microprocessor, a 2 A power supply, battery protection and (on some versions) a full sensor set into a **20 mm × 33 mm** board. You don't need a stack of loose breakout boards.
 
 ![HYPER S3 ROCKET hero shot](https://placeholders.dev)
 *Figure 1: The HYPER S3 ROCKET LOGGER version, with castellated edges and tightly packed parts.*

@@ -21,8 +21,10 @@ The hard analog and power problems are solved on the PCB itself, so you don't ne
 | **Battery protection** | TI eFuse + supervisor + comparator, independent of firmware |
 | **GPIO** | 16 through-hole multi-role GPIOs on the RTC power domain, plus 5 SMD GPIOs |
 | **Buses** | Two isolated I²C buses (internal sensors, external expansion), 4-bit SD bus |
+| **Core Power Telemetry** | I²C address 0x6a for Vin and Battery attached/detached, Charging Status, Charging Faults, Charging Voltage Parameters), GPIO15 ADC for Battery Voltage and Current sensing - GPIO0 switched |
 | **Sensors (LOGGER)** | STM LSM6DSV32X 6-DoF IMU, Memsic MMC5603NJ 3-axis magnetometer, Goertek SPL07 barometer/temperature |
 | **Storage (DATA, LOGGER)** | MicroSD, 4-bit SDMMC, push-push holder |
+| **Switches** | User Button on GPIO0 (Labelled Boot) |
 | **Indicators** | 4 programmable LEDs (3 front, 1 back) |
 
 ---
@@ -71,7 +73,7 @@ The **TI BQ25188** power-path charger gives you several ways to run the board:
 - **USB-C** input up to 1.1 A, shared between system load and battery charging.
 - **Battery only**: up to 3 A direct to the system through the internal FET.
 - **Supplemental mode**: the battery tops up the system rail when the input can't keep up.
-- **Solar**: connect a nominal 5 V panel to `VIN`. VINDPM and IINDPM input regulation harvests as much power as the panel can give.
+- **Solar**: connect a nominal 5 V panel to `VIN`. VINDPM and IINDPM input regulation harvests as much power as the panel can give with thermal limiting. NOTE: this linear regulator cannot handle high voltages and current at the same time. DO NOT connect Vin to a battery or supply over 6 V.
 - **I²C configurable** charge voltage for Li-Ion, Li-Poly and LiFePO₄ cells.
 
 Batteries are optional. The board runs from USB or solar alone.

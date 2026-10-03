@@ -185,4 +185,4 @@ Four user-programmable LEDs (3 front, 1 back) for diagnostics and hardware check
 
 ## Built for the Water Rocket Challenge
 
-The HYPER S3 ROCKET was designed with water-rocket flight logging in mind: a small, light board that survives launch shock, logs fast to MicroSD, timestamps accurately offline, and protects its own battery.
+The HYPER S3 ROCKET was designed with water-rocket flight logging in mind: a small, light board that survives launch shock, logs fast to MicroSD, timestamps accurately offline, and protects its own battery, but maybe this should be called The Little Rocket that Could - there's no excuse - don't settle for less. 

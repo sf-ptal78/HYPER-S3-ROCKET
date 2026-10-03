@@ -1,6 +1,6 @@
 # HYPER S3 ROCKET — Hardware Architecture & Specifications
 
-The **HYPER S3 ROCKET** by Stem Forge is a rugged telemetry and power-management node built for high-G environments, aerospace logging and long-term remote deployment. A dual-core 240 MHz ESP32-S3, a 2 A buck-boost power train, a hardware-enforced battery protection chain, data logging MicroSD and an optional 10-DoF sensor array all fit on a **20 mm × 33 mm** castellated board.
+The **HYPER S3 ROCKET** by Stem Forge is a rugged telemetry and power-management node built for high-G environments, aerospace logging and long-term remote deployment. A dual-core 240 MHz ESP32-S3, a 2 A buck-boost power train, a hardware-enforced battery protection chain, optional data logging MicroSD and 10-DoF sensor array all fit on a **20 mm × 33 mm** castellated board.
 
 The hard analog and power problems are solved on the PCB itself, so you don't need a stack of fragile breakout boards.
 

@@ -148,12 +148,12 @@ The ESP32-S3 is incorporates the Xtensa Dual-Core 32-bit LX7 Microprocessor. Whe
 
 | LP/HP Features | Benefits | Control Aspects |
 | --- | --- | --- |
-| Voltage Sensing | The battery voltage can be measured during battery mode from GPIO 16 ADC | Set GPIO 0 Low |
-| Current Sensing | The battery current can be measured also during battery mode from GPIO 16 ADC | Set GPIO 0 High |
-| Advanced Autonomous timekeeping  | The SiTime 32.768Hz Clock, and ESP32-S3 range of  peripheral counters and interrupts are a level of Set and Forget accuracy and dependability keeping track  behind the scene | Arduino is best for set and forget / MicroPython not so great |
-| Hassle Free Comms | Attach External I²C devices and sensors at GPIO 1 and GPIO 2 for HP & LP Hardware implemented I²C. Internal sensors use GPIO 17 and GPIO 18 for battery charging and motion LOGGER sensing telemetries (Accelerometer, Gyroscopic sensor, Magnetometer, Barometric Pressure (Altimeter) Temperature) (HP) | LP sensor measurement requires software implementation (Bit-Banging) but fully achievable |
-| Advanced IO | HP and LP can both take measurements with ADC or Touch sensing on 12 of the GPIO (GPIO 3 to GPIO 14) | USB, PWM and UART on HP only |
-| Micro SD DATA Storage | DATA & LOGGER feature hardware implementation of ESP32-S3 SDMMC-4bit fast data storage using Micro Secure Digital (μSD) and MultiMediaCard (MMC) | Note, μSD and MMC cards are not included |
+| **Voltage Sensing** | The battery voltage can be measured during battery mode from GPIO 16 ADC | Set GPIO 0 Low |
+| **Current Sensing** | The battery current can be measured also during battery mode from GPIO 16 ADC | Set GPIO 0 High |
+| **Advanced Autonomous Timekeeping**  | The SiTime **32.768 Hz Clock**, and ESP32-S3 range of  peripheral counters and interrupts are a level of Set and Forget accuracy and dependability keeping track  behind the scene | Arduino is best for set and forget / MicroPython not so great |
+| **Hassle Free Communications** | Attach External I²C devices and sensors at GPIO 1 and GPIO 2 for HP & LP Hardware implemented I²C. Internal sensors use GPIO 17 and GPIO 18 for battery charging and motion LOGGER sensing telemetries (**Accelerometer**, **Gyroscopic sensor**, **Magnetometer**, **Barometric Pressure - Altimeter & Temperature**) (HP) | LP sensor measurement requires software implementation (Bit-Banging) but fully achievable |
+| **Advanced IO** | HP and LP can both take measurements with **ADC** or **Touch Sensing** on 12 of the GPIO (GPIO 3 to GPIO 14) | **USB-C**, **PWM** and **UART** on HP only |
+| **Micro SD DATA Storage** | DATA & LOGGER feature hardware implementation of ESP32-S3 SDMMC-4bit fast data storage using Micro Secure Digital (μSD) and MultiMediaCard (MMC) | Note, μSD and MMC cards are not included |
 
 ### Two isolated I²C buses
 

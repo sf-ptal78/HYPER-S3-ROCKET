@@ -35,13 +35,13 @@ The board comes in four series that share the same core design.
 
 | Series | What you get | Best for |
 | --- | --- | --- |
-| **MODULE** | Core power, charging, safety and ESP32-S3 on a single side with castellated edges. No JST connector. The external `B+` pin is active for an external battery (no reverse-polarity protection on that pin). 10k and 100k NTC thermistors must be soldered in place. | Embedding in your own PCB |
+| **MODULE** | Core power, charging, safety and ESP32-S3 on a single side with castellated edges. No JST connector. The external `B+` pin is active for an external battery. 10k and 100k NTC thermistors must be soldered in place. | Embedding in your own PCB |
 | **CHARGE** | Adds pre-soldered pin headers and a JST-PH battery connector. Supplied with NTC bypass resistors (remove before fitting a real NTC). `B+` pin disabled. | Benchtop prototyping, education |
 | **DATA** | CHARGE plus the MicroSD slot. | Data logging |
 | **LOGGER** | DATA plus the 10-DoF sensor array on the bottom layer. The flagship. | Rocketry and kinetic telemetry |
 
-**Top layer (all series):** ESP32-S3-MINI-1-N4R2, TI BQ25188, TI TPS631000, SiTime SiT1532, TI TLV809EA26DPWR supervisor, TI TLV4021R1YKAR comparator, Diodes DMC31D5UDA-7B MOSFET array.
-**Bottom layer (LOGGER only):** LSM6DSV32X IMU, MMC5603NJ magnetometer, SPL07-003/006 barometer.
+**Top Components (all series):** ESP32-S3-MINI-1-N4R2, TI BQ25188, TI TPS631000, SiTime SiT1532, TI TLV809EA26DPWR supervisor, TI TLV4021R1YKAR comparator, Diodes DMC31D5UDA-7B MOSFET array.
+**Bottom Components (LOGGER only):** LSM6DSV32X IMU Accelerometer and Gyroscopic Sensors, MMC5603NJ Magnetometer, SPL07-003/006 barometer pressure (altimeter).
 
 ---
 
@@ -56,10 +56,7 @@ The board comes in four series that share the same core design.
 
 ## Power Train: TI TPS631000 Buck-Boost
 
-![Double Safety Vault flow](https://placeholders.dev)
-*Figure 2: Hardware protection topology that works independently of the MCU firmware.*
-
-- **Up to 2 A at 3.3 V** when the input is ≥ 3.0 V, and **1.5 A** deep into boost mode with the input down to 2.7 V.
+- **Up to 2 A at 3.3 V** when the input is ≥ 3.0 V, and **1.5 A** deep into boost mode with the input down to 2.7 V (dependent on battery connection at B+) 
 - **Seamless mode transitions.** Constant-frequency peak-current control moves between buck, boost and a 3-cycle buck-boost window, keeping output ripple under **20 mV**. That keeps analog noise out of your telemetry data.
 - **True load disconnect** with about **8 µA** quiescent current in standby.
 - **Dynamic analog power sensing.** A PMOS + NMOS switching circuit lets a single analog line alternate between battery voltage sensing and current sensing, without cross-talk.
@@ -81,6 +78,8 @@ Batteries are optional. The board runs from USB or solar alone.
 ---
 
 ## Hardware-Enforced "Double Safety Vault"
+![Double Safety Vault flow](https://placeholders.dev)
+*Figure 2: Hardware protection topology that works independently of the MCU firmware.*
 
 Protection runs **independently of the ESP32-S3 firmware**. If your code freezes, the battery and power rails still protect themselves.
 
@@ -101,21 +100,21 @@ Many charger ICs only protect during charging and ignore the discharge side. Her
 
 ### Micropower Preservation
 
-When the hardware UVLO trips at **2.63 V**, the eFuse's parasitic leakage (**4.4 µA**) and the input divider (**1.22 µA**) total only **5.62 µA**. The circuit won't drain an exhausted cell during long shelf storage. Once USB or a 5 V solar panel is present, the BQ25188 powers the SYS rail and releases the eFuse so charging can resume.
+When the hardware UVLO trips at **2.63 V**, the eFuse's parasitic leakage (**4.4 µA**) and the input divider (**1.22 µA**) total only **5.62 µA** typical. The circuit won't drain an exhausted cell during long shelf storage. Once USB or a 5 V solar panel is present, the BQ25188 powers the SYS rail and releases the eFuse so charging can resume.
 
 ### Dual-Zone Thermal Control
 
 - **While charging:** the BQ25188 uses its own NTC input to regulate or disengage charging.
-- **While discharging:** the charger can't see the battery, so the eFuse, TI supervisor and TI **TLV4021R1YKAR** comparator monitor a second, independent NTC and shut the main rail if the cell overheats past 60 degrees celcius (140°F) .
+- **While discharging:** the charger can't see the battery, so the eFuse, TI **TLV4021R1YKAR** Supervisor and TI **TLV4021R1YKAR** Comparator monitor a second, independent NTC and shut the main rail if the cell overheats past 58 degrees celcius (135°F) .
 
-Note: Thermistors are not supplied as they are unique to every situation. Use the type that suits your cell placement (Both require a Beta of 3435, but one is 10k NTC for precise charging regulation and the other is 100k NTC for strict 60 degree C charging and discharging lockout. 2.0mm through-holes pads are provided). Note: Please remove the bypass resistors next to NTC1 and NTC2, before attaching your NTCs or they will read incorrectly.
+Note: Chip Thermistors are supplied on CHARGE, DATA, LOGGER. NTC thin-film thermistors are compatible with every node. Use the type that suits your cell placement (Both require a Beta of 3435, but one is 10k NTC for precise charging regulation and the other is 100k NTC for strict 58 degree C charging and discharging lockout. 2.0mm through-holes pads are provided). Note: Please remove the Chip Thermistors next to NTC1 and NTC2, before attaching your Thin-Film NTCs or they will read incorrectly and stop the BQ25188 from charging.
 
 ### Boundary Protection
 
 - **ESD / TVS** on `Vusb`, `D+`, `D-`, `VIN`, `VOUT` and `B+`, against positive and negative transients from cable insertion or touching exposed pins.
-- **Reverse-polarity protection** on the USB and `VIN` inputs, using two onboard power Schottky diodes. They cost a small voltage drop in exchange for solid protection.
-- **Battery connector:** diodes and typical eFuses can't allow two-way battery current, so the JST-PH connector is keyed. Always check polarity before connecting. On CHARGE, DATA and LOGGER the external `B+` pin is disabled for safety so one cell is only ever connected at any one time; on MODULE it is active and unprotected.
-- **Schottky clamp** on the analog divider, keeping voltage spikes away from the ESP32-S3.
+- **Reverse-polarity protection** on USB and `VIN` and 'B+' (MODULE only) inputs, using two onboard power Schottky diodes and a Mosfet array (MODULE). The diodes cost a small voltage drop in exchange for solid protection.
+- **Battery connector:** the JST-PH connector (CHARGE< DATA, LOGGER) is keyed for reverse polarity. Still, always check polarity before connecting for 'Red on the Right' (when looking at the JST connector). On CHARGE, DATA and LOGGER the external `B+` pin is disabled for safety so one cell is only ever connected at any one time and B+ does not drain the battery; on MODULE it is active and protected (and the JST connector should never be enable or soldered to the circuit).
+- **Schottky clamp** on the analog divider for voltage sensing will keep over-voltage spikes away from the ESP32-S3.
 
 ### Battery Analytics
 
@@ -123,7 +122,7 @@ A Diodes Inc. MOSFET array switches between a Schottky-protected resistor divide
 
 <summary><strong>Why two layers? Industry battery-safety context</strong></summary>
 
-Many industries require more than one independent layer of battery protection. This table is background on why the board is designed this way. **NOTE:** It is **not** a statement that the HYPER S3 ROCKET is certified to any of these standards. And though at STEM FORGE we aim to get you close, true understanding and determination is up to the end-user.
+Many industries require more than one independent layer of battery protection. This table is background information on why the board is designed this way. **NOTE:** It is **not** a statement that the HYPER S3 ROCKET is certified to any of these standards. And though at STEM FORGE we aim to get you close, true understanding and determination is up to the end-user or engineer.
 
 | Industry | Primary standards | Core danger addressed | Typical secondary safeguard |
 | --- | --- | --- | --- |
@@ -143,9 +142,18 @@ Many industries require more than one independent layer of battery protection. T
 
 ## I/O & Expansion
 
-### 14 multi-role GPIOs on the RTC domain
+### **Low Power (LP) & High Performance (HP) Features**
 
-Every exposed through-hole GPIO is on the ESP32-S3 **RTC power domain**, so any of them can wake the chip from deep sleep or be used by the ULP coprocessor. **12 capacitive-touch channels** and **12 ADC channels**, including dedicated UART and I²C (with the pull-ups).
+The ESP32-S3 is incorporates the Xtensa Dual-Core 32-bit LX7 Microprocessor. Whether you are developing High-Power and High Performance taking advantage of Battery Supplementation, or developing Low Power solutions with full Battery Only mode, we have taken care to ensure every external through-hole GPIO can be used by each of the Cores. The following features are avilable in both cores:
+
+| LP/HP Features | Benefits | Control Aspects |
+| --- | --- | --- |
+| Voltage Sensing | The battery voltage can be measured during battery mode from GPIO 16 ADC | Set GPIO 0 Low |
+| Current Sensing | The battery current can be measured also during battery mode from GPIO 16 ADC | Set GPIO 0 High |
+| Advanced Autonomous timekeeping  | The SiTime 32.768Hz Clock, and ESP32-S3 range of  peripheral counters and interrupts are a level of Set and Forget accuracy and dependability keeping track  behind the scene | Arduino is best for set and forget / MicroPython not so great |
+| Hassle Free Comms | Attach External I²C devices and sensors at GPIO 1 and GPIO 2 for HP & LP Hardware implemented I²C. Internal sensors use GPIO 17 and GPIO 18 for battery charging and motion LOGGER sensing telemetries (Accelerometer, Gyroscopic sensor, Magnetometer, Barometric Pressure (Altimeter) Temperature) (HP) | LP sensor measurement requires software implementation (Bit-Banging) but fully achievable |
+| Advanced IO | HP and LP can both take measurements with ADC or Touch sensing on 12 of the GPIO (GPIO 3 to GPIO 14) | USB, PWM and UART on HP only |
+| Micro SD DATA Storage | DATA & LOGGER feature hardware implementation of ESP32-S3 SDMMC-4bit fast data storage using Micro Secure Digital (μSD) and MultiMediaCard (MMC) | Note, μSD and MMC cards are not included |
 
 ### Two isolated I²C buses
 
@@ -160,6 +168,7 @@ Separate buses prevent address conflicts and bus stalls between your sensors and
 
 - Uses the ESP32-S3's native **4-bit SD bus** instead of slow SPI, for faster read and write cycles such as Data Logging.
 - **Push-push holder** designed to keep the card seated through high-vibration and high-G launches.
+- μSD and MMC cards are not included
 
 ### Status LEDs
 

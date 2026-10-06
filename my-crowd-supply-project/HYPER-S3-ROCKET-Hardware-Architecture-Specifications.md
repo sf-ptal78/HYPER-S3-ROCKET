@@ -4,7 +4,7 @@
 
 ### Hardware Architecture & Specifications
 
-**A 20 × 33 mm ESP32-S3 telemetry and battery-management platform for any industry that needs safe, timestamped, battery-powered data**
+**A 20 × 33 mm ESP32-S3 powerhouse with fail-safe dual-channel battery protection, solar and USB-C charging, and motion-aware data logging  **
 
 *by Stem Forge*
 
@@ -12,9 +12,11 @@
 
 ---
 
-The **HYPER S3 ROCKET** is a rugged telemetry platform and power-management sensor node for any application where a battery-powered device has to log trustworthy data and stay safe while doing it. It packs a dual-core 240 MHz processor, an always-on RTC for precise timestamps, a 2 A buck-boost power train, a solar-ready power-path charger, built-in battery telemetry and a two-layer hardware protection scheme into a 20 mm × 33 mm castellated SMT module.
+The **HYPER S3 ROCKET** is a compact powerhouse: a feature-rich ESP32-S3 telemetry platform with a fail-safe, **dual-channel battery management system** built in. Available as a castellated SMD module or a breadboard-ready through-hole board, it brings together **USB-C and solar charging**, peak-power supplementation from the battery, a **2 A buck-boost regulator**, a precision onboard **real-time clock**, and an optional **10-DoF motion sensor array** with **high-speed MicroSD** logging.
 
-Because the hard analog problems (charging, discharge lockout, thermal cutoff, voltage and current sensing) are solved on the board itself, you don't need a stack of fragile breakout boards to get a safe, self-aware, battery-powered logger. It started in rocketry and high-G flight logging, and the same features serve medical, automotive, energy, telecom, marine, rail and industrial development just as well.
+Battery safety you don't have to engineer yourself. Two independent layers of protection guard every charge and discharge cycle against thermal stress, overcurrent, overvoltage and undervoltage. Comprehensive battery diagnostics give your firmware what it needs for fuel-gauge estimation: VIN and B+ power-state detection, voltage and current sensing, and fault-generated interrupts. Whether you're building an ultra-low-power node or a high-performance system, the diagnostics are designed to be accessible in both active and low-power operation, so you can monitor the battery even while the main cores sleep.
+
+Skip the patchwork of breakout boards. Loose connections and unprotected cells are where prototypes fail. The HYPER S3 ROCKET puts charging, protection, regulation, timekeeping and sensing on one board. It began in rocketry and high-G flight logging, and this intelligent BMS node now serves medical, automotive, energy, telecom, marine and rail development just as well, and, of course, rocket science.
 
 <!-- TODO: replace placeholder image with the final hero shot -->
 ![HYPER S3 ROCKET hero shot](https://placeholders.dev)

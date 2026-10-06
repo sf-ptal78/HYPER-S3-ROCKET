@@ -349,8 +349,8 @@ Two 2.0 mm through-hole NTC ports accept custom-length, thin-film, flexible beta
 | **10k** | Charge regulation |
 | **100k** | Charge and discharge limit and lockout |
 
-- **CHARGE, DATA and LOGGER:** remove the 0402 bypass resistors before installing an NTC.
-- **MODULE:** NTCs are required, and a bypass is not available.
+- **CHARGE, DATA and LOGGER:** if thin film thermistors are required, remove the supplied 0402 chip thermistors at NTC1 and NTC2 before installing your custom NTCs.
+- **MODULE:** NTCs are required for charging & discharging, and bypassing is not available.
 
 ---
 
@@ -361,7 +361,7 @@ The HYPER S3 ROCKET is a castellated SMT module that can be soldered directly on
 | Series | Edition | What's included | Notes |
 | --- | --- | --- | --- |
 | **MODULE** | Core SMT Module | All core charging, power and safety circuitry plus the ESP32-S3, on a single side with castellated edges | A 10k NTC and a 100k NTC must be soldered in place. `B+` is live, with onboard PMOS and NMOS reverse polarity protection |
-| **CHARGE** | Breadboard Ready | Adds pre-soldered male pin headers and a JST-style battery connector | NTC bypass resistors supplied; remove them before fitting an NTC |
+| **CHARGE** | Breadboard Ready | Adds pre-soldered male pin headers and a JST-style battery connector | NTC chip thermistors are supplied; remove them before fitting custom thin-film thermistors |
 | **DATA** | Data Logger Edition | Adds the 4-bit MicroSD slot | Localized data acquisition |
 | **LOGGER** | Full Telemetry | MicroSD slot plus the 10-DoF sensor array | Flagship configuration |
 

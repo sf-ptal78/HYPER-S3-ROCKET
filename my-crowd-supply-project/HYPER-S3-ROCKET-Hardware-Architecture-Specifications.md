@@ -99,7 +99,7 @@ Every industry below has the same underlying need: a battery-powered node that r
 
 ## Compute and Timing
 
-The **ESP32-S3-MINI-1-N4R2** is a pre-certified module on a 6-layer PCB, which gives a fast track to EMC testing. Near-field pre-compliance scans have passed.
+The **ESP32-S3-MINI-1-N4R2** is a pre-certified module on a 6-layer PCB, which gives a fast track to EMC testing.
 
 - **Cores:** dual-core Xtensa LX7 at 240 MHz.
 - **Ultra-low-power domain:** the RTC domain can run on either the ULP RISC-V coprocessor or the ULP finite state machine, so the board can sample sensors and wake on events while the main cores sleep.
@@ -168,7 +168,7 @@ Many charger ICs cover charging only and ignore the discharge stage. Here, batte
 
 ### Micropower shelf safety
 
-When the eFuse UVLO trips at **2.63 V**, the protection circuit itself draws only **5.62 µA**: 4.4 µA of internal parasitic leakage plus 1.22 µA through the input resistor divider. An exhausted cell therefore isn't drained further during extended storage.
+When the eFuse UVLO trips at **2.63 V**, the protection circuit itself draws a typical **5.62 µA** (TI): 4.4 µA of internal parasitic leakage plus 1.22 µA through the input resistor divider. An exhausted cell therefore isn't drained further during extended storage.
 
 **Recovery:** applying USB (Vusb) or a nominal 5 V solar panel powers the BQ25188, which governs the SYS rail, releases the eFuse and lets charging begin.
 

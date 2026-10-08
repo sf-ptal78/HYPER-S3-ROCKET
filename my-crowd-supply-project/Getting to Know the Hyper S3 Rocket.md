@@ -3,7 +3,9 @@
 The **STEMFORGE™ HYPER S3 ROCKET** is a production-grade development board, smart power management hub, and flight computer powered by the dual-core **Espressif ESP32-S3 SoC**, designed for water rocketry, aerospace tracking, and remote IoT nodes.
 
 ---
-![STEMFORGE HYPER S3 ROCKET Front Layout](getting-started/images/Hyper_s3_Rocket_pinout_LOGGER_DATA_CHARGE.avif)
+<p align="center">
+  <img src="getting-started/images/Hyper_S3_Rocket_Functional_Pinout_Diagram.avif" alt="Hyper S3 Rocket Functional Pinout Diagram" width="600">
+</p>
 
 ## 📸 Visual Hardware Tour
 

@@ -21,7 +21,7 @@ The **HYPER S3 ROCKET™** is a compact, feature-rich ESP32-S3 telemetry platfor
 ---
 
 <p align="center">
-  <img src="my-crowd-supply-project/getting-started/images/Hyper_S3_Rocket_Functional_Pinout_Diagram.avif" alt="Hyper S3 Rocket Functional Pinout Diagram" width="600">
+  <img src="my-crowd-supply-project/getting-started/images/Hyper_S3_Rocket_Functional_Pinout_Diagram.avif" alt="Hyper S3 Rocket Functional Pinout Diagram" width="900">
 </p>
 
 
@@ -86,7 +86,7 @@ Every industry below has the same underlying need: a battery-powered node that r
 
 ---
 <p align="center">
-  <img src="my-crowd-supply-project/getting-started/images/Hyper_S3_Rocket_Board_Anatomy_Diagram.avif" alt="Hyper S3 Rocket Board Anatomy and Component Guide" width="600">
+  <img src="my-crowd-supply-project/getting-started/images/Hyper_S3_Rocket_Board_Anatomy_Diagram.avif" alt="Hyper S3 Rocket Board Anatomy and Component Guide" width="900">
 </p>
 
 
@@ -163,7 +163,7 @@ A Diodes Inc. PMOS + NMOS array switches **GPIO 16** between two measurements, s
 GPIO 1–14 sit on the RTC domain, giving up to **12 touch channels**, **12 ADC channels** and deep-sleep wake. GPIO 43/44 (UART) are outside the RTC domain. All 16 can output PWM from the main cores (not the ULP). GPIO 1 and 2 give up touch and ADC because they carry the external I²C pull-ups; GPIO 13 and 14 have no pull-ups and are free for any use.
 
 <p align="center">
-  <img src="my-crowd-supply-project/getting-started/images/Hyper_S3_Rocket_Pinout_GPIO-Allocation.avif" alt="Hyper S3 Rocket Pinout GPIO Allocation" width="600">
+  <img src="my-crowd-supply-project/getting-started/images/Hyper_S3_Rocket_Pinout_GPIO-Allocation.avif" alt="Hyper S3 Rocket Pinout GPIO Allocation" width="900">
 </p>
 
 ### Internal and system signals

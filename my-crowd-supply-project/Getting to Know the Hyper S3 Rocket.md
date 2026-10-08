@@ -4,7 +4,7 @@ The **STEMFORGE™ HYPER S3 ROCKET** is a production-grade development board, sm
 
 ---
 <p align="center">
-  <img src="getting-started/images/Hyper_S3_Rocket_Functional_Pinout_Diagram.avif" alt="Hyper S3 Rocket Functional Pinout Diagram" width="600">
+  <img src="getting-started/images/Hyper_S3_Rocket_Functional_Pinout_Diagram.avif" alt="Hyper S3 Rocket Functional Pinout Diagram" width="900">
 </p>
 
 ## 📸 Visual Hardware Tour

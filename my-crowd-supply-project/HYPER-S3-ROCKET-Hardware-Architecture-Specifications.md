@@ -4,7 +4,7 @@
 
 ### Hardware Architecture & Specifications
 
-**A 20 × 33 mm ESP32-S3 powerhouse with fail-safe dual-channel battery protection, solar and USB-C charging, and motion-aware data logging**
+**A 20 × 33.5 mm ESP32-S3 powerhouse with fail-safe dual-channel battery protection, solar and USB-C charging, and motion-aware data logging**
 
 *by Stem Forge*
 
@@ -30,7 +30,7 @@ The **HYPER S3 ROCKET** is a compact powerhouse: a feature-rich ESP32-S3 telemet
 | | |
 | --- | --- |
 | **Built for** | Safe, timestamped, battery-powered telemetry and data logging across aerospace, medical, automotive, energy, telecom, marine, rail and industrial projects |
-| **Form factor** | 20 mm × 33 mm castellated SMT module, 6-layer PCB |
+| **Form factor** | 20 mm × 33.5 mm castellated SMT module, 6-layer PCB |
 | **Processor** | Espressif ESP32-S3-MINI-1-N4R2, dual-core Xtensa LX7 @ 240 MHz |
 | **Memory** | 4 MB flash, 2 MB PSRAM |
 | **Power train** | TI TPS631000 buck-boost, 3.3 V output, up to 2 A continuous |
@@ -87,7 +87,7 @@ Every industry below has the same underlying need: a battery-powered node that r
 | **Aerospace and rocketry** | Flight and launch logging under high G and vibration | 10-DoF IMU, magnetometer and barometer; 4-bit SD holder that stays seated; RTC timestamps; 2 A rail for payloads |
 | **Medical and wearables** | Safe, small, long-life battery devices during prototyping and evaluation | Discharge lockout and shelf-safe 5.62 µA UVLO state; independent hardware protection; low-power standby; battery telemetry |
 | **Automotive and EV** | Auxiliary pack monitoring, shock and vibration recording | Battery voltage and current analytics; dual NTC thermal monitoring (charge and discharge); timestamped IMU logs |
-| **Consumer electronics** | Compact, USB-C rechargeable products | 20 × 33 mm footprint; power-path charging; TVS and reverse-polarity protection; keyed JST battery connector |
+| **Consumer electronics** | Compact, USB-C rechargeable products | 20 × 33.5 mm footprint; power-path charging; TVS and reverse-polarity protection; keyed JST battery connector |
 | **Energy storage and solar** | Solar-powered monitoring and battery health tracking | 5 V solar harvesting (VINDPM/IINDPM); chemistry-configurable charger (Li-Ion, Li-Poly, LiFePO4); voltage and current telemetry; deep-sleep wake |
 | **Telecom and remote infrastructure** | Unattended sites with no reliable connectivity | Offline RTC timestamps; MicroSD logging; low-quiescent power train; hardware cutoff that survives firmware faults |
 | **Rail, marine and transport** | Condition monitoring on vibrating or sealed assets | Shock and vibration logging; discharge-side thermal protection; long standby; expansion I²C bus for extra sensors |

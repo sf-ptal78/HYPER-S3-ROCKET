@@ -2,7 +2,7 @@
 
 # HYPER S3 ROCKET
 
-### A 20 × 33 mm ESP32-S3 powerhouse with fail-safe dual-channel battery protection, solar and USB-C charging, and motion-aware data logging
+### A 20 × 33.5 mm ESP32-S3 powerhouse with fail-safe dual-channel battery protection, solar and USB-C charging, and motion-aware data logging
 
 *by [STEMFORGE™](https://stemforge.com.au)*
 
@@ -29,7 +29,7 @@ The **HYPER S3 ROCKET™** is a compact, feature-rich ESP32-S3 telemetry platfor
 
 | | |
 | --- | --- |
-| **Form factor** | 20 mm × 33 mm castellated SMT module, 6-layer PCB |
+| **Form factor** | 20 mm × 33.5 mm castellated SMT module, 6-layer PCB |
 | **Processor** | Espressif ESP32-S3-MINI-1-N4R2, dual-core Xtensa LX7 @ 240 MHz |
 | **Memory** | 4 MB flash, 2 MB PSRAM |
 | **Power train** | TI TPS631000 buck-boost, 3.3 V output, up to 2 A continuous (accepts up to 3 A input current) |

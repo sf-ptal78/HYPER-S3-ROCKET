@@ -18,15 +18,21 @@ The **STEMFORGE™ HYPER S3 ROCKET** is a production-grade development board, sm
 
 ## 🚀 Versatile Core Applications
 
-*   **Water Rocketry & Aerospace Trackers:** Handles high-moisture launch environments and high-G deployment forces.
-*   **Autonomous Drone Flight Computers:** Offloads heavy background sensor math loops.
+*   **Commercial Aerospace & Space Flight:** Handles high-moisture launch environments and high-G deployment forces.
+*   **Autonomous Drone Flight Computers:** Includes Avionics, Data Logging and considerably more power with a Buck Boost regulator than any other tiny controller.
 *   **Off-Grid IoT & Solar Powered Nodes:** Features ultra-low-power **Ship Mode** to prevent battery drain during storage.
+*   **Life-Critical Medical Devices**: Dual-layer hardware temperature protection, undervoltage lockout (UVLO), overvoltage and overcurrent safeguards, and firmware-integrated fuel gauge telemetry.
 
 ---
 
 ## 🧠 Internal Peripherals Architecture
 
-The board integrates key navigational components directly onto the PCB (refer to the full repository documentation for complete I2C addresses and hardware pin mappings):
+The board integrates core peripheral functionality on every board:
+*   **Real Time Clock SIT1532AI-J4-DCC:** SiTime 32.768kHz Real Time Clock enables precision timing on any project.
+*   **Texas Instruments Battery Charger BQ25188:** Provides i2c configuration for battery chemistries including Li-ion, Li-Poly, and LiFePO4.
+*   **External i2c pullups for ULP:** Will not conflict with internal i2c peripherals, and can even be hardware peripheral controlled from the Ultra Low Power RTC Domain.
+
+The board integrates key navigational components directly onto the PCB (LOGGER - refer to the full repository documentation for complete I2C addresses and hardware pin mappings):
 *   **STMicroelectronics LSM6DSV32XTR:** 6-Axis Motion IMU (up to 32G acceleration).
 *   **Goertek SPL07-006 Altimeter:** Waterproof gel-filled cavity for relative flight height.
 *   **Texas Instruments BQ25188 PMIC:** Power management supporting software Ship Mode.

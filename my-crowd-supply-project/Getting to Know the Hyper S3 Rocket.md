@@ -9,8 +9,10 @@ The **STEMFORGE™ HYPER S3 ROCKET** is a production-grade development board, sm
 
 ## 📸 Visual Hardware Tour
 
-*   **Board Front View:** `getting-started/images/front-view.png`
-*   **Board Back View:** `getting-started/images/back-view.png`
+*   **Board Front & Back Views:** 
+<p align="center">
+  <img src="getting-started/images/Hyper_S3_Rocket_Board_Anatomy_Diagram.avif" alt="Hyper S3 Rocket Board Anatomy and Component Guide" width="900">
+</p>
 
 ---
 
@@ -36,3 +38,7 @@ The board integrates key navigational components directly onto the PCB (refer to
 
 *   **Edge Pin Connections:** 16 primary pins exposed via standard 2.54mm holes, supporting native hardware PWM across every external GPIO pin. Includes standard ADC/Touch channels and default UART serial console lines on GPIO 43/44.
 *   **Flat SMD Pads:** Bottom-side expansion pads (GPIO 39, 40, 41, 42, and 47) optimized for daughterboards and compact permanent solder connections.
+
+<p align="center">
+  <img src="getting-started/images/Hyper_S3_Rocket_Pinout_GPIO-Allocation.avif" alt="Hyper S3 Rocket Pinout GPIO Allocation" width="900">
+</p>

@@ -15,11 +15,23 @@ USBMSC msc;
 #define SD_D3  34
 
 static int32_t onWrite(uint32_t lba, uint32_t offset, uint8_t* buffer, uint32_t bufsize) {
-  return SD_MMC.writeRAW(buffer, lba) ? bufsize : -1;
+  uint32_t secSize = SD_MMC.sectorSize();
+  if (secSize == 0 || secSize > 512) return -1;
+  for (uint32_t x = 0; x < bufsize / secSize; x++) {
+    uint8_t blk[512] __attribute__((aligned(4)));          // aligned copy for the SD driver
+    memcpy(blk, buffer + secSize * x, secSize);
+    if (!SD_MMC.writeRAW(blk, lba + x)) return -1;
+  }
+  return bufsize;
 }
 
 static int32_t onRead(uint32_t lba, uint32_t offset, void* buffer, uint32_t bufsize) {
-  return SD_MMC.readRAW((uint8_t*)buffer, lba) ? bufsize : -1;
+  uint32_t secSize = SD_MMC.sectorSize();
+  if (secSize == 0) return -1;
+  for (uint32_t x = 0; x < bufsize / secSize; x++) {
+    if (!SD_MMC.readRAW((uint8_t*)buffer + secSize * x, lba + x)) return -1;
+  }
+  return bufsize;
 }
 
 static bool onStartStop(uint8_t power_condition, bool start, bool load_eject) { 

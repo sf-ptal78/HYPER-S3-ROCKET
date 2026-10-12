@@ -1,5 +1,5 @@
 /*
-  HYPER S3 ROCKET - Live Sensor Plotter - 10 DoF + Temperature
+  HYPER S3 ROCKET - Live Sensor Plotter
   STEMFORGE
 
   Open Tools > Serial Plotter at 115200 baud. Type one letter in the
@@ -7,18 +7,23 @@
 
     a  accelerometer       ax, ay, az        (g)
     g  gyroscope           gx, gy, gz        (deg/s)
-    m  magnetometer        mx, my, mz        (uT)               Note: Pass-through mode is used to access this directly. Hub-mod is not used in this example.
+    m  magnetometer        mx, my, mz        (uT)
     b  barometer           height (m), pressure change (Pa)
     t  temperatures        IMU and barometer (C)
+    p  magnetometer path   pass-through <-> IMU sensor hub
     l  next LED pattern    off > each LED > all on > off
     z  re-zero height and gyro (keep the board still)
     h  help text
 
+  Every mode key also refreshes the graph so it rescales to the new
+  sensor; press the same key again for a manual refresh.
+
   Works with either IMU fitted at 0x6B:
     LSM6DS3TR-C (WHO_AM_I 0x6A) - current prototype
     LSM6DSV32X  (WHO_AM_I 0x70) - next prototype
-  The MMC5603NJ magnetometer sits behind the IMU and is reached
-  through the IMU's I2C pass-through mode.
+  The MMC5603NJ magnetometer sits behind the IMU. It starts in
+  pass-through mode (the ESP32 reads it directly); press p to have
+  the IMU's sensor hub read it instead, and p again to switch back.
 */
 
 #include <Wire.h>
@@ -39,10 +44,31 @@ const uint8_t BARO_ADDR = 0x76;
 const float    BARO_TEMP_OFFSET = -8.5;   // same offset as the SPL07 example sketch
 const uint32_t PLOT_INTERVAL_MS = 50;     // 20 lines per second
 
+// Graph refresh on a mode change: send a fast burst of new readings so the
+// old trace scrolls out of the plotter window and the Y axis rescales.
+// The IDE 2 plotter shows about 50 points; raise FLUSH_LINES if your
+// plotter window is wider (the old IDE 1.8 plotter shows 500).
+const uint16_t FLUSH_LINES       = 100;
+const uint32_t FLUSH_INTERVAL_MS = 10;    // 100 lines per second during the burst
+uint16_t flushRemaining = 0;
+
 // ---------------- State ----------------
 enum ImuType { IMU_NONE, IMU_DS3TRC, IMU_DSV32X };
 ImuType imuType = IMU_NONE;
 bool magOK = false, baroOK = false;
+bool hubMode = false;                     // false = pass-through, true = sensor hub
+
+// Magnetometer lock-up detection
+bool     magLocked     = false;
+uint8_t  magFailCount  = 0;               // consecutive failed reads
+uint16_t magSameCount  = 0;               // consecutive identical readings
+uint8_t  magLastRaw[6] = {0};
+uint32_t lastLockMsg   = 0;
+const uint8_t  MAG_FAIL_LIMIT   = 5;      // 5 failed reads (0.25 s) = locked
+const uint16_t MAG_FROZEN_LIMIT = 40;     // 40 identical readings (2 s) = frozen
+const uint32_t LOCK_MSG_INTERVAL_MS = 5000;
+
+void setPassThrough();                    // defined further down
 
 char mode = 'a';
 int  ledPattern = 0;                      // 0 = off, 1..NUM_LEDS = one LED, NUM_LEDS+1 = all
@@ -151,8 +177,26 @@ void readIMU() {
 }
 
 // ---------------- Magnetometer (MMC5603NJ) ----------------
+bool magAnswers() {
+  return readReg(MAG_ADDR, 0x39) == 0x10;              // product ID
+}
+
 bool initMag() {
-  if (readReg(MAG_ADDR, 0x39) != 0x10) return false;  // product ID
+  // Up to 3 tries, re-entering pass-through between tries
+  bool found = false;
+  for (int attempt = 0; attempt < 3 && !found; attempt++) {
+    if (attempt > 0) { setPassThrough(); delay(50); }
+    found = magAnswers();
+  }
+  if (!found) {
+    // The IMU answers but the mag doesn't: almost always the lock-up
+    magLocked = (imuType != IMU_NONE);
+    return false;
+  }
+  magLocked = false;
+  magFailCount = 0;
+  magSameCount = 0;
+
   writeReg(MAG_ADDR, 0x1C, 0x80); delay(20);           // software reset
   writeReg(MAG_ADDR, 0x1B, 0x08); delay(1);            // SET pulse
   writeReg(MAG_ADDR, 0x1A, 100);                       // ODR 100 Hz
@@ -161,10 +205,138 @@ bool initMag() {
   return true;
 }
 
+// ---------------- Magnetometer path: pass-through or sensor hub ----------------
+// The two modes must never be on together: always turn one off, wait, then
+// turn the other on.
+
+void setPassThrough() {
+  if (imuType == IMU_DS3TRC) {
+    writeReg(IMU_ADDR, 0x1A, 0x00);   // MASTER_CONFIG: hub master off
+    delay(20);                        // let any hub transaction finish (2+ ODR periods)
+    writeReg(IMU_ADDR, 0x19, 0x00);   // CTRL10_C: embedded functions off
+    writeReg(IMU_ADDR, 0x1A, 0x04);   // MASTER_CONFIG: pass-through on
+  }
+  else if (imuType == IMU_DSV32X) {
+    writeReg(IMU_ADDR, 0x01, 0x40);   // sensor hub bank
+    writeReg(IMU_ADDR, 0x14, 0x00);   // MASTER_CONFIG: master off
+    delay(20);
+    writeReg(IMU_ADDR, 0x14, 0x10);   // MASTER_CONFIG: pass-through on
+    writeReg(IMU_ADDR, 0x01, 0x00);   // main bank
+    writeReg(IMU_ADDR, 0x03, readReg(IMU_ADDR, 0x03) & ~0x40);  // IF_CFG: hub pull-ups off
+  }
+  delay(5);
+  hubMode = false;
+}
+
+void setHub() {
+  if (imuType == IMU_DS3TRC) {
+    writeReg(IMU_ADDR, 0x1A, 0x00);   // MASTER_CONFIG: pass-through off
+    delay(5);
+    writeReg(IMU_ADDR, 0x01, 0x80);   // FUNC_CFG_ACCESS: embedded bank A
+    writeReg(IMU_ADDR, 0x02, (MAG_ADDR << 1) | 1);  // SLV0_ADD: 0x61 (read)
+    writeReg(IMU_ADDR, 0x03, 0x00);   // SLV0_SUBADD: start at Xout0
+    writeReg(IMU_ADDR, 0x04, 0x06);   // SLAVE0_CONFIG: read 6 bytes
+    writeReg(IMU_ADDR, 0x01, 0x00);   // main bank
+    writeReg(IMU_ADDR, 0x19, 0x3C);   // CTRL10_C: embedded functions on (stage 3b value)
+    writeReg(IMU_ADDR, 0x1A, 0x09);   // MASTER_CONFIG: master on + internal pull-ups
+  }
+  else if (imuType == IMU_DSV32X) {
+    writeReg(IMU_ADDR, 0x03, readReg(IMU_ADDR, 0x03) | 0x40);   // IF_CFG: hub pull-ups on
+    writeReg(IMU_ADDR, 0x01, 0x40);   // sensor hub bank
+    writeReg(IMU_ADDR, 0x14, 0x00);   // MASTER_CONFIG: pass-through off
+    delay(5);
+    writeReg(IMU_ADDR, 0x15, (MAG_ADDR << 1) | 1);  // SLV0_ADD: 0x61 (read)
+    writeReg(IMU_ADDR, 0x16, 0x00);   // SLV0_SUBADD: start at Xout0
+    writeReg(IMU_ADDR, 0x17, 0x86);   // SLV0_CONFIG: 120 Hz, read 6 bytes
+    writeReg(IMU_ADDR, 0x14, 0x04);   // MASTER_CONFIG: master on, one sensor
+    writeReg(IMU_ADDR, 0x01, 0x00);   // main bank
+  }
+  delay(50);                          // give the hub a few cycles to fill its registers
+  hubMode = true;
+  magFailCount = 0;
+  magSameCount = 0;
+}
+
+void printLockMessage() {
+  Serial.println("!! MAGNETOMETER LOCKED UP !!");
+  Serial.println("   Disconnect the battery AND the USB cable for 10 seconds, then reconnect.");
+  Serial.println("   (Press p to try a software recovery first.)");
+  lastLockMsg = millis();
+}
+
+void declareMagLocked(const char* reason) {
+  magLocked = true;
+  Serial.print("Magnetometer problem: "); Serial.println(reason);
+  printLockMessage();
+}
+
+bool tryRecoverMag() {
+  Serial.println("Trying to recover the magnetometer...");
+  setPassThrough();                   // stop the hub, back to direct access
+  delay(50);
+  if (initMag()) {
+    magOK = true;
+    Serial.println("Magnetometer recovered - mode: PASS-THROUGH");
+    return true;
+  }
+  printLockMessage();
+  return false;
+}
+
+void toggleMagPath() {
+  if (magLocked) { tryRecoverMag(); return; }
+  if (imuType == IMU_NONE || !magOK) {
+    Serial.println("Magnetometer not available - cannot switch mode");
+    return;
+  }
+  if (hubMode) {
+    setPassThrough();
+    bool ok = (readReg(MAG_ADDR, 0x39) == 0x10);
+    Serial.println(ok ? "Mag mode: PASS-THROUGH (ESP32 reads 0x30 directly)"
+                      : "Mag mode: PASS-THROUGH - mag not answering, try a power cycle");
+  } else {
+    setHub();
+    Serial.println("Mag mode: SENSOR HUB (IMU reads the mag every cycle)");
+  }
+}
+
+// Fetch the 6 raw magnetometer bytes from whichever path is active
+bool readMagRaw(uint8_t* b) {
+  if (!hubMode) return readRegs(MAG_ADDR, 0x00, b, 6);
+
+  if (imuType == IMU_DS3TRC) return readRegs(IMU_ADDR, 0x2E, b, 6);  // SENSORHUB1..6_REG
+
+  // LSM6DSV32X: SENSOR_HUB_1..6 live in the sensor hub bank
+  writeReg(IMU_ADDR, 0x01, 0x40);
+  bool ok = readRegs(IMU_ADDR, 0x02, b, 6);
+  writeReg(IMU_ADDR, 0x01, 0x00);
+  return ok;
+}
+
 void readMag() {
-  if (!magOK) return;
+  if (!magOK || magLocked) return;
   uint8_t b[6];
-  if (!readRegs(MAG_ADDR, 0x00, b, 6)) return;
+
+  // 1. No reply on the bus (pass-through lock-up)
+  if (!readMagRaw(b)) {
+    if (++magFailCount >= MAG_FAIL_LIMIT) declareMagLocked("no reply on I2C");
+    return;
+  }
+  magFailCount = 0;
+
+  // 2. Frozen data: a live sensor always flickers by a few counts.
+  //    Identical bytes for 2 s means the mag (or the hub copy) has stopped.
+  if (memcmp(b, magLastRaw, 6) == 0) {
+    if (++magSameCount >= MAG_FROZEN_LIMIT) {
+      bool allZero = !(b[0] | b[1] | b[2] | b[3] | b[4] | b[5]);
+      declareMagLocked(hubMode && allZero ? "hub data all zero (check hub pull-ups)"
+                                          : "readings frozen");
+      return;
+    }
+  } else {
+    magSameCount = 0;
+    memcpy(magLastRaw, b, 6);
+  }
   // 16-bit, offset binary, 1024 counts per gauss, 1 gauss = 100 uT
   mx = ((int32_t)((b[0] << 8) | b[1]) - 32768) / 1024.0 * 100.0;
   my = ((int32_t)((b[2] << 8) | b[3]) - 32768) / 1024.0 * 100.0;
@@ -258,10 +430,11 @@ void applyLedPattern() {
 
 // ---------------- Commands ----------------
 void printHelp() {
-  Serial.println("Keys: a accel, g gyro, m mag, b baro, t temp, l LEDs, z zero, h help");
+  Serial.println("Keys: a accel, g gyro, m mag, b baro, t temp, p mag path, l LEDs, z zero, h help");
+  Serial.print("Mag mode: "); Serial.println(hubMode ? "SENSOR HUB" : "PASS-THROUGH");
   Serial.print("IMU: ");
   Serial.print(imuType == IMU_DS3TRC ? "LSM6DS3TR-C" : imuType == IMU_DSV32X ? "LSM6DSV32X" : "not found");
-  Serial.print("  Mag: ");  Serial.print(magOK ? "OK" : "not found");
+  Serial.print("  Mag: ");  Serial.print(magLocked ? "LOCKED UP" : magOK ? "OK" : "not found");
   Serial.print("  Baro: "); Serial.println(baroOK ? "OK" : "not found");
 }
 
@@ -270,10 +443,14 @@ void handleSerial() {
     char c = tolower(Serial.read());
     switch (c) {
       case 'a': case 'g': case 'm': case 'b': case 't':
-        mode = c; break;
+        mode = c;
+        flushRemaining = FLUSH_LINES;   // refresh the graph (same key again = manual refresh)
+        break;
       case 'l':
         ledPattern = (ledPattern + 1) % (NUM_LEDS + 2);
         applyLedPattern(); break;
+      case 'p':
+        toggleMagPath(); break;
       case 'z':
         zeroSensors(); break;
       case 'h':
@@ -294,7 +471,14 @@ void plot() {
   switch (mode) {
     case 'a': trace("ax_g", ax); trace("ay_g", ay); trace("az_g", az, true); break;
     case 'g': trace("gx_dps", gx); trace("gy_dps", gy); trace("gz_dps", gz, true); break;
-    case 'm': trace("mx_uT", mx); trace("my_uT", my); trace("mz_uT", mz, true); break;
+    case 'm':
+      if (magLocked) {
+        // The label shows in the plotter legend, so the instruction is on screen
+        trace("MAG_LOCKED_unplug_battery_and_USB_for_10s", 0, true);
+      } else {
+        trace("mx_uT", mx); trace("my_uT", my); trace("mz_uT", mz, true);
+      }
+      break;
     case 'b': trace("height_m", heightMetres()); trace("dP_Pa", pressure - pressureBase, true); break;
     case 't': trace("imu_C", imuTemp); trace("baro_C", baroTemp, true); break;
   }
@@ -315,18 +499,23 @@ void setup() {
   baroOK = initBaro();
 
   printHelp();
+  if (magLocked) printLockMessage();
   zeroSensors();
 }
 
 void loop() {
   handleSerial();
 
+  if (magLocked && millis() - lastLockMsg >= LOCK_MSG_INTERVAL_MS) printLockMessage();
+
   static uint32_t lastPlot = 0;
-  if (millis() - lastPlot >= PLOT_INTERVAL_MS) {
+  uint32_t interval = flushRemaining ? FLUSH_INTERVAL_MS : PLOT_INTERVAL_MS;
+  if (millis() - lastPlot >= interval) {
     lastPlot = millis();
     readIMU();
     readMag();
     readBaro();
     plot();
+    if (flushRemaining) flushRemaining--;
   }
 }

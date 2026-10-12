@@ -1,0 +1,332 @@
+/*
+  HYPER S3 ROCKET - Live Sensor Plotter - 10 DoF + Temperature
+  STEMFORGE
+
+  Open Tools > Serial Plotter at 115200 baud. Type one letter in the
+  message box at the bottom and press Enter:
+
+    a  accelerometer       ax, ay, az        (g)
+    g  gyroscope           gx, gy, gz        (deg/s)
+    m  magnetometer        mx, my, mz        (uT)               Note: Pass-through mode is used to access this directly. Hub-mod is not used in this example.
+    b  barometer           height (m), pressure change (Pa)
+    t  temperatures        IMU and barometer (C)
+    l  next LED pattern    off > each LED > all on > off
+    z  re-zero height and gyro (keep the board still)
+    h  help text
+
+  Works with either IMU fitted at 0x6B:
+    LSM6DS3TR-C (WHO_AM_I 0x6A) - current prototype
+    LSM6DSV32X  (WHO_AM_I 0x70) - next prototype
+  The MMC5603NJ magnetometer sits behind the IMU and is reached
+  through the IMU's I2C pass-through mode.
+*/
+
+#include <Wire.h>
+
+// ---------------- Board settings (check against your schematic) ----------------
+const int  I2C_SDA = 18;
+const int  I2C_SCL = 17;
+
+const int   LED_PINS[]  = {48, 45, 46};
+const char* LED_NAMES[] = {"blue (48)", "red (45)", "LED 46"};
+const int   NUM_LEDS    = 3;
+const bool  LED_ACTIVE_HIGH = true;
+
+const uint8_t IMU_ADDR  = 0x6B;
+const uint8_t MAG_ADDR  = 0x30;
+const uint8_t BARO_ADDR = 0x76;
+
+const float    BARO_TEMP_OFFSET = -8.5;   // same offset as the SPL07 example sketch
+const uint32_t PLOT_INTERVAL_MS = 50;     // 20 lines per second
+
+// ---------------- State ----------------
+enum ImuType { IMU_NONE, IMU_DS3TRC, IMU_DSV32X };
+ImuType imuType = IMU_NONE;
+bool magOK = false, baroOK = false;
+
+char mode = 'a';
+int  ledPattern = 0;                      // 0 = off, 1..NUM_LEDS = one LED, NUM_LEDS+1 = all
+
+// Latest readings
+float ax, ay, az;                         // g
+float gx, gy, gz;                         // deg/s
+float mx, my, mz;                         // uT
+float imuTemp, baroTemp;                  // C
+float pressure;                           // Pa
+
+float gBiasX = 0, gBiasY = 0, gBiasZ = 0;
+float pressureBase = 101325.0;
+
+const float ACC_SCALE  = 0.000488;        // g per LSB at +-16 g (both IMUs)
+const float GYRO_SCALE = 0.070;           // dps per LSB at +-2000 dps (both IMUs)
+
+// SPL07-006 calibration coefficients
+int32_t c0, c1, c00, c10, c01, c11, c20, c21, c30, c31, c40;
+const float BARO_KP = 7864320.0;          // 8x pressure oversampling
+const float BARO_KT = 524288.0;           // 1x temperature oversampling
+
+// ---------------- I2C helpers ----------------
+bool writeReg(uint8_t dev, uint8_t reg, uint8_t val) {
+  Wire.beginTransmission(dev);
+  Wire.write(reg);
+  Wire.write(val);
+  return Wire.endTransmission() == 0;
+}
+
+bool readRegs(uint8_t dev, uint8_t reg, uint8_t* buf, uint8_t len) {
+  Wire.beginTransmission(dev);
+  Wire.write(reg);
+  if (Wire.endTransmission(false) != 0) return false;
+  if (Wire.requestFrom(dev, len) != len) return false;
+  for (uint8_t i = 0; i < len; i++) buf[i] = Wire.read();
+  return true;
+}
+
+uint8_t readReg(uint8_t dev, uint8_t reg) {
+  uint8_t v = 0xFF;
+  readRegs(dev, reg, &v, 1);
+  return v;
+}
+
+int32_t signExtend(int32_t v, int bits) {
+  if (v & (1L << (bits - 1))) v -= (1L << bits);
+  return v;
+}
+
+// ---------------- IMU ----------------
+bool initIMU() {
+  uint8_t id = readReg(IMU_ADDR, 0x0F);
+
+  if (id == 0x6A) {
+    imuType = IMU_DS3TRC;
+    writeReg(IMU_ADDR, 0x12, 0x01); delay(50);   // CTRL3_C: software reset
+    writeReg(IMU_ADDR, 0x12, 0x44);              // BDU + auto-increment
+    writeReg(IMU_ADDR, 0x10, 0x44);              // CTRL1_XL: 104 Hz, +-16 g
+    writeReg(IMU_ADDR, 0x11, 0x4C);              // CTRL2_G: 104 Hz, +-2000 dps
+    writeReg(IMU_ADDR, 0x1A, 0x00);              // MASTER_CONFIG: hub off
+    delay(5);
+    writeReg(IMU_ADDR, 0x1A, 0x04);              // MASTER_CONFIG: pass-through on
+  }
+  else if (id == 0x70) {
+    imuType = IMU_DSV32X;
+    writeReg(IMU_ADDR, 0x12, 0x01); delay(50);   // CTRL3: software reset
+    writeReg(IMU_ADDR, 0x12, 0x44);              // BDU + auto-increment
+    writeReg(IMU_ADDR, 0x17, 0x02);              // CTRL8: +-16 g
+    writeReg(IMU_ADDR, 0x15, 0x04);              // CTRL6: +-2000 dps
+    writeReg(IMU_ADDR, 0x10, 0x06);              // CTRL1: accel 120 Hz, high performance
+    writeReg(IMU_ADDR, 0x11, 0x06);              // CTRL2: gyro 120 Hz, high performance
+    writeReg(IMU_ADDR, 0x01, 0x40);              // FUNC_CFG_ACCESS: sensor hub bank
+    writeReg(IMU_ADDR, 0x14, 0x00);              // MASTER_CONFIG: hub off
+    delay(5);
+    writeReg(IMU_ADDR, 0x14, 0x10);              // MASTER_CONFIG: pass-through on
+    writeReg(IMU_ADDR, 0x01, 0x00);              // back to main bank
+  }
+  else {
+    imuType = IMU_NONE;
+    return false;
+  }
+  delay(20);
+  return true;
+}
+
+void readIMU() {
+  if (imuType == IMU_NONE) return;
+  uint8_t b[14];                                 // temp, gyro xyz, accel xyz
+  if (!readRegs(IMU_ADDR, 0x20, b, 14)) return;
+  int16_t t  = (int16_t)(b[1]  << 8 | b[0]);
+  int16_t rx = (int16_t)(b[3]  << 8 | b[2]);
+  int16_t ry = (int16_t)(b[5]  << 8 | b[4]);
+  int16_t rz = (int16_t)(b[7]  << 8 | b[6]);
+  int16_t qx = (int16_t)(b[9]  << 8 | b[8]);
+  int16_t qy = (int16_t)(b[11] << 8 | b[10]);
+  int16_t qz = (int16_t)(b[13] << 8 | b[12]);
+
+  imuTemp = 25.0 + t / 256.0;
+  gx = rx * GYRO_SCALE - gBiasX;
+  gy = ry * GYRO_SCALE - gBiasY;
+  gz = rz * GYRO_SCALE - gBiasZ;
+  ax = qx * ACC_SCALE;
+  ay = qy * ACC_SCALE;
+  az = qz * ACC_SCALE;
+}
+
+// ---------------- Magnetometer (MMC5603NJ) ----------------
+bool initMag() {
+  if (readReg(MAG_ADDR, 0x39) != 0x10) return false;  // product ID
+  writeReg(MAG_ADDR, 0x1C, 0x80); delay(20);           // software reset
+  writeReg(MAG_ADDR, 0x1B, 0x08); delay(1);            // SET pulse
+  writeReg(MAG_ADDR, 0x1A, 100);                       // ODR 100 Hz
+  writeReg(MAG_ADDR, 0x1B, 0xA0);                      // Cmm_freq_en + Auto_SR_en
+  writeReg(MAG_ADDR, 0x1D, 0x10);                      // Cmm_en: continuous mode
+  return true;
+}
+
+void readMag() {
+  if (!magOK) return;
+  uint8_t b[6];
+  if (!readRegs(MAG_ADDR, 0x00, b, 6)) return;
+  // 16-bit, offset binary, 1024 counts per gauss, 1 gauss = 100 uT
+  mx = ((int32_t)((b[0] << 8) | b[1]) - 32768) / 1024.0 * 100.0;
+  my = ((int32_t)((b[2] << 8) | b[3]) - 32768) / 1024.0 * 100.0;
+  mz = ((int32_t)((b[4] << 8) | b[5]) - 32768) / 1024.0 * 100.0;
+}
+
+// ---------------- Barometer (SPL07-006) ----------------
+bool initBaro() {
+  Wire.beginTransmission(BARO_ADDR);
+  if (Wire.endTransmission() != 0) return false;
+
+  writeReg(BARO_ADDR, 0x0C, 0x09);                     // soft reset
+  delay(40);
+  uint32_t start = millis();
+  while ((readReg(BARO_ADDR, 0x08) & 0xC0) != 0xC0) {  // COEF_RDY + SENSOR_RDY
+    if (millis() - start > 500) return false;
+    delay(5);
+  }
+
+  uint8_t b[21];
+  if (!readRegs(BARO_ADDR, 0x10, b, 21)) return false;
+  c0  = signExtend(((int32_t)b[0] << 4) | (b[1] >> 4), 12);
+  c1  = signExtend(((int32_t)(b[1] & 0x0F) << 8) | b[2], 12);
+  c00 = signExtend(((int32_t)b[3] << 12) | ((int32_t)b[4] << 4) | (b[5] >> 4), 20);
+  c10 = signExtend(((int32_t)(b[5] & 0x0F) << 16) | ((int32_t)b[6] << 8) | b[7], 20);
+  c01 = (int16_t)(b[8]  << 8 | b[9]);
+  c11 = (int16_t)(b[10] << 8 | b[11]);
+  c20 = (int16_t)(b[12] << 8 | b[13]);
+  c21 = (int16_t)(b[14] << 8 | b[15]);
+  c30 = (int16_t)(b[16] << 8 | b[17]);
+  c31 = signExtend(((int32_t)b[18] << 4) | (b[19] >> 4), 12);
+  c40 = signExtend(((int32_t)(b[19] & 0x0F) << 8) | b[20], 12);
+
+  writeReg(BARO_ADDR, 0x06, 0x43);   // pressure: 16 Hz, 8x oversampling
+  writeReg(BARO_ADDR, 0x07, 0xC0);   // temperature: 16 Hz, 1x
+  writeReg(BARO_ADDR, 0x09, 0x00);   // no result shift needed at 8x
+  writeReg(BARO_ADDR, 0x08, 0x07);   // continuous pressure + temperature
+  delay(100);
+  return true;
+}
+
+void readBaro() {
+  if (!baroOK) return;
+  uint8_t b[6];
+  if (!readRegs(BARO_ADDR, 0x00, b, 6)) return;
+  int32_t pr = signExtend(((int32_t)b[0] << 16) | ((int32_t)b[1] << 8) | b[2], 24);
+  int32_t tr = signExtend(((int32_t)b[3] << 16) | ((int32_t)b[4] << 8) | b[5], 24);
+  float ps = pr / BARO_KP;
+  float ts = tr / BARO_KT;
+
+  pressure = c00 + ps * (c10 + ps * (c20 + ps * (c30 + ps * c40)))
+           + ts * c01 + ts * ps * (c11 + ps * (c21 + ps * c31));
+  baroTemp = c0 * 0.5 + c1 * ts + BARO_TEMP_OFFSET;
+}
+
+float heightMetres() {
+  return 44330.0 * (1.0 - pow(pressure / pressureBase, 0.1903));
+}
+
+// ---------------- Zeroing ----------------
+void zeroSensors() {
+  Serial.println("Zeroing - keep the board still");
+  float sx = 0, sy = 0, sz = 0, sp = 0;
+  const int N = 50;
+  gBiasX = gBiasY = gBiasZ = 0;
+  for (int i = 0; i < N; i++) {
+    readIMU();
+    readBaro();
+    sx += gx; sy += gy; sz += gz; sp += pressure;
+    delay(20);
+  }
+  gBiasX = sx / N; gBiasY = sy / N; gBiasZ = sz / N;
+  if (baroOK) pressureBase = sp / N;
+}
+
+// ---------------- LEDs ----------------
+void setLED(int i, bool on) {
+  digitalWrite(LED_PINS[i], (on == LED_ACTIVE_HIGH) ? HIGH : LOW);
+}
+
+void applyLedPattern() {
+  for (int i = 0; i < NUM_LEDS; i++) {
+    bool on = (ledPattern == NUM_LEDS + 1) || (ledPattern == i + 1);
+    setLED(i, on);
+  }
+  Serial.print("LED: ");
+  if (ledPattern == 0)                 Serial.println("all off");
+  else if (ledPattern == NUM_LEDS + 1) Serial.println("all on");
+  else                                 Serial.println(LED_NAMES[ledPattern - 1]);
+}
+
+// ---------------- Commands ----------------
+void printHelp() {
+  Serial.println("Keys: a accel, g gyro, m mag, b baro, t temp, l LEDs, z zero, h help");
+  Serial.print("IMU: ");
+  Serial.print(imuType == IMU_DS3TRC ? "LSM6DS3TR-C" : imuType == IMU_DSV32X ? "LSM6DSV32X" : "not found");
+  Serial.print("  Mag: ");  Serial.print(magOK ? "OK" : "not found");
+  Serial.print("  Baro: "); Serial.println(baroOK ? "OK" : "not found");
+}
+
+void handleSerial() {
+  while (Serial.available()) {
+    char c = tolower(Serial.read());
+    switch (c) {
+      case 'a': case 'g': case 'm': case 'b': case 't':
+        mode = c; break;
+      case 'l':
+        ledPattern = (ledPattern + 1) % (NUM_LEDS + 2);
+        applyLedPattern(); break;
+      case 'z':
+        zeroSensors(); break;
+      case 'h':
+        printHelp(); break;
+      default:
+        break;   // ignore Enter, spaces and unknown keys
+    }
+  }
+}
+
+// ---------------- Plot output ----------------
+void trace(const char* label, float value, bool last = false) {
+  Serial.print(label); Serial.print(':'); Serial.print(value, 3);
+  Serial.print(last ? '\n' : ',');
+}
+
+void plot() {
+  switch (mode) {
+    case 'a': trace("ax_g", ax); trace("ay_g", ay); trace("az_g", az, true); break;
+    case 'g': trace("gx_dps", gx); trace("gy_dps", gy); trace("gz_dps", gz, true); break;
+    case 'm': trace("mx_uT", mx); trace("my_uT", my); trace("mz_uT", mz, true); break;
+    case 'b': trace("height_m", heightMetres()); trace("dP_Pa", pressure - pressureBase, true); break;
+    case 't': trace("imu_C", imuTemp); trace("baro_C", baroTemp, true); break;
+  }
+}
+
+// ---------------- Setup / loop ----------------
+void setup() {
+  Serial.begin(115200);
+  uint32_t t0 = millis();
+  while (!Serial && millis() - t0 < 3000) delay(10);   // don't hang on battery
+
+  for (int i = 0; i < NUM_LEDS; i++) { pinMode(LED_PINS[i], OUTPUT); setLED(i, false); }
+
+  Wire.begin(I2C_SDA, I2C_SCL, 400000);
+
+  initIMU();
+  magOK  = initMag();     // needs pass-through, so after the IMU
+  baroOK = initBaro();
+
+  printHelp();
+  zeroSensors();
+}
+
+void loop() {
+  handleSerial();
+
+  static uint32_t lastPlot = 0;
+  if (millis() - lastPlot >= PLOT_INTERVAL_MS) {
+    lastPlot = millis();
+    readIMU();
+    readMag();
+    readBaro();
+    plot();
+  }
+}

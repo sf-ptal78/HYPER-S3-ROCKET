@@ -8,14 +8,15 @@
     a  accelerometer       ax, ay, az        (g)
     g  gyroscope           gx, gy, gz        (deg/s)
     m  magnetometer        mx, my, mz        (uT)
-    b  barometer           height (m) above the zero point
+    h  height              height (m) above the zero point
+    b  barometer           pressure (hPa) and the zero-point pressure
     t  temperatures        IMU and barometer (C)
     p  magnetometer path   pass-through <-> IMU sensor hub
     l  next LED pattern    off > each LED > all on > off
     z  re-zero height and gyro (keep the board still)
     x  text messages on/off (off by default: words in the plotter
        end up as legend labels; turn on when using the Serial Monitor)
-    h  help text (Serial Monitor)
+    ?  help text (Serial Monitor)
 
   Every mode key also refreshes the graph so it rescales to the new
   sensor; press the same key again for a manual refresh.
@@ -485,7 +486,7 @@ void applyLedPattern() {
 
 // ---------------- Commands ----------------
 void printHelp() {
-  msgln("Keys: a accel, g gyro, m mag, b baro, t temp, p mag path, l LEDs, z zero, x text, h help");
+  msgln("Keys: a accel, g gyro, m mag, h height, b pressure, t temp, p mag path, l LEDs, z zero, x text, ? help");
   msg("Mag mode: "); msgln(hubMode ? "SENSOR HUB" : "PASS-THROUGH");
   msg("IMU: ");
   msg(imuType == IMU_DS3TRC ? "LSM6DS3TR-C" : imuType == IMU_DSV32X ? "LSM6DSV32X" : "not found");
@@ -497,7 +498,7 @@ void handleSerial() {
   while (Serial.available()) {
     char c = tolower(Serial.read());
     switch (c) {
-      case 'a': case 'g': case 'm': case 'b': case 't':
+      case 'a': case 'g': case 'm': case 'h': case 'b': case 't':
         mode = c;
         refreshGraph();                 // same key again = manual refresh
         break;
@@ -512,7 +513,7 @@ void handleSerial() {
         textMessages = !textMessages;
         if (textMessages) Serial.println("Text messages ON (Serial Monitor mode)");
         break;
-      case 'h': {                       // help always prints, even with text off
+      case '?': {                       // help always prints, even with text off
         bool was = textMessages;
         textMessages = true;
         printHelp();
@@ -545,10 +546,17 @@ void buildLine() {
       else
         snprintf(line, sizeof(line), "mx_uT:%.3f,my_uT:%.3f,mz_uT:%.3f\n", mx, my, mz);
       break;
+    case 'h':
+      // Height only. Columns 1 and 2 are a ground line at 0 m (drawn on top of
+      // each other) to keep the 3-column rule. Height goes LAST because the
+      // plotter draws the last column on top, so it is never hidden.
+      snprintf(line, sizeof(line), "ground:0,ground:0,height_m:%.3f\n", heightMetres());
+      break;
     case 'b':
-      // Height only. Columns 2 and 3 are a ground line at 0 m (drawn on top of
-      // each other, so they look like one line) to keep the 3-column rule.
-      snprintf(line, sizeof(line), "height_m:%.3f,ground:0,ground:0\n", heightMetres());
+      // Pressure in hPa. Columns 1 and 2 are the zero-point pressure (set by z),
+      // a reference line on the same scale. Pressure goes LAST so it is drawn on top.
+      snprintf(line, sizeof(line), "zero_hPa:%.2f,zero_hPa:%.2f,pressure_hPa:%.2f\n",
+               pressureBase / 100.0, pressureBase / 100.0, pressure / 100.0);
       break;
     case 't':
       // third column: average of the two, so it sits between them and doesn't stretch the scale

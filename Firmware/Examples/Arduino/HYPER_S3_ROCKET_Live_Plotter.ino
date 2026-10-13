@@ -8,12 +8,14 @@
     a  accelerometer       ax, ay, az        (g)
     g  gyroscope           gx, gy, gz        (deg/s)
     m  magnetometer        mx, my, mz        (uT)
-    b  barometer           height (m), pressure change (Pa)
+    b  barometer           height (m) above the zero point
     t  temperatures        IMU and barometer (C)
     p  magnetometer path   pass-through <-> IMU sensor hub
     l  next LED pattern    off > each LED > all on > off
     z  re-zero height and gyro (keep the board still)
-    h  help text
+    x  text messages on/off (off by default: words in the plotter
+       end up as legend labels; turn on when using the Serial Monitor)
+    h  help text (Serial Monitor)
 
   Every mode key also refreshes the graph so it rescales to the new
   sensor; press the same key again for a manual refresh.
@@ -44,13 +46,11 @@ const uint8_t BARO_ADDR = 0x76;
 const float    BARO_TEMP_OFFSET = -8.5;   // same offset as the SPL07 example sketch
 const uint32_t PLOT_INTERVAL_MS = 50;     // 20 lines per second
 
-// Graph refresh on a mode change: send a fast burst of new readings so the
-// old trace scrolls out of the plotter window and the Y axis rescales.
-// The IDE 2 plotter shows about 50 points; raise FLUSH_LINES if your
-// plotter window is wider (the old IDE 1.8 plotter shows 500).
-const uint16_t FLUSH_LINES       = 100;
-const uint32_t FLUSH_INTERVAL_MS = 10;    // 100 lines per second during the burst
-uint16_t flushRemaining = 0;
+// Graph refresh on a mode change: the current reading is sent FLUSH_LINES
+// times in one instant burst (no sensor reads, no delays), which pushes the
+// old trace out of the plotter window so the Y axis rescales immediately.
+// Match this to your plotter's window: 500 for this IDE's plotter.
+const uint16_t FLUSH_LINES = 500;
 
 // ---------------- State ----------------
 enum ImuType { IMU_NONE, IMU_DS3TRC, IMU_DSV32X };
@@ -68,7 +68,18 @@ const uint8_t  MAG_FAIL_LIMIT   = 5;      // 5 failed reads (0.25 s) = locked
 const uint16_t MAG_FROZEN_LIMIT = 40;     // 40 identical readings (2 s) = frozen
 const uint32_t LOCK_MSG_INTERVAL_MS = 5000;
 
+// Text messages. The Arduino 1.8 Serial Plotter turns any line of words into
+// trace labels, which fills the legend with junk ("try", "a", "software"...).
+// So text is OFF by default while plotting; press x to turn it on when using
+// the Serial Monitor instead. The magnetometer lock-up still shows in the
+// legend in m mode.
+bool textMessages = false;
+void msg(const char* s)   { if (textMessages) Serial.print(s); }
+void msgln(const char* s) { if (textMessages) Serial.println(s); }
+
 void setPassThrough();                    // defined further down
+bool recoverMagBus();
+void refreshGraph();
 
 char mode = 'a';
 int  ledPattern = 0;                      // 0 = off, 1..NUM_LEDS = one LED, NUM_LEDS+1 = all
@@ -182,12 +193,8 @@ bool magAnswers() {
 }
 
 bool initMag() {
-  // Up to 3 tries, re-entering pass-through between tries
-  bool found = false;
-  for (int attempt = 0; attempt < 3 && !found; attempt++) {
-    if (attempt > 0) { setPassThrough(); delay(50); }
-    found = magAnswers();
-  }
+  bool found = magAnswers();
+  if (!found) found = recoverMagBus();   // try to unstick it without a power cycle
   if (!found) {
     // The IMU answers but the mag doesn't: almost always the lock-up
     magLocked = (imuType != IMU_NONE);
@@ -203,6 +210,54 @@ bool initMag() {
   writeReg(MAG_ADDR, 0x1B, 0xA0);                      // Cmm_freq_en + Auto_SR_en
   writeReg(MAG_ADDR, 0x1D, 0x10);                      // Cmm_en: continuous mode
   return true;
+}
+
+// ---------------- Magnetometer lock-up recovery (no power cycle) ----------------
+// A lock-up usually happens when the ESP32 resets (new upload, reset button)
+// in the middle of a magnetometer transfer. The ESP32 restarts but the IMU and
+// magnetometer stay powered: the mag is left half-way through a byte, waiting
+// for clock pulses that never come, and ignores everything else.
+//
+// The standard I2C cure is to send it those clock pulses: 9 or more SCL pulses
+// finish whatever byte it was sending, then a STOP returns it to idle. The
+// ESP32 can only reach the mag's private bus through the IMU's pass-through
+// switch, so the IMU is rebooted and put in pass-through first.
+
+void i2cBusRecovery() {
+  Wire.end();                                   // take the pins back from the I2C driver
+  pinMode(I2C_SDA, OUTPUT_OPEN_DRAIN); digitalWrite(I2C_SDA, HIGH);
+  pinMode(I2C_SCL, OUTPUT_OPEN_DRAIN); digitalWrite(I2C_SCL, HIGH);
+  delayMicroseconds(10);
+
+  for (int i = 0; i < 16; i++) {                // clock out any half-finished byte
+    digitalWrite(I2C_SCL, LOW);  delayMicroseconds(10);
+    digitalWrite(I2C_SCL, HIGH); delayMicroseconds(10);
+  }
+  // STOP condition: SDA goes low -> high while SCL is high
+  digitalWrite(I2C_SCL, LOW);  delayMicroseconds(10);
+  digitalWrite(I2C_SDA, LOW);  delayMicroseconds(10);
+  digitalWrite(I2C_SCL, HIGH); delayMicroseconds(10);
+  digitalWrite(I2C_SDA, HIGH); delayMicroseconds(10);
+
+  Wire.begin(I2C_SDA, I2C_SCL, 400000);         // hand the pins back to the driver
+}
+
+bool recoverMagBus() {
+  if (imuType == IMU_NONE) return false;
+  for (int attempt = 1; attempt <= 3; attempt++) {
+    msgln("Mag recovery: rebooting IMU, clocking the bus");
+    writeReg(IMU_ADDR, 0x12, 0x80);             // CTRL3: BOOT - reload IMU, stops the hub
+    delay(30);
+    initIMU();                                  // software reset, sensors on, pass-through on
+    hubMode = false;
+    i2cBusRecovery();                           // pulses reach the mag through pass-through
+    delay(10);
+    if (magAnswers()) {
+      msgln("Mag recovery: magnetometer answering again");
+      return true;
+    }
+  }
+  return false;
 }
 
 // ---------------- Magnetometer path: pass-through or sensor hub ----------------
@@ -258,25 +313,25 @@ void setHub() {
 }
 
 void printLockMessage() {
-  Serial.println("!! MAGNETOMETER LOCKED UP !!");
-  Serial.println("   Disconnect the battery AND the USB cable for 10 seconds, then reconnect.");
-  Serial.println("   (Press p to try a software recovery first.)");
+  msgln("!! MAGNETOMETER LOCKED UP !!");
+  msgln("   Disconnect the battery AND the USB cable for 10 seconds, then reconnect.");
+  msgln("   (Press p to try a software recovery first.)");
   lastLockMsg = millis();
 }
 
 void declareMagLocked(const char* reason) {
   magLocked = true;
-  Serial.print("Magnetometer problem: "); Serial.println(reason);
+  msg("Magnetometer problem: "); msgln(reason);
   printLockMessage();
 }
 
 bool tryRecoverMag() {
-  Serial.println("Trying to recover the magnetometer...");
+  msgln("Trying to recover the magnetometer...");
   setPassThrough();                   // stop the hub, back to direct access
   delay(50);
   if (initMag()) {
     magOK = true;
-    Serial.println("Magnetometer recovered - mode: PASS-THROUGH");
+    msgln("Magnetometer recovered - mode: PASS-THROUGH");
     return true;
   }
   printLockMessage();
@@ -286,17 +341,17 @@ bool tryRecoverMag() {
 void toggleMagPath() {
   if (magLocked) { tryRecoverMag(); return; }
   if (imuType == IMU_NONE || !magOK) {
-    Serial.println("Magnetometer not available - cannot switch mode");
+    msgln("Magnetometer not available - cannot switch mode");
     return;
   }
   if (hubMode) {
     setPassThrough();
     bool ok = (readReg(MAG_ADDR, 0x39) == 0x10);
-    Serial.println(ok ? "Mag mode: PASS-THROUGH (ESP32 reads 0x30 directly)"
+    msgln(ok ? "Mag mode: PASS-THROUGH (ESP32 reads 0x30 directly)"
                       : "Mag mode: PASS-THROUGH - mag not answering, try a power cycle");
   } else {
     setHub();
-    Serial.println("Mag mode: SENSOR HUB (IMU reads the mag every cycle)");
+    msgln("Mag mode: SENSOR HUB (IMU reads the mag every cycle)");
   }
 }
 
@@ -398,7 +453,7 @@ float heightMetres() {
 
 // ---------------- Zeroing ----------------
 void zeroSensors() {
-  Serial.println("Zeroing - keep the board still");
+  msgln("Zeroing - keep the board still");
   float sx = 0, sy = 0, sz = 0, sp = 0;
   const int N = 50;
   gBiasX = gBiasY = gBiasZ = 0;
@@ -422,20 +477,20 @@ void applyLedPattern() {
     bool on = (ledPattern == NUM_LEDS + 1) || (ledPattern == i + 1);
     setLED(i, on);
   }
-  Serial.print("LED: ");
-  if (ledPattern == 0)                 Serial.println("all off");
-  else if (ledPattern == NUM_LEDS + 1) Serial.println("all on");
-  else                                 Serial.println(LED_NAMES[ledPattern - 1]);
+  msg("LED: ");
+  if (ledPattern == 0)                 msgln("all off");
+  else if (ledPattern == NUM_LEDS + 1) msgln("all on");
+  else                                 msgln(LED_NAMES[ledPattern - 1]);
 }
 
 // ---------------- Commands ----------------
 void printHelp() {
-  Serial.println("Keys: a accel, g gyro, m mag, b baro, t temp, p mag path, l LEDs, z zero, h help");
-  Serial.print("Mag mode: "); Serial.println(hubMode ? "SENSOR HUB" : "PASS-THROUGH");
-  Serial.print("IMU: ");
-  Serial.print(imuType == IMU_DS3TRC ? "LSM6DS3TR-C" : imuType == IMU_DSV32X ? "LSM6DSV32X" : "not found");
-  Serial.print("  Mag: ");  Serial.print(magLocked ? "LOCKED UP" : magOK ? "OK" : "not found");
-  Serial.print("  Baro: "); Serial.println(baroOK ? "OK" : "not found");
+  msgln("Keys: a accel, g gyro, m mag, b baro, t temp, p mag path, l LEDs, z zero, x text, h help");
+  msg("Mag mode: "); msgln(hubMode ? "SENSOR HUB" : "PASS-THROUGH");
+  msg("IMU: ");
+  msg(imuType == IMU_DS3TRC ? "LSM6DS3TR-C" : imuType == IMU_DSV32X ? "LSM6DSV32X" : "not found");
+  msg("  Mag: ");  msg(magLocked ? "LOCKED UP" : magOK ? "OK" : "not found");
+  msg("  Baro: "); msgln(baroOK ? "OK" : "not found");
 }
 
 void handleSerial() {
@@ -444,7 +499,7 @@ void handleSerial() {
     switch (c) {
       case 'a': case 'g': case 'm': case 'b': case 't':
         mode = c;
-        flushRemaining = FLUSH_LINES;   // refresh the graph (same key again = manual refresh)
+        refreshGraph();                 // same key again = manual refresh
         break;
       case 'l':
         ledPattern = (ledPattern + 1) % (NUM_LEDS + 2);
@@ -453,8 +508,17 @@ void handleSerial() {
         toggleMagPath(); break;
       case 'z':
         zeroSensors(); break;
-      case 'h':
-        printHelp(); break;
+      case 'x':
+        textMessages = !textMessages;
+        if (textMessages) Serial.println("Text messages ON (Serial Monitor mode)");
+        break;
+      case 'h': {                       // help always prints, even with text off
+        bool was = textMessages;
+        textMessages = true;
+        printHelp();
+        textMessages = was;
+        break;
+      }
       default:
         break;   // ignore Enter, spaces and unknown keys
     }
@@ -462,26 +526,48 @@ void handleSerial() {
 }
 
 // ---------------- Plot output ----------------
-void trace(const char* label, float value, bool last = false) {
-  Serial.print(label); Serial.print(':'); Serial.print(value, 3);
-  Serial.print(last ? '\n' : ',');
+// Every mode sends exactly 3 columns. This plotter tracks traces by column
+// position (1st = blue, 2nd = red, 3rd = green), so a mode with fewer columns
+// would leave the old 3rd trace frozen on screen during a refresh.
+char line[128];                           // one plotter line, built once and reused
+
+void buildLine() {
+  switch (mode) {
+    case 'a':
+      snprintf(line, sizeof(line), "ax_g:%.3f,ay_g:%.3f,az_g:%.3f\n", ax, ay, az);
+      break;
+    case 'g':
+      snprintf(line, sizeof(line), "gx_dps:%.3f,gy_dps:%.3f,gz_dps:%.3f\n", gx, gy, gz);
+      break;
+    case 'm':
+      if (magLocked)   // the labels show in the plotter legend, so the instruction is on screen
+        snprintf(line, sizeof(line), "MAG_LOCKED:0,unplug_battery_and_USB:0,wait_10s_then_reconnect:0\n");
+      else
+        snprintf(line, sizeof(line), "mx_uT:%.3f,my_uT:%.3f,mz_uT:%.3f\n", mx, my, mz);
+      break;
+    case 'b':
+      // Height only. Columns 2 and 3 are a ground line at 0 m (drawn on top of
+      // each other, so they look like one line) to keep the 3-column rule.
+      snprintf(line, sizeof(line), "height_m:%.3f,ground:0,ground:0\n", heightMetres());
+      break;
+    case 't':
+      // third column: average of the two, so it sits between them and doesn't stretch the scale
+      snprintf(line, sizeof(line), "imu_C:%.3f,baro_C:%.3f,avg_C:%.3f\n", imuTemp, baroTemp, (imuTemp + baroTemp) / 2.0);
+      break;
+  }
 }
 
-void plot() {
-  switch (mode) {
-    case 'a': trace("ax_g", ax); trace("ay_g", ay); trace("az_g", az, true); break;
-    case 'g': trace("gx_dps", gx); trace("gy_dps", gy); trace("gz_dps", gz, true); break;
-    case 'm':
-      if (magLocked) {
-        // The label shows in the plotter legend, so the instruction is on screen
-        trace("MAG_LOCKED_unplug_battery_and_USB_for_10s", 0, true);
-      } else {
-        trace("mx_uT", mx); trace("my_uT", my); trace("mz_uT", mz, true);
-      }
-      break;
-    case 'b': trace("height_m", heightMetres()); trace("dP_Pa", pressure - pressureBase, true); break;
-    case 't': trace("imu_C", imuTemp); trace("baro_C", baroTemp, true); break;
-  }
+void readAll() {
+  readIMU();
+  readMag();
+  readBaro();
+}
+
+// Instant refresh: one fresh reading, repeated FLUSH_LINES times as fast as USB allows
+void refreshGraph() {
+  readAll();
+  buildLine();
+  for (uint16_t i = 0; i < FLUSH_LINES; i++) Serial.print(line);
 }
 
 // ---------------- Setup / loop ----------------
@@ -509,13 +595,10 @@ void loop() {
   if (magLocked && millis() - lastLockMsg >= LOCK_MSG_INTERVAL_MS) printLockMessage();
 
   static uint32_t lastPlot = 0;
-  uint32_t interval = flushRemaining ? FLUSH_INTERVAL_MS : PLOT_INTERVAL_MS;
-  if (millis() - lastPlot >= interval) {
+  if (millis() - lastPlot >= PLOT_INTERVAL_MS) {
     lastPlot = millis();
-    readIMU();
-    readMag();
-    readBaro();
-    plot();
-    if (flushRemaining) flushRemaining--;
+    readAll();
+    buildLine();
+    Serial.print(line);
   }
 }

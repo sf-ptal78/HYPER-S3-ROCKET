@@ -1,141 +1,170 @@
+// HYPER S3 ROCKET - BQ25188 charger control + charge LED
+// I2C: SDA 18 / SCL 17, BQ25188 at 0x6A
+//
+// LED patterns:
+//   Off         - no USB/VIN
+//   Slow blink  - charging (constant current or constant voltage)
+//   Steady on   - charge done
+//   Fast blink  - VIN present but charger not charging (fault, TS hot/cold, OVP...)
+//
+// Fully non-blocking (no delay() in the charger code), so chargerBegin() and
+// chargerUpdate() can be dropped straight into the main firmware.
+
 #include <Wire.h>
 
-#define LED_PIN 45
-#define I2C_SDA 18
-#define I2C_SCL 17
+// ---------------- User settings ----------------
+#define CHG_LED_PIN         45      // change to the LED you want as the charge indicator
+#define CHG_LED_ACTIVE_LOW  false   // true if the LED turns on when the pin is LOW
+#define ICHG_CODE           0x2F    // 47 -> 200 mA, bit 7 (CHG_DIS) = 0
+#define POLL_MS             250     // how often the charger status is read
+#define FAULT_CONFIRM_MS    2000    // "not charging" must last this long before showing a fault
+#define SLOW_BLINK_MS       500     // half period -> 1 Hz
+#define FAST_BLINK_MS       100     // half period -> 5 Hz
 
-// BQ25188 I2C Address
-#define BQ_ADDR 0x6A
+// ---------------- BQ25188 registers ----------------
+const uint8_t BQ          = 0x6A;
+const uint8_t REG_STAT0   = 0x00;
+const uint8_t REG_STAT1   = 0x01;
+const uint8_t REG_FLAG0   = 0x02;   // clear-on-read
+const uint8_t REG_ICHG    = 0x04;
 
-// BQ25188 Register Maps
-#define REG_STAT0     0x00
-#define REG_ICHG_CTRL 0x04 // Corrected from 0x03 to 0x04
-#define REG_IC_CTRL2  0x05
+enum ChgState { CHG_NO_VIN, CHG_CHARGING, CHG_DONE, CHG_FAULT };
 
-// Global Timer Variables
-hw_timer_t *timer = NULL;
-volatile bool bqCheckFlag = false;          // Raised by ISR, cleared by loop()
-volatile uint32_t currentAlarmPeriod = 1000000; // Tracks active toggle rate
+ChgState      chgState      = CHG_NO_VIN;
+bool          lastVinGood   = false;
+uint32_t      lastPoll      = 0;
+uint32_t      notChgSince   = 0;     // when "VIN good but not charging" started (0 = not active)
+uint8_t       lastStat0     = 0xFF;
+uint8_t       lastStat1     = 0xFF;
 
-// Hardware ISR: Flips the LED state and signals the loop to check the charger
-void IRAM_ATTR onTimer() {
-  digitalWrite(LED_PIN, !digitalRead(LED_PIN));
-  bqCheckFlag = true;
-}
-
-// Thread-safe I2C Write Helper
-void writeRegister(uint8_t reg, uint8_t value) {
-  Wire.beginTransmission(BQ_ADDR);
+// ---------------- I2C helpers ----------------
+bool bqRead(uint8_t reg, uint8_t &val) {
+  Wire.beginTransmission(BQ);
   Wire.write(reg);
-  Wire.write(value);
-  Wire.endTransmission();
+  if (Wire.endTransmission(false) != 0) return false;
+  if (Wire.requestFrom(BQ, (uint8_t)1) != 1) return false;
+  val = Wire.read();
+  return true;
 }
 
-// Thread-safe I2C Read Helper
-uint8_t readRegister(uint8_t reg) {
-  Wire.beginTransmission(BQ_ADDR);
+bool bqWrite(uint8_t reg, uint8_t val) {
+  Wire.beginTransmission(BQ);
   Wire.write(reg);
-  if (Wire.endTransmission() == 0 && Wire.requestFrom(BQ_ADDR, 1)) {
-    return Wire.read();
-  }
-  return 0;
+  Wire.write(val);
+  return Wire.endTransmission() == 0;
 }
 
-void setup() {
-  Serial.begin(115200);
-  
-  // Custom I2C Initialization using your explicit S3 hardware pinout
-  Wire.begin(I2C_SDA, I2C_SCL); 
-  delay(2000);
-  
-  Serial.println("\n--- BQ25188 Unified Management Script ---");
-  
-  // Clean, standard Arduino approach to locking down the pull-down resistor
-  pinMode(LED_PIN, INPUT_PULLDOWN);
-  pinMode(LED_PIN, OUTPUT);
-
-  // 1. Configure BQ25188 for exactly 200mA Fast Charge Current (using your non-linear formula math!)
-  writeRegister(REG_ICHG_CTRL, 0x2F);
-  
-  // Verify what was written using your parsing logic
-  uint8_t ichg_val = readRegister(REG_ICHG_CTRL);
-  uint8_t code = ichg_val & 0x7F;
-  int ma = (code <= 31) ? (code + 5) : (40 + (code - 31) * 10);
-  Serial.printf("BQ25188: Charge Rate configured to %d mA (Disabled Bit: %d)\n", ma, (ichg_val >> 7));
-
-  // 2. Initialize the Hardware Timer at 1MHz base clock 
-  timer = timerBegin(1000000); 
-  timerAttachInterrupt(timer, &onTimer);
-  
-  // Start at a default 1Hz flash (500,000us high, 500,000us low)
-  timerAlarm(timer, 500000, true, 0); 
+int ichgToMa(uint8_t code) {
+  code &= 0x7F;
+  return (code <= 31) ? (code + 5) : (40 + (code - 31) * 10);
 }
 
-void loop() {
-  // If the interrupt flag hasn't been raised by the hardware timer, skip immediately
-  if (!bqCheckFlag) return;
-  bqCheckFlag = false; // Reset the execution flag
-
-  // 1. Query charging engine status from register 0x00
-  uint8_t stat0 = readRegister(REG_STAT0);
-  
-  // Official BQ25188 Map: Bit 0 = VIN_PGOOD_STAT, Bits 6-5 = CHG_STAT
-  bool vin_pgood = (stat0 & 0x01); 
-  uint8_t chg_status = (stat0 >> 5) & 0x03; 
-
-  // --- CASE A: USB / VIN Power is disconnected ---
-  if (!vin_pgood) {
-    timerAlarm(timer, 0, false, 0);   // Disable background clock interrupts
-    pinMode(LED_PIN, INPUT_PULLDOWN); // Terminate pin leakage (LED completely Dark)
-    
-    currentAlarmPeriod = 0; 
-    Serial.print("Power Event: VIN Disconnected. Pin anchored to INPUT_PULLDOWN. ");
-    Serial.print("Raw STAT0: 0x");
-    Serial.println(stat0, HEX);
-    
-    // Always service the watchdog so the BQ25188 doesn't force a hard reset
-    uint8_t ic_ctrl2 = readRegister(REG_IC_CTRL2);
-    writeRegister(REG_IC_CTRL2, ic_ctrl2 | 0x80);
-    return; // Exit loop early
-  }
-
-  // --- CASE B: VIN is connected ---
-  uint32_t targetPeriod = 0;
-  bool shouldBlink = true;
-
-  if (chg_status == 0x01) {
-    // 01 = Slow Charge (Trickle / Pre-Charge) -> 0.25Hz Blink
-    targetPeriod = 2000000; // Toggle pin every 2,000,000us (2s ON / 2s OFF)
-    Serial.print("State: Slow / Pre-Charge -> Blinking 0.25Hz. ");
-  } else if (chg_status == 0x10) {
-    // 10 = Fast Charge / CV Taper Mode -> 1Hz Blink
-    targetPeriod = 500000; // Toggle pin every 500,000us (0.5s ON / 0.5s OFF)
-    Serial.print("State: Fast Charge / Taper Mode -> Blinking 1Hz. ");
+// Make sure the charge current register holds our setting (it can reset to default)
+void ensureChargeSettings() {
+  uint8_t ichg;
+  if (bqRead(REG_ICHG, ichg) && ichg == ICHG_CODE) return;
+  if (bqWrite(REG_ICHG, ICHG_CODE)) {
+    Serial.printf("[CHG] Charge current set to %d mA\n", ichgToMa(ICHG_CODE));
   } else {
-    // 00 (Standby/Done) or 11 (Top-off/Termination) -> Blink OFF, LED Solid ON
-    shouldBlink = false;
-    Serial.print("State: Charging Completed / Standby -> LED Solid ON. ");
+    Serial.println("[CHG] Failed to write ICHG");
   }
-  
-  Serial.print("Raw STAT0: 0x");
-  Serial.println(stat0, HEX);
+}
 
-  // 2. Adjust or handle timer/pin properties based on active state
-  if (!shouldBlink) {
-    timerAlarm(timer, 0, false, 0); // Stop the background clock interrupts
-    pinMode(LED_PIN, OUTPUT);
-    digitalWrite(LED_PIN, HIGH);   // Force LED solid ON
-    currentAlarmPeriod = 1;        // Flags tracking state out of blinking thresholds
-  } else {
-    // Re-engage output configuration and update timer if frequency changed
-    if (targetPeriod != currentAlarmPeriod) {
-      pinMode(LED_PIN, OUTPUT);
-      currentAlarmPeriod = targetPeriod;
-      timerAlarm(timer, currentAlarmPeriod, true, 0); // Re-engage hardware clock
+// ---------------- LED ----------------
+void ledWrite(bool on) {
+  digitalWrite(CHG_LED_PIN, (on != CHG_LED_ACTIVE_LOW) ? HIGH : LOW);
+}
+
+void updateLed(uint32_t now) {
+  switch (chgState) {
+    case CHG_NO_VIN:   ledWrite(false); break;
+    case CHG_DONE:     ledWrite(true);  break;
+    case CHG_CHARGING: ledWrite((now / SLOW_BLINK_MS) & 1); break;
+    case CHG_FAULT:    ledWrite((now / FAST_BLINK_MS) & 1); break;
+  }
+}
+
+const char *stateName(ChgState s) {
+  switch (s) {
+    case CHG_NO_VIN:   return "NO VIN";
+    case CHG_CHARGING: return "CHARGING";
+    case CHG_DONE:     return "DONE";
+    default:           return "FAULT";
+  }
+}
+
+// ---------------- Charger logic ----------------
+void chargerBegin() {
+  pinMode(CHG_LED_PIN, OUTPUT);
+  ledWrite(false);
+  uint8_t dummy;
+  bqRead(REG_FLAG0, dummy);          // clear old latched flags
+  ensureChargeSettings();
+}
+
+void chargerUpdate() {
+  uint32_t now = millis();
+
+  if (now - lastPoll >= POLL_MS) {
+    lastPoll = now;
+
+    uint8_t s0, s1;
+    if (!bqRead(REG_STAT0, s0) || !bqRead(REG_STAT1, s1)) {
+      chgState = CHG_FAULT;          // charger not answering
+    } else {
+      bool    vinGood = s0 & 0x01;          // STAT0 bit 0  VIN_PGOOD
+      uint8_t chg     = (s0 >> 5) & 0x03;   // STAT0 bits 6:5 CHG_STAT
+      uint8_t ts      = (s1 >> 3) & 0x03;   // STAT1 bits 4:3 TS_STAT
+      bool    tsOpen  = s0 & 0x80;          // STAT0 bit 7
+      bool    vinOvp  = s1 & 0x80;          // STAT1 bit 7
+
+      // Rewrite settings every time USB is plugged in
+      if (vinGood && !lastVinGood) ensureChargeSettings();
+      lastVinGood = vinGood;
+
+      ChgState next;
+      if (!vinGood) {
+        next = CHG_NO_VIN;
+        notChgSince = 0;
+      } else if (chg == 1 || chg == 2) {
+        next = CHG_CHARGING;
+        notChgSince = 0;
+      } else if (chg == 3) {
+        next = CHG_DONE;
+        notChgSince = 0;
+      } else if (ts == 1 || tsOpen || vinOvp) {
+        next = CHG_FAULT;              // definite fault, show at once
+      } else {
+        // VIN good but not charging: can be a short gap at plug-in, so confirm first
+        if (notChgSince == 0) notChgSince = now;
+        next = (now - notChgSince >= FAULT_CONFIRM_MS) ? CHG_FAULT : chgState;
+      }
+
+      // Log only when something changes
+      if (next != chgState || s0 != lastStat0 || s1 != lastStat1) {
+        uint8_t f0 = 0;
+        bqRead(REG_FLAG0, f0);
+        Serial.printf("[CHG] %s  STAT0=0x%02X STAT1=0x%02X FLAG0=0x%02X\n",
+                      stateName(next), s0, s1, f0);
+        lastStat0 = s0;
+        lastStat1 = s1;
+      }
+      chgState = next;
     }
   }
 
-  // 3. Clear the BQ25188 safety watchdog
-  uint8_t ic_ctrl2 = readRegister(REG_IC_CTRL2);
-  writeRegister(REG_IC_CTRL2, ic_ctrl2 | 0x80); // Kick watchdog
+  updateLed(now);
+}
+
+// ---------------- Standalone test ----------------
+void setup() {
+  Serial.begin(115200);
+  Wire.begin(18, 17);
+  delay(500);                        // only at boot, not in the charger code
+  chargerBegin();
+}
+
+void loop() {
+  chargerUpdate();
+  // ...rest of the firmware runs here...
 }

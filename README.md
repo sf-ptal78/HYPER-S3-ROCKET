@@ -206,8 +206,8 @@ Two 2.0 mm through-hole ports for thin-film, flexible beta 3435 NTCs (not suppli
 | Part | Function | I²C address |
 | --- | --- | --- |
 | STMicroelectronics LSM6DSV32X | 6-DoF accelerometer and gyroscope | `0x6B` |
-| Memsic MMC5603NJ | 3-DoF magnetometer | `0x30` |
-| Goertek SPL07-003 / 006 | Barometer with temperature (the 006 has a waterproof gel-filled cavity), routed via the LSM6DSV32X sensor hub | `0x76` |
+| Memsic MMC5603NJ | 3-DoF magnetometer, routed via the LSM6DSV32X sensor hub | `0x30 when set as pass through only` |
+| Goertek SPL07-003 / 006 | Barometer with temperature (the 006 has a waterproof gel-filled cavity) | `0x76` |
 | TI BQ25188 (all variants) | Charger / power path | `0x6A` |
 
 ---

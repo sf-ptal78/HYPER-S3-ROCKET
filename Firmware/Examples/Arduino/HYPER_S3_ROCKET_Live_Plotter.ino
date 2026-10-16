@@ -36,7 +36,7 @@ const int  I2C_SDA = 18;
 const int  I2C_SCL = 17;
 
 const int   LED_PINS[]  = {48, 45, 46};
-const char* LED_NAMES[] = {"blue (48)", "red (45)", "LED 46"};
+const char* LED_NAMES[] = {"blue (48)", "green (45)", "bottom red (46)"};
 const int   NUM_LEDS    = 3;
 const bool  LED_ACTIVE_HIGH = true;
 

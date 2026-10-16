@@ -1,79 +1,79 @@
-// 1. Define the physical hardware pin mappings
-const int BUTTON_PIN = 0;   // The physical BOOT button on the ESP32-S3
-const int LED_RED = 21;    // 🔴 TOP RED Status/Fault Light
-const int LED_GREEN = 45;  // 🟢 TOP GREEN Charge Done Light
+// =========================================================================
+// HYPER S3 ROCKET - Button Toggle with Non-Blocking Code
+// STEMFORGE
+//
+// Press the BOOT button (GPIO 0) to swap between the red and green LEDs.
+// The blue LED blinks the whole time. It keeps blinking even while you
+// hold the button down - that is the proof the code never stops and waits.
+// =========================================================================
 
-// 2. State tracking variables
-String currentState = "GREEN_ALIVE"; // Tracks which LED is currently on
-int lastButtonState = HIGH;          // HIGH means unpressed (due to internal Pull-Up)
+// 1. Physical pin mappings
+const int BUTTON_PIN = 0;    // BOOT button
+const int LED_RED    = 21;   // 🔴 TOP RED Status/Fault Light
+const int LED_GREEN  = 45;   // 🟢 TOP GREEN Charge Done Light
+const int LED_BLUE   = 48;   // 🔵 TOP BLUE User Light (heartbeat)
 
-// Time tracking variables
-unsigned long lastDebounceTime = 0;  // Stores the last time the button pin twitched
-const unsigned long debounceDelay = 50; // ⏱️ 50 milliseconds safety window
+// 2. State tracking
+bool redActive = false;                 // false = green on, true = red on
+
+// Button debounce
+int  lastReading  = HIGH;               // HIGH = not pressed (internal pull-up)
+int  stableState  = HIGH;               // the debounced button state
+unsigned long lastChangeTime = 0;
+const unsigned long debounceDelay = 50; // ⏱️ 50 ms safety window
+
+// Heartbeat
+unsigned long lastBlinkTime = 0;
+const unsigned long blinkInterval = 250; // blue LED toggles every 250 ms
+bool blueOn = false;
+
+void showLeds() {
+  digitalWrite(LED_RED,   redActive ? HIGH : LOW);
+  digitalWrite(LED_GREEN, redActive ? LOW  : HIGH);
+}
 
 void setup() {
-  // put your setup code here, to run once:
   Serial.begin(115200);
-  
-  // Configure physical pin behaviors
-  pinMode(BUTTON_PIN, INPUT_PULLUP); // Requires internal Pull-Up resistor
+
+  pinMode(BUTTON_PIN, INPUT_PULLUP);
   pinMode(LED_RED, OUTPUT);
   pinMode(LED_GREEN, OUTPUT);
+  pinMode(LED_BLUE, OUTPUT);
 
-  // Set the starting condition
-  digitalWrite(LED_GREEN, HIGH);  // Start with Green ON
-  digitalWrite(LED_RED, LOW);     // Start with Red OFF
-  
+  showLeds();                           // start with green on
   Serial.println("🚀 HYPER S3 ROCKET: Button Toggle Demo Online!");
 }
 
 void loop() {
-  // put your main code here, to run repeatedly:
-  
-  // Read the instantaneous physical status of the button right now
+  unsigned long now = millis();
+
+  // ---- Button: read it, never wait for it ----
   int reading = digitalRead(BUTTON_PIN);
 
-  // Check if the button reading just changed (due to noise or an actual press)
-  if (reading != lastButtonState) {
-    // Reset the countdown timer to right now
-    lastDebounceTime = millis();
-    // Save the reading for the next loop check
-    lastButtonState = reading;
+  if (reading != lastReading) {         // pin changed (noise or a real press)
+    lastChangeTime = now;               // restart the debounce timer
+    lastReading = reading;
   }
 
-  // If the reading has stayed steady for longer than our safety delay,
-  // we know it is a real press, not a background hardware twitch!
-  if ((millis() - lastDebounceTime) > debounceDelay) {
-    
-    // In INPUT_PULLUP mode, 'LOW' means the button is physically pushed down
-    if (reading == LOW) {
-      
-      // Trigger the toggle based on the active tracking state
-      if (currentState == "GREEN_ALIVE") {
-        Serial.println("🔴 Button Pushed! Swapping to RED alert.");
-        digitalWrite(LED_GREEN, LOW);
-        digitalWrite(LED_RED, HIGH);
-        currentState = "RED_ALIVE";
-        
-        // Small pause to prevent rapid cycling while holding the button down
-        while (digitalRead(BUTTON_PIN) == LOW) {
-          // Do nothing, wait for user to release finger
-        }
-      } 
-      else if (currentState == "RED_ALIVE") {
-        Serial.println("🟢 Button Pushed! Swapping to GREEN safe.");
-        digitalWrite(LED_RED, LOW);
-        digitalWrite(LED_GREEN, HIGH);
-        currentState = "GREEN_ALIVE";
-        
-        // Small pause to prevent rapid cycling while holding the button down
-        while (digitalRead(BUTTON_PIN) == LOW) {
-          // Do nothing, wait for user to release finger
-        }
-      }
+  // Steady for longer than the debounce window and different from before?
+  if ((now - lastChangeTime) > debounceDelay && reading != stableState) {
+    stableState = reading;
+
+    if (stableState == LOW) {           // act once, on the press only
+      redActive = !redActive;
+      showLeds();
+      Serial.println(redActive ? "🔴 Button Pushed! Swapping to RED alert."
+                               : "🟢 Button Pushed! Swapping to GREEN safe.");
     }
+    // Releasing the button changes stableState back to HIGH and does nothing else.
   }
 
-  // 🌟 BECAUSE THIS IS NON-BLOCKING, YOU CAN WRITE OTHER LIVE
-  // FLIGHT LOOPS OR TELEMETRY PRINTS RIGHT HERE WITHOUT DELAYS!
+  // ---- Heartbeat: keeps running while the button is held ----
+  if (now - lastBlinkTime >= blinkInterval) {
+    lastBlinkTime = now;
+    blueOn = !blueOn;
+    digitalWrite(LED_BLUE, blueOn ? HIGH : LOW);
+  }
+
+  // 🌟 Add your own flight loops or telemetry here - nothing above ever waits.
 }

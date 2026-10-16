@@ -1,5 +1,8 @@
 #include <Wire.h>
-#include <SPL07-003.h> // Library by Kenneract / Seeed Studio
+// The board is fitted with the Goertek SPL07-006 (gel-filled version).
+// The Arduino library is named "SPL07-003" (by Kenneract / Seeed Studio).
+// It is the right library: it works with the SPL07-006 on this board.
+#include <SPL07-003.h>
 
 // Create the sensor instance globally
 SPL07_003 spl;
@@ -25,7 +28,7 @@ void setup() {
   delay(500); 
 
   Serial.println("\n=============================================");
-  Serial.println("  SPL07-003 16Hz INT SAMPLING / 10Hz MONITOR ");
+  Serial.println("  SPL07-006 16Hz INT SAMPLING / 10Hz MONITOR ");
   Serial.println("=============================================");
 
   // 1. Lock onto hardware pins (GPIO 18 = SDA, GPIO 17 = SCL)
@@ -36,7 +39,7 @@ void setup() {
 
   // 3. TARGET ADDRESS ENFORCED: Initialize exclusively on 0x76 
   if (spl.begin(0x76, &Wire) == true) {
-    Serial.println("🎉 SUCCESS: SPL07-003 connected at address 0x76!");
+    Serial.println("🎉 SUCCESS: SPL07-006 connected at address 0x76!");
     sensorOnline = true;
     
     // Configured back to 16Hz internal sampling rates
@@ -54,7 +57,7 @@ void setup() {
     Serial.println("Sensor background streaming and calibration active.");
   } 
   else {
-    Serial.println("❌ ERROR: SPL07-003 NOT responding at address 0x76!");
+    Serial.println("❌ ERROR: SPL07-006 NOT responding at address 0x76!");
   }
   
   Serial.println("---------------------------------------------");

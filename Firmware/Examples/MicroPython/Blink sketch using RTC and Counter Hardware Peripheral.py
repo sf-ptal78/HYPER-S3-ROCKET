@@ -1,4 +1,5 @@
 import esp32
+import time
 from machine import Pin
 
 # =========================================================================
@@ -9,28 +10,38 @@ user_led = Pin(48, Pin.OUT)  # Blue Status LED (Active Default)
 # user_led = Pin(46, Pin.OUT)  # Red LED (Backside Placement)
 # user_led = Pin(21, Pin.OUT)  # Alternative Red LED
 
-sitime_clock = Pin(15, Pin.IN) # SiTime Hardware input trace
+sitime_clock = Pin(15, Pin.IN)  # SiTime 32,768 Hz clock input
 
 # =========================================================================
-# Native ESP32 Pulse Counter (PCNT) Initialisation
+# Native ESP32 Pulse Counter (PCNT)
 # =========================================================================
-# Binds PCNT unit 0 straight to GPIO 15 to capture the rising edges.
-# The internal silicon register handles the increments automatically in the background.
-counter = esp32.PCNT(0, pin=sitime_clock, rising=esp32.PCNT.INCREMENT)
+# 32,768 Hz / 2 = 16,384 pulses = exactly 0.5 seconds.
+#
+# The counter counts rising edges on GPIO 15 by itself. When it reaches
+# max it goes back to 0 in hardware, in the same instant, and raises an
+# event. Because the software never resets the counter, no clock pulses
+# are ever lost - the blink stays locked to the SiTime crystal, which
+# makes this sketch usable for a long-term clock drift test.
+
+TARGET_PULSES = 16384
+
+counter = esp32.PCNT(0, pin=sitime_clock, rising=esp32.PCNT.INCREMENT,
+                     max=TARGET_PULSES)
+
+half_seconds = 0
+
+def on_half_second(pcnt):
+    global half_seconds
+    user_led.toggle()            # flip the LED every 0.5 s
+    half_seconds += 1
+    if half_seconds % 2 == 0:    # every second LED change = 1 s
+        print("Mission Time:", half_seconds // 2, "s")
+
+counter.irq(on_half_second, esp32.PCNT.IRQ_MAX)
 counter.start()
 
 print("HYPER S3 ROCKET: PCNT hardware engine locked onto GPIO 15 clock source.")
 
-# =========================================================================
-# Flight Execution Loop (Solely reliant on SiTime clock ticks)
-# =========================================================================
-# No software timers or time.sleep() delays are used.
-# 32,768 Hz / 2 = 16,384 pulses needed to create a clean 0.5-second state transition.
-
-TARGET_PULSES = 16384
-
+# Nothing to do here - the hardware counter runs the timing.
 while True:
-    # Read the raw hardware tracking register directly from the silicon
-    if counter.value() >= TARGET_PULSES:
-        user_led.toggle()   # Instantly flip the physical LED state
-        counter.value(0)    # Instantly clear and reset the hardware counter to zero
+    time.sleep(1)

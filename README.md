@@ -4,7 +4,7 @@
 
 ### A 20 × 33.5 mm ESP32-S3 powerhouse with fail-safe dual-channel battery protection, solar and USB-C charging, and motion-aware data logging
 
-*by [STEMFORGE™](https://stemforge.com.au)*
+*by [STEM FORGE™](https://stemforge.com.au)*
 
 </div>
 

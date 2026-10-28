@@ -21,7 +21,7 @@ The **HYPER S3 ROCKET™** is a compact, feature-rich ESP32-S3 telemetry platfor
 ---
 
 <p align="center">
-  <img src="my-crowd-supply-project/getting-started/images/Hyper_S3_Rocket_Functional_Pinout_Diagram.avif" alt="Hyper S3 Rocket Functional Pinout Diagram" width="900">
+  <img src="my-crowd-supply-project/getting-started/images/Hyper-S3-Rocket-Functional-Block-Diagram.png" alt="Hyper S3 Rocket Functional Pinout Diagram" width="900">
 </p>
 
 
@@ -45,13 +45,17 @@ The **HYPER S3 ROCKET™** is a compact, feature-rich ESP32-S3 telemetry platfor
 
 ---
 
+<p align="center">
+  <img src="my-crowd-supply-project/getting-started/images/Hyper_S3_Rocket_Functional_Pinout_Diagram.avif" alt="Hyper S3 Rocket Functional Pinout Diagram" width="900">
+</p>
+
 ## Core Capabilities
 
 | Capability | What you get | Why it matters |
 | --- | --- | --- |
 | **Onboard RTC** | SiTime nano-power MEMS oscillator, 14 RTC-domain GPIOs, ULP coprocessors, deep-sleep wake | Precise timestamps with no network, and months-long standby on a small cell |
 | **Double Safety Vault** | BQ25188 charger plus a discrete eFuse, supervisor and comparator, independent of firmware | Over-discharge, overvoltage, overcurrent and over-temperature faults are caught even if your code crashes |
-| **Battery telemetry** | Battery voltage and current sensed through one analog line, I²C-configurable charger, dual NTC inputs | Report state of charge, load profile and thermal history, and adapt to battery chemistry |
+| **Battery telemetry** | Battery voltage and current discharge sensing through one analog line, I²C-configurable charger, dual NTC inputs | Report state of charge, load profile and thermal history, and adapt to battery chemistry |
 | **Data logging** | 4-bit MicroSD, 10-DoF sensor array, dual isolated I²C buses | High-rate, vibration-tolerant logs of motion, pressure, temperature and your own external sensors |
 
 ---

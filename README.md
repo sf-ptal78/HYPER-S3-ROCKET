@@ -10,7 +10,7 @@
 
 ---
 
-The **HYPER S3 ROCKET™** is a compact, feature-rich ESP32-S3 telemetry platform with a fail-safe, dual-channel battery management system built in. Available as a castellated SMD module or a breadboard-ready through-hole board, it brings together USB-C and solar charging, peak-power supplementation from the battery, a 2 A buck-boost regulator, a precision onboard real-time clock, and an optional 10-DoF motion sensor array with high-speed MicroSD logging.
+The **HYPER S3 ROCKET™** is a compact, feature-rich ESP32-S3 telemetry platform with a fail-safe, dual-channel battery management system built in. Available as a castellated SMD module or a breadboard-ready through-hole board, it brings together USB-C and solar charging, peak-power supplementation from the battery, a 2 A buck-boost regulator, a precision onboard real-time clock, and an optional 10-DoF motion sensor array with high-speed MicroSD logging (Push-Push Holder - Card not included).
 
 **Battery safety you don't have to engineer yourself.** Two independent layers of protection guard every charge and discharge cycle against thermal stress, overcurrent, overvoltage and undervoltage. Battery diagnostics give your firmware what it needs for fuel-gauge estimation: VIN and battery attach/detach detection, voltage and current sensing, and fault-generated interrupts, available in both active and low-power operation so you can monitor the battery while the main cores sleep.
 
@@ -39,7 +39,7 @@ The **HYPER S3 ROCKET™** is a compact, feature-rich ESP32-S3 telemetry platfor
 | **Timekeeping** | SiTime SiT1532 nano-power MEMS oscillator for RTC |
 | **GPIO** | 21 external (16 through-hole, 5 SMD); 14 multi-role GPIOs (GPIO 1–14) on the RTC domain |
 | **I²C** | Two independent buses: internal sensors and external expansion |
-| **Storage** | 4-bit MicroSD (DATA and LOGGER variants) |
+| **Storage** | 4-bit MicroSD holder (DATA and LOGGER variants) card not included |
 | **Sensors** | 10-DoF array: IMU, magnetometer, barometer (LOGGER variant) |
 | **Indicators** | 4 user LEDs (3 front, 1 back) |
 
@@ -56,7 +56,7 @@ The **HYPER S3 ROCKET™** is a compact, feature-rich ESP32-S3 telemetry platfor
 | **Onboard RTC** | SiTime nano-power MEMS oscillator, 14 RTC-domain GPIOs, ULP coprocessors, deep-sleep wake | Precise timestamps with no network, and months-long standby on a small cell |
 | **Double Safety Vault** | BQ25188 charger plus a discrete eFuse, supervisor and comparator, independent of firmware | Over-discharge, overvoltage, overcurrent and over-temperature faults are caught even if your code crashes |
 | **Battery telemetry** | Battery voltage and current discharge sensing through one analog line, I²C-configurable charger, dual NTC inputs | Report state of charge, load profile and thermal history, and adapt to battery chemistry |
-| **Data logging** | 4-bit MicroSD, 10-DoF sensor array, dual isolated I²C buses | High-rate, vibration-tolerant logs of motion, pressure, temperature and your own external sensors |
+| **Data logging** | 4-bit MicroSD holder, 10-DoF sensor array, dual isolated I²C buses | High-rate, vibration-tolerant logs of motion, pressure, temperature and your own external sensors (Card not included) |
 
 ---
 

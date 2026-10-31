@@ -12,7 +12,7 @@
 
 The **HYPER S3 ROCKET™** is a compact, feature-rich ESP32-S3 telemetry platform with a fail-safe, dual-channel battery management system built in. Available as a castellated SMD module or a breadboard-ready through-hole board, it brings together USB-C and solar charging, peak-power supplementation from the battery, a 2 A buck-boost regulator, a precision onboard real-time clock, and an optional 10-DoF motion sensor array with high-speed MicroSD logging (Push-Push Holder - Card not included).
 
-**Battery safety you don't have to engineer yourself.** Two independent layers of protection guard every charge and discharge cycle against thermal stress, overcurrent, overvoltage and undervoltage. Battery diagnostics give your firmware what it needs for fuel-gauge estimation: VIN and battery attach/detach detection, voltage and current sensing, and fault-generated interrupts, available in both active and low-power operation so you can monitor the battery while the main cores sleep.
+**Battery safety you don't have to engineer yourself.** Two independent layers of protection guard every charge and discharge cycle against thermal stress, overcurrent, overvoltage and undervoltage. Battery diagnostics give your firmware what it needs for per-flight fuel-sensing: VIN and battery attach/detach detection, voltage and current sensing (discharge only), and fault-generated interrupts, available in both active and low-power operation so you can monitor the battery while the main cores sleep.
 
 **Skip the patchwork of breakout boards.** Charging, protection, regulation, timekeeping and sensing live on one board. It began in rocketry and high-G flight logging, and this intelligent BMS node now serves medical, automotive, energy, telecom, marine and rail development just as well, and of course rocket science and aerospace.
 
@@ -140,7 +140,7 @@ A Diodes Inc. PMOS + NMOS array switches **GPIO 16** between two measurements, s
 
 | Bus | Pins | Purpose |
 | --- | --- | --- |
-| **Internal sensor bus** | GPIO 17 (SDA), GPIO 18 (SCL) | Onboard 10-DoF array and internal subsystems, with onboard pull-ups |
+| **Internal sensor bus** | GPIO 17 (SCL), GPIO 18 (SDA) | Onboard 10-DoF array and internal subsystems, with onboard pull-ups |
 | **External expansion bus** | GPIO 1 (SDA), GPIO 2 (SCL) | Third-party sensors with dedicated pull-ups. Matches the ESP32-S3 ULP hardware I²C, so the ULP can read expansion sensors while the main cores sleep |
 
 ---
@@ -221,8 +221,8 @@ Two 2.0 mm through-hole ports for thin-film, flexible beta 3435 NTCs (not suppli
 ```cpp
 #include <Wire.h>
 
-#define INTERNAL_I2C_SDA  17
-#define INTERNAL_I2C_SCL  18
+#define INTERNAL_I2C_SCL  17
+#define INTERNAL_I2C_SDA  18
 #define SENSE_SELECT_PIN  0    // HIGH = battery voltage, LOW = battery current
 #define BATTERY_SENSE_PIN 16
 
@@ -246,7 +246,7 @@ void setup() {
     Serial.println("CRITICAL: internal I2C bus failed!");
     while (1);
   }
-  Serial.println("Internal I2C bus online (SDA 17 / SCL 18).");
+  Serial.println("Internal I2C bus online (SCL 17 / SDA 18).");
 
   checkDevice("LSM6DSV32X IMU", IMU_ADDR);
   checkDevice("MMC5603NJ Magnetometer", MAG_ADDR);
@@ -291,7 +291,7 @@ void checkDevice(const char* name, uint8_t addr) {
 
 ---
 
-## ⚖️ License & Copyright
+## License & Copyright
 
 - **Software / Firmware Examples:** Licensed under the **Apache License, Version 2.0**. You may not use these files except in compliance with the License. You may obtain a copy at <http://www.apache.org/licenses/LICENSE-2.0>. Unless required by applicable law or agreed to in writing, software distributed under the License is distributed on an "AS IS" BASIS, WITHOUT WARRANTIES OR CONDITIONS OF ANY KIND, either express or implied. See the License for the specific language governing permissions and limitations.
 - **Physical Hardware Design:** The circuit layouts, component placement, schematics, layer stackups and PCB architecture of the **HYPER S3 ROCKET** are proprietary intellectual property. Copyright © 2026 by **STEMFORGE**. All rights reserved. Commercial replication, hardware cloning or unauthorized reverse engineering of the physical board layout is strictly prohibited. **Exception:** the MODULE footprint published in [`manufacturing`](manufacturing) may be used in your own PCB designs to mount HYPER S3 ROCKET modules. It does not grant any right to copy or manufacture the module itself.

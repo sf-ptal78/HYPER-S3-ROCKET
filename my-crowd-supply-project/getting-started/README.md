@@ -28,33 +28,38 @@ If your rocketry project demands maximum execution speed, high-frequency flight 
 
 *⚠️ Note: Flashing a C++ program will overwrite the pre-installed MicroPython environment. To return to MicroPython later, you will need to re-flash the MicroPython `.bin` file.*
 
+*💡 Tip: If your computer does not see the board's serial port when you upload, hold the **BOOT** button while plugging in the USB-C cable to enter the bootloader, then release it and try again.*
+
 ### 🥈 Option 2: The Arduino IDE Compiler
 Great for makers who want access to a massive ecosystem of ready-made C++ sensor libraries.
 1. Download and install the latest **Arduino IDE** from [arduino.cc](https://arduino.cc).
 2. Go to **File** > **Preferences** and add the following URL to your **Additional Boards Manager URLs**:
    ```text
-   https://githubusercontent.com
+   https://espressif.github.io/arduino-esp32/package_esp32_index.json
    ```
 3. Open the **Boards Manager**, search for **esp32** by Espressif Systems, and hit install.
 4. Select **Tools** > **Board** > **ESP32S3 Dev Module** and apply these core hardware settings:
    * **USB CDC On Boot:** Enabled *(Crucial for keeping your Serial Monitor connection active)*
-   * **PSRAM:** OPI PSRAM *(Activates your ultra-fast Octal SPIRAM memory cache)*
+   * **PSRAM:** QSPI PSRAM *(Activates the 2 MB of onboard PSRAM. Do not choose OPI PSRAM: this board's module uses quad-SPI PSRAM, and OPI would conflict with the microSD pins)*
+   * **Flash Size:** 4MB (32Mb)
 5. For a complete walkthrough on running your first I2C sensor scan sketch, see our detailed [Arduino IDE Configuration Guide](arduino-setup.md).
 
 ### 🥇 Option 3: Professional ESP-IDF or PlatformIO in VS Code
 Designed for aerospace developers who want a production-grade, commercial development pipeline.
 1. Download and install **Visual Studio Code (VS Code)**.
 2. Head to the Extensions marketplace sidebar, search for **PlatformIO IDE** (or the official **Espressif ESP-IDF Extension**), and click install.
-3. Create a new project selecting the `Espressif ESP32-S3 Box` or `ESP32S3 Dev Module` as your target profile.
+3. Create a new project selecting the `ESP32S3 Dev Module` (`esp32-s3-devkitc-1`) as your target profile.
 4. Configure your local `platformio.ini` environment file to match the physical board architecture:
    ```ini
    [env:esp32-s3-devkitc-1]
    platform = espressif32
    board = esp32-s3-devkitc-1
    framework = arduino ; Or espidf depending on your preference
-   board_build.arduino.memory_type = qio_opi ; Critical for Octal PSRAM configurations
+   board_upload.flash_size = 4MB ; 4 MB flash on this module
+   board_build.partitions = default.csv ; Partition table that fits 4 MB
+   board_build.arduino.memory_type = qio_qspi ; Quad-SPI PSRAM (2 MB) on this module
    build_flags = 
        -D ARDUINO_USB_CDC_ON_BOOT=1
+       -D BOARD_HAS_PSRAM
    ```
 5. Use the terminal task keys inside VS Code to build, optimize, and deploy your custom firmware directly over the native USB JTAG hardware layers.
-

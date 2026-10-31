@@ -39,4 +39,4 @@ Open the **Tools** menu at the top of your Arduino IDE screen and match these ch
 * 🔒 **Close BEFORE you Upload:** Close the Serial Monitor before clicking Upload to prevent port lockouts.
 * 🛰️ **Open to Unblock the Clock:** Press **Ctrl + Shift + M** to flush the channel if any timing becomes erratic.
 
-**That's it!** No need to toggle the buttons ever again. Rocket knows exactly what to do. Uploading new code is fun, easy, and completely hands-free! 🚀✨
+**That's it!** No need to toggle the buttons again (unless it hangs). Rocket knows exactly what to do. Uploading new code is fun, easy, and completely hands-free! 🚀✨

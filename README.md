@@ -10,7 +10,7 @@
 
 ---
 
-The **HYPER S3 ROCKET™** is a compact, feature-rich ESP32-S3 telemetry platform with a fail-safe, dual-channel battery management system built in. Available as a castellated SMD module or a breadboard-ready through-hole board, it brings together USB-C and solar charging, peak-power supplementation from the battery, a 2 A buck-boost regulator, a precision onboard real-time clock, and an optional 10-DoF motion sensor array with high-speed MicroSD logging (Push-Push Holder - Card not included).
+The **HYPER S3 ROCKET™** is a compact, feature-rich ESP32-S3 telemetry platform with a fail-safe, dual-channel battery management system built in. Every version has castellated edges for surface mounting, and all but the narrower MODULE add through-holes for breadboard use (pin headers not supplied). It brings together USB-C and solar charging, peak-power supplementation from the battery, a 2 A buck-boost regulator, a precision onboard real-time clock, and an optional 10-DoF motion sensor array with high-speed MicroSD logging (Push-Push Holder - Card not included).
 
 **Battery safety you don't have to engineer yourself.** Two independent layers of protection guard every charge and discharge cycle against thermal stress, overcurrent, overvoltage and undervoltage. Battery diagnostics give your firmware what it needs for per-flight fuel-sensing: VIN and battery attach/detach detection, voltage and current sensing (discharge only), and fault-generated interrupts, available in both active and low-power operation so you can monitor the battery while the main cores sleep.
 
@@ -28,8 +28,8 @@ The **HYPER S3 ROCKET™** is a compact, feature-rich ESP32-S3 telemetry platfor
 ## At a Glance
 
 | | |
-| --- | --- |
-| **Form factor** | 20 mm × 33.5 mm castellated SMT module, 6-layer PCB |
+| :---: | :---: |
+| **Form factor** | 20 mm × 33.5 mm castellated SMT board, 6-layer PCB (the MODULE is narrower) |
 | **Processor** | Espressif ESP32-S3-MINI-1-N8, dual-core Xtensa LX7 @ 240 MHz |
 | **Memory** | 8 MB flash, no PSRAM |
 | **Power train** | TI TPS631000 buck-boost, 3.3 V output, 2 A continuous in buck mode, 1.5 A in boost mode |
@@ -37,7 +37,7 @@ The **HYPER S3 ROCKET™** is a compact, feature-rich ESP32-S3 telemetry platfor
 | **Battery** | Single-cell (1S) Li-Ion, Li-Poly or LiFePO4 |
 | **Battery protection** | TI eFuse + TI supervisor + TI comparator, independent of firmware |
 | **Timekeeping** | SiTime SiT1532 nano-power MEMS oscillator for RTC |
-| **GPIO** | 21 external (16 through-hole, 5 SMD); 14 multi-role GPIOs (GPIO 1–14) on the RTC domain |
+| **GPIO** | 21 external (16 castellated, 5 SMD); 14 multi-role GPIOs (GPIO 1–14) on the RTC domain |
 | **I²C** | Two independent buses: internal sensors and external expansion |
 | **Storage** | 4-bit MicroSD holder (DATA and LOGGER variants) card not included |
 | **Sensors** | 10-DoF array: IMU, magnetometer, barometer (LOGGER variant) |
@@ -52,7 +52,7 @@ The **HYPER S3 ROCKET™** is a compact, feature-rich ESP32-S3 telemetry platfor
 ## Core Capabilities
 
 | Capability | What you get | Why it matters |
-| --- | --- | --- |
+| :---: | :---: | :---: |
 | **Onboard RTC** | SiTime nano-power MEMS oscillator, 14 RTC-domain GPIOs, ULP coprocessors, deep-sleep wake | Precise timestamps with no network, and deep-sleep wake for low-power standby |
 | **Double Safety Vault** | BQ25188 charger plus a discrete eFuse, supervisor and comparator, independent of firmware | Over-discharge, overvoltage, overcurrent and over-temperature faults are caught even if your code crashes |
 | **Battery telemetry** | Battery voltage and current discharge sensing through one analog line, I²C-configurable charger, dual NTC inputs | Report state of charge, load profile and thermal history, and adapt to battery chemistry |
@@ -65,7 +65,7 @@ The **HYPER S3 ROCKET™** is a compact, feature-rich ESP32-S3 telemetry platfor
 Every industry below has the same underlying need: a battery-powered node that records *when* something happened, *what* the battery and environment were doing, and fails safe.
 
 | Industry | Typical need | Features that apply |
-| --- | --- | --- |
+| :---: | :---: | :---: |
 | **Aerospace and rocketry** | Flight and launch logging under high G and vibration | 10-DoF IMU, magnetometer and barometer; MicroSD holder that stays seated; RTC timestamps; 2 A rail for payloads |
 | **Medical and wearables** | Safe, small, long-life battery devices during prototyping and evaluation | Discharge lockout and shelf-safe UVLO state (calculated 5.62 µA); independent hardware protection; low-power standby |
 | **Automotive and EV** | Auxiliary pack monitoring, shock and vibration recording | Battery voltage and current analytics; dual NTC thermal monitoring; timestamped IMU logs |
@@ -82,11 +82,13 @@ Every industry below has the same underlying need: a battery-powered node that r
 ## Variants
 
 | Series | Edition | What's included | Notes |
-| --- | --- | --- | --- |
-| **MODULE** | Core SMT Module | All core charging, power and safety circuitry plus the ESP32-S3, on a single side with castellated edges | 10k and 100k NTCs must be soldered in place. `B+` is live, with onboard PMOS/NMOS reverse-polarity protection |
-| **CHARGE** | Breadboard Ready | Adds pre-soldered male headers and a JST PH-style battery connector (PMOS/NMOS reverse-polarity protected, rated 2 A) | NTC chip thermistors supplied; remove before fitting custom thin-film NTCs. `B+` disabled |
+| :---: | :---: | :---: | :---: |
+| **MODULE** | Core SMT Module | All core charging, power and safety circuitry plus the ESP32-S3, on a single side with castellated edges. No through-holes, so it is narrower than the other versions | 10k and 100k NTCs must be soldered in place. `B+` is live, with onboard PMOS/NMOS reverse-polarity protection |
+| **CHARGE** | Breadboard Capable | Adds through-holes for pin headers (not supplied) and a JST PH-style battery connector (PMOS/NMOS reverse-polarity protected, rated 2 A) | NTC chip thermistors supplied; remove before fitting custom thin-film NTCs. `B+` disabled |
 | **DATA** | Data Logger Edition | Adds the 4-bit MicroSD slot | Localized data acquisition |
 | **LOGGER** | Full Telemetry | MicroSD slot plus the 10-DoF sensor array | Flagship configuration |
+
+All versions have castellated edges. CHARGE, DATA and LOGGER also have through-holes for pin headers (not supplied), so they can be used on a breadboard; the MODULE has none.
 
 ---
 <p align="center">
@@ -99,7 +101,7 @@ Every industry below has the same underlying need: a battery-powered node that r
 ### Power train (TI TPS631000)
 
 | Input voltage | Mode | Continuous output |
-| --- | --- | --- |
+| :---: | :---: | :---: |
 | V<sub>IN</sub> ≥ 3.0 V | Buck / stabilizer | **2.0 A** |
 | V<sub>IN</sub> ≥ 2.7 V | Boost | **1.5 A** |
 
@@ -117,7 +119,7 @@ Output ripple stays below 20 mV through a seamless 3-cycle buck-boost crossover.
 A discrete **TI TPS259461A eFuse**, **TLV809EA26 supervisor** and **TLV4021 comparator** run in parallel with the charger as a hard-wired cutoff that does not depend on ESP32-S3 firmware.
 
 | Fault | Protects against |
-| --- | --- |
+| :---: | :---: |
 | **UVLO** | Permanent damage from over-discharging a cell (enforced on charge *and* discharge) |
 | **OVLO** | Faulty, fluctuating or noisy charge inputs |
 | **OCLO** | Dead shorts and motor stalls |
@@ -139,7 +141,7 @@ A Diodes Inc. PMOS + NMOS array switches **GPIO 16** between two measurements, s
 ## Dual Independent I²C Buses
 
 | Bus | Pins | Purpose |
-| --- | --- | --- |
+| :---: | :---: | :---: |
 | **Internal sensor bus** | GPIO 17 (SCL), GPIO 18 (SDA) | Onboard 10-DoF array and internal subsystems, with onboard pull-ups |
 | **External expansion bus** | GPIO 1 (SDA), GPIO 2 (SCL) | Third-party sensors with dedicated pull-ups. Matches the ESP32-S3 ULP hardware I²C, so the ULP can read expansion sensors while the main cores sleep |
 
@@ -152,7 +154,7 @@ A Diodes Inc. PMOS + NMOS array switches **GPIO 16** between two measurements, s
 16 GPIOs plus `B+`, `VIN`, `GND` and `VOUT`, numbered from the top left down the left edge, then up the right edge.
 
 | Left pin | Left signal | Right pin | Right signal |
-| :---: | --- | :---: | --- |
+| :---: | :---: | :---: | :---: |
 | **1** | GPIO 1 (external I²C SDA) | **20** | GPIO 9 |
 | **2** | GPIO 2 (external I²C SCL) | **19** | GPIO 10 |
 | **3** | GPIO 3 | **18** | GPIO 11 |
@@ -173,7 +175,7 @@ GPIO 1–14 sit on the RTC domain, giving up to **12 touch channels**, **12 ADC 
 ### Internal and system signals
 
 | Signal | Pin | Notes |
-| --- | --- | --- |
+| :---: | :---: | :---: |
 | Button / sense select | GPIO 0 | BOOT switch; also selects the GPIO 16 measurement (high = voltage via NMOS, low = current via PMOS from the eFuse) |
 | 32.768 kHz RTC clock | GPIO 15 | Hardwired to the onboard SiTime oscillator |
 | Battery voltage / current | GPIO 16 | Analog, via the switched divider and eFuse sense |
@@ -195,7 +197,7 @@ GPIO 39–42 and GPIO 47 are exposed as pads for additional GPIO. They may inter
 ### Power and ground pins
 
 | Pin | Rating / notes |
-| --- | --- |
+| :---: | :---: |
 | `VOUT` (pin 12) | 3.3 V, up to 2 A, same on every variant |
 | `VIN` (pin 10) | 5 V nominal (most efficient and thermally friendly); 18.5 V capable at low current; 23 V tolerant |
 | `B+` (pin 9) | Live on MODULE only; up to 3 A; eFuse limited to 4.6 V |
@@ -208,7 +210,7 @@ Two 2.0 mm through-hole ports for thin-film, flexible beta 3435 NTCs (not suppli
 ### Onboard sensors (LOGGER variant, internal I²C)
 
 | Part | Function | I²C address |
-| --- | --- | --- |
+| :---: | :---: | :---: |
 | STMicroelectronics LSM6DSV32X | 6-DoF accelerometer and gyroscope | `0x6B` |
 | Memsic MMC5603NJ | 3-DoF magnetometer, routed via the LSM6DSV32X sensor hub | `0x30 when set as pass through only` |
 | Goertek SPL07-003 / 006 | Barometer with temperature (the 006 has a waterproof gel-filled cavity) | `0x76` |
@@ -280,7 +282,7 @@ void checkDevice(const char* name, uint8_t addr) {
 ## Repository Guide
 
 | Folder | Contents |
-| --- | --- |
+| :---: | :---: |
 | [`Firmware/Examples`](Firmware/Examples) | Example firmware and sketches |
 | [`my-crowd-supply-project`](my-crowd-supply-project) | Crowd Supply campaign material, including the [Hardware Architecture & Specifications](my-crowd-supply-project/HYPER-S3-ROCKET-Hardware-Architecture-Specifications.md) |
 | [`manufacturing`](manufacturing) | Footprint for the **MODULE** (castellated SMT) edition, so you can surface-mount it on your own baseboard like any other SoC module |

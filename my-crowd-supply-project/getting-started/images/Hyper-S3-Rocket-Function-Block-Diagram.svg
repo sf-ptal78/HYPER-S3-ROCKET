@@ -1,0 +1,1094 @@
+<?xml version="1.0" encoding="UTF-8" standalone="no"?>
+<svg
+   width="1000"
+   height="795"
+   viewBox="0 0 1000 795"
+   font-family="Helvetica, Arial, sans-serif"
+   role="img"
+   version="1.1"
+   id="svg101"
+   sodipodi:docname="hyper-s3-rocket-block-diagram.svg"
+   inkscape:version="1.4.4 (dcaf3e7, 2026-05-05)"
+   xmlns:inkscape="http://www.inkscape.org/namespaces/inkscape"
+   xmlns:sodipodi="http://sodipodi.sourceforge.net/DTD/sodipodi-0.dtd"
+   xmlns="http://www.w3.org/2000/svg"
+   xmlns:svg="http://www.w3.org/2000/svg"
+   xmlns:rdf="http://www.w3.org/1999/02/22-rdf-syntax-ns#"
+   xmlns:cc="http://creativecommons.org/ns#"
+   xmlns:dc="http://purl.org/dc/elements/1.1/"
+   xmlns:c2pa="http://c2pa.org/manifest">
+  <defs
+     id="defs101" />
+  <sodipodi:namedview
+     id="namedview101"
+     pagecolor="#ffffff"
+     bordercolor="#000000"
+     borderopacity="0.25"
+     inkscape:showpageshadow="2"
+     inkscape:pageopacity="0.0"
+     inkscape:pagecheckerboard="0"
+     inkscape:deskcolor="#d1d1d1"
+     inkscape:zoom="1.2464789"
+     inkscape:cx="568.40113"
+     inkscape:cy="350.18644"
+     inkscape:window-width="1920"
+     inkscape:window-height="1129"
+     inkscape:window-x="-8"
+     inkscape:window-y="-8"
+     inkscape:window-maximized="1"
+     inkscape:current-layer="g61" />
+  <metadata
+     id="metadata1">
+    <c2pa:manifest>AAAWgmp1bWIAAAAeanVtZGMycGEAEQAQgAAAqgA4m3EDYzJwYQAAABZcanVtYgAAAEdqdW1kYzJtYQARABCAAACqADibcQN1cm46YzJwYTphYWRjMzZiNS0yYmU0LTRjNDQtYjQ2Ni01Yzg2YjQ0NTc2ZGUAAAADl2p1bWIAAAApanVtZGMyYXMAEQAQgAAAqgA4m3EDYzJwYS5hc3NlcnRpb25zAAAAALxqdW1iAAAARGp1bWRjYm9yABEAEIAAAKoAOJtxE2MycGEuaW5ncmVkaWVudC52MwAAAAAYYzJzaN4SD+0VXM3RIxeqOutg1ecAAABwY2JvcqNpZGM6Zm9ybWF0bWltYWdlL3N2Zyt4bWxqaW5zdGFuY2VJRHgseG1wOmlpZDo3ZTgwNWY1ZC1lOGU5LTRmYzktYTQ4NS1kNWQzOGI1Yjk4NmJscmVsYXRpb25zaGlwaHBhcmVudE9mAAAB4mp1bWIAAABBanVtZGNib3IAEQAQgAAAqgA4m3ETYzJwYS5hY3Rpb25zLnYyAAAAABhjMnNofhXOr7a32iPWbcq+ofDHZQAAAZljYm9yomdhY3Rpb25zgqJmYWN0aW9ua2MycGEub3BlbmVkanBhcmFtZXRlcnOha2luZ3JlZGllbnRzgaJjdXJseC1zZWxmI2p1bWJmPWMycGEuYXNzZXJ0aW9ucy9jMnBhLmluZ3JlZGllbnQudjNkaGFzaFggwJRWtbTdbsxwGp/tTuljA4kW/Efow+ecrSmsPBgZFAmkZmFjdGlvbngdY29tLmFudGhyb3BpYy5jbGF1ZGUucHJvdmlkZWRqcGFyYW1ldGVyc6F4H2NvbS5hbnRocm9waWMub3JpZ2luLWNvbmZpZGVuY2VndW5rbm93bmtkZXNjcmlwdGlvbnhmQ2xhdWRlIHByb3ZpZGVkIHRoaXMgZmlsZSBhdCB0aGUgcmVxdWVzdCBvZiBhIHVzZXIgYW5kIG1heSBoYXZlIGNyZWF0ZWQgb3IgbW9kaWZpZWQgdGhlIGZpbGUgY29udGVudHMubXNvZnR3YXJlQWdlbnShZG5hbWVmQ2xhdWRlcmFsbEFjdGlvbnNJbmNsdWRlZPUAAADIanVtYgAAAEBqdW1kY2JvcgARABCAAACqADibcRNjMnBhLmhhc2guZGF0YQAAAAAYYzJzaHxjcIpy6zmBq0y1aIz11pwAAACAY2JvcqVjYWxnZnNoYTI1NmNwYWRNAAAAAAAAAAAAAAAAAGRoYXNoWCA129qCsubphHsRHMKHRSmihAdpy5QNAUZbC/agkdDMVmRuYW1lbmp1bWJmIG1hbmlmZXN0amV4Y2x1c2lvbnOBomVzdGFydBjMZmxlbmd0aBkeBAAAAj5qdW1iAAAAJ2p1bWRjMmNsABEAEIAAAKoAOJtxA2MycGEuY2xhaW0udjIAAAACD2Nib3KlY2FsZ2ZzaGEyNTZpc2lnbmF0dXJleE1zZWxmI2p1bWJmPS9jMnBhL3VybjpjMnBhOmFhZGMzNmI1LTJiZTQtNGM0NC1iNDY2LTVjODZiNDQ1NzZkZS9jMnBhLnNpZ25hdHVyZWppbnN0YW5jZUlEeCx4bXA6aWlkOjIzNDk5ZTA3LWIxOWQtNGRmNi1hNTg5LTMxYjdjYTdkZTdjN3JjcmVhdGVkX2Fzc2VydGlvbnODomN1cmx4LXNlbGYjanVtYmY9YzJwYS5hc3NlcnRpb25zL2MycGEuaW5ncmVkaWVudC52M2RoYXNoWCDAlFa1tN1uzHAan+1O6WMDiRb8R+jD55ytKaw8GBkUCaJjdXJseCpzZWxmI2p1bWJmPWMycGEuYXNzZXJ0aW9ucy9jMnBhLmFjdGlvbnMudjJkaGFzaFggO5amjA0C9RLL/czJBh/RLgub7xpa3YFCMMzD9wdrPbyiY3VybHgpc2VsZiNqdW1iZj1jMnBhLmFzc2VydGlvbnMvYzJwYS5oYXNoLmRhdGFkaGFzaFggX+qjnpGegTn6JKDieDP+EsqSQeYJvUJOId+kg6qwL3J0Y2xhaW1fZ2VuZXJhdG9yX2luZm+jZG5hbWVvQW50aHJvcGljIEZpbGVzZ3ZlcnNpb25lMS4wLjBrc3BlY1ZlcnNpb25lMi40LjAAABA4anVtYgAAAChqdW1kYzJjcwARABCAAACqADibcQNjMnBhLnNpZ25hdHVyZQAAABAIY2JvctKEWQISogEmGCFZAgowggIGMIIBjaADAgECAhRA5aAK7sI50L64g/oGQgU9Z1UTADAKBggqhkjOPQQDAzBJMRcwFQYDVQQKEw5BbnRocm9waWMsIFBCQzEuMCwGA1UEAxMlQW50aHJvcGljIENvbnRlbnQgQ3JlZGVudGlhbHMgUm9vdCBDQTAeFw0yNjA4MDcxODQzNTZaFw0yODA4MDYxOTQzNTZaMEQxFzAVBgNVBAoTDkFudGhyb3BpYywgUEJDMSkwJwYDVQQDEyBBbnRocm9waWMgQ2xhdWRlIENvbnRlbnQgU2lnbmluZzBZMBMGByqGSM49AgEGCCqGSM49AwEHA0IABJh6CmvLUBgFFNU0vUKlOVtE6djd17L5SuwX0LemFisBM3dkd/3cyjxFA3Qo5S46fX0/ihY0VZ7mfb9KF703t5OjWDBWMA4GA1UdDwEB/wQEAwIHgDAVBgNVHSUEDjAMBgorBgEEAYPoXgIBMAwGA1UdEwEB/wQCMAAwHwYDVR0jBBgwFoAUzlHiBIFOZFsj+OPEz5o+nMHXXMIwCgYIKoZIzj0EAwMDZwAwZAIwMXMdFJ4BetLLVY7ORuE9noqbbAZOZn/aArXyTwFAZfKrPzxF2vPoJNf1+UCdg1XGAjBwX1zd9WGqYkqmL5SFqw1QySjr1zJfpJM9+1rdDwSPLMOPOjKuiXjoU/pUUeG9RwmhY3BhZFkNngAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAPZYQGyBqXn3OKkrbOGj687/wnzIEkoWDBPQKEvwWhf9u4GPErUnWanUINgCgZ2bQK72iyAR82Dw3NtstHNO0t5IIYY=</c2pa:manifest>
+    <rdf:RDF>
+      <cc:Work
+         rdf:about="">
+        <dc:title>HYPER S3 ROCKET functional block diagram</dc:title>
+      </cc:Work>
+    </rdf:RDF>
+  </metadata>
+  <title
+     id="title1">HYPER S3 ROCKET functional block diagram</title>
+  <desc
+     id="desc1">The microcontroller sits in the centre with its pin tabs inset evenly from its edges. Red arrows show power connections and white arrows with a black outline show signal connections. USB-C and the solar input sit in line with the User I/O blocks along the top. The User I/O group holds the external I2C bus, UART, GPIO 3 to 14 and SMD pads 39 to 42 and 47. An optional group along the bottom holds the magnetometer, IMU with accelerometer and gyroscope, altimeter, a dashed microSD card and the back red LED. On the left are the solar input, charger, 3.3 V 2 A regulator, guard, eFuse, polarity guard, a dashed battery that is not included, and battery sensing. On the right are the LEDs, BOOT and RESET buttons and the RTC.</desc>
+  <!-- TOP -->
+  <rect
+     x="182"
+     y="120"
+     width="64"
+     height="48"
+     rx="8"
+     fill="#f4a09b"
+     stroke="#8f2a25"
+     stroke-width="2.5"
+     id="rect2" />
+  <text
+     x="214"
+     y="136"
+     text-anchor="middle"
+     dy="4.9000001"
+     font-size="14px"
+     font-weight="600"
+     fill="#111111"
+     id="text2">Solar</text>
+  <text
+     x="214"
+     y="152"
+     text-anchor="middle"
+     dy="4.9000001"
+     font-size="14px"
+     font-weight="600"
+     fill="#111111"
+     id="text3">input</text>
+  <rect
+     x="256"
+     y="120"
+     width="176"
+     height="48"
+     rx="8"
+     fill="#f4a09b"
+     stroke="#8f2a25"
+     stroke-width="2.5"
+     id="rect3" />
+  <text
+     x="344"
+     y="144"
+     text-anchor="middle"
+     dy="4.9000001"
+     font-size="14px"
+     font-weight="600"
+     fill="#111111"
+     id="text4">USB-C</text>
+  <rect
+     x="444"
+     y="90"
+     width="383"
+     height="98"
+     rx="12"
+     fill="none"
+     stroke="#7a8590"
+     stroke-width="0.75"
+     stroke-dasharray="4, 3"
+     id="rect4" />
+  <text
+     font-size="12px"
+     fill="#444444"
+     x="460"
+     y="104"
+     dy="4.1999998"
+     id="text5"><tspan
+       style="font-weight:bold"
+       id="tspan102">User I/O</tspan></text>
+  <rect
+     x="454"
+     y="120"
+     width="80"
+     height="48"
+     rx="8"
+     fill="#9ed89a"
+     stroke="#2f7a2b"
+     stroke-width="2.5"
+     id="rect5" />
+  <text
+     x="494"
+     y="136"
+     text-anchor="middle"
+     dy="4.9000001"
+     font-size="14px"
+     font-weight="600"
+     fill="#111111"
+     id="text6">External</text>
+  <text
+     x="494"
+     y="152"
+     text-anchor="middle"
+     dy="4.9000001"
+     font-size="14px"
+     font-weight="600"
+     fill="#111111"
+     id="text7">I2C 1 / 2</text>
+  <rect
+     x="547"
+     y="120"
+     width="80"
+     height="48"
+     rx="8"
+     fill="#9ed89a"
+     stroke="#2f7a2b"
+     stroke-width="2.5"
+     id="rect7" />
+  <text
+     x="587"
+     y="136"
+     text-anchor="middle"
+     dy="4.9000001"
+     font-size="14px"
+     font-weight="600"
+     fill="#111111"
+     id="text8">UART</text>
+  <text
+     x="587"
+     y="152"
+     text-anchor="middle"
+     dy="4.9000001"
+     font-size="14px"
+     font-weight="600"
+     fill="#111111"
+     id="text9">RX / TX</text>
+  <rect
+     x="640"
+     y="120"
+     width="80"
+     height="48"
+     rx="8"
+     fill="#9ed89a"
+     stroke="#2f7a2b"
+     stroke-width="2.5"
+     id="rect9" />
+  <text
+     x="680"
+     y="136"
+     text-anchor="middle"
+     dy="4.9000001"
+     font-size="14px"
+     font-weight="600"
+     fill="#111111"
+     id="text10">GPIO</text>
+  <text
+     x="680"
+     y="152"
+     text-anchor="middle"
+     dy="4.9000001"
+     font-size="14px"
+     font-weight="600"
+     fill="#111111"
+     id="text11">3 to 14</text>
+  <rect
+     x="729"
+     y="120"
+     width="88"
+     height="48"
+     rx="8"
+     fill="#9ed89a"
+     stroke="#2f7a2b"
+     stroke-width="2.5"
+     id="rect11" />
+  <text
+     x="773"
+     y="136"
+     text-anchor="middle"
+     dy="4.9000001"
+     font-size="14px"
+     font-weight="600"
+     fill="#111111"
+     id="text12">SMD</text>
+  <text
+     x="773"
+     y="152"
+     text-anchor="middle"
+     dy="4.5499997"
+     font-size="13px"
+     font-weight="600"
+     fill="#111111"
+     id="text13">39-42 / 47</text>
+  <!-- LEFT -->
+  <text
+     font-size="16.8087px"
+     fill="#444444"
+     x="103.93895"
+     y="179.57079"
+     text-anchor="middle"
+     dy="5.8830538"
+     id="text14"
+     style="stroke-width:1.40073"><tspan
+       style="font-weight:bold;stroke-width:1.40073"
+       id="tspan101">3.3 V output</tspan></text>
+  <rect
+     x="52"
+     y="220"
+     width="104"
+     height="48"
+     rx="8"
+     fill="#f4a09b"
+     stroke="#8f2a25"
+     stroke-width="2.5"
+     id="rect14" />
+  <text
+     x="104"
+     y="236"
+     text-anchor="middle"
+     dy="4.9000001"
+     font-size="14px"
+     font-weight="600"
+     fill="#111111"
+     id="text15">Regulator</text>
+  <text
+     x="104"
+     y="254"
+     text-anchor="middle"
+     dy="4.1999998"
+     font-size="12px"
+     fill="#222222"
+     id="text17">2 A max</text>
+  <rect
+     x="182"
+     y="208"
+     width="140"
+     height="88"
+     rx="8"
+     fill="#ffc680"
+     stroke="#a85f00"
+     stroke-width="2.5"
+     id="rect17" />
+  <text
+     x="252"
+     y="230"
+     text-anchor="middle"
+     dy="4.9000001"
+     font-size="14px"
+     font-weight="600"
+     fill="#111111"
+     id="text18">Charger</text>
+  <text
+     x="252"
+     y="254"
+     text-anchor="middle"
+     font-size="12px"
+     fill="#222222"
+     id="text19">charge temp regulation</text>
+  <text
+     x="252"
+     y="276"
+     text-anchor="middle"
+     dy="0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0"
+     font-size="12px"
+     fill="#222222"
+     id="text20">under V / over I lockout</text>
+  <rect
+     x="52"
+     y="333"
+     width="104"
+     height="48"
+     rx="8"
+     fill="#ffc680"
+     stroke="#a85f00"
+     stroke-width="2.5"
+     id="rect20" />
+  <text
+     x="104"
+     y="349"
+     text-anchor="middle"
+     dy="4.9000001"
+     font-size="14px"
+     font-weight="600"
+     fill="#111111"
+     id="text21">Thermal + UV</text>
+  <text
+     x="104"
+     y="365"
+     text-anchor="middle"
+     dy="4.9000001"
+     font-size="14px"
+     font-weight="600"
+     fill="#111111"
+     id="text22">monitor</text>
+  <rect
+     x="182"
+     y="333"
+     width="140"
+     height="48"
+     rx="8"
+     fill="#ffc680"
+     stroke="#a85f00"
+     stroke-width="2.5"
+     id="rect23" />
+  <text
+     x="252"
+     y="349"
+     text-anchor="middle"
+     dy="4.9000001"
+     font-size="14px"
+     font-weight="600"
+     fill="#111111"
+     id="text24">eFuse</text>
+  <text
+     x="252"
+     y="367"
+     text-anchor="middle"
+     dy="4.1999998"
+     font-size="12px"
+     fill="#222222"
+     id="text25">over V / over I lockout</text>
+  <rect
+     x="182"
+     y="418"
+     width="140"
+     height="44"
+     rx="8"
+     fill="#ffc680"
+     stroke="#a85f00"
+     stroke-width="2.5"
+     id="rect25" />
+  <text
+     x="252"
+     y="440"
+     text-anchor="middle"
+     dy="4.9000001"
+     font-size="14px"
+     font-weight="600"
+     fill="#111111"
+     id="text26">Polarity guard</text>
+  <rect
+     x="182"
+     y="499"
+     width="140"
+     height="48"
+     rx="8"
+     fill="#fde6e4"
+     stroke="#d63a32"
+     stroke-width="2.5"
+     stroke-dasharray="7, 4"
+     id="rect26" />
+  <text
+     x="252"
+     y="515"
+     text-anchor="middle"
+     dy="4.9000001"
+     font-size="14px"
+     font-weight="600"
+     fill="#111111"
+     id="text27">Battery</text>
+  <text
+     x="252"
+     y="533"
+     text-anchor="middle"
+     dy="4.1999998"
+     font-size="12px"
+     fill="#222222"
+     id="text28">(not included)</text>
+  <rect
+     x="182"
+     y="584"
+     width="140"
+     height="48"
+     rx="8"
+     fill="#4fd1c0"
+     stroke="#0f6b5e"
+     stroke-width="2.5"
+     id="rect28" />
+  <text
+     x="252"
+     y="600"
+     text-anchor="middle"
+     dy="4.9000001"
+     font-size="14px"
+     font-weight="600"
+     fill="#111111"
+     id="text29">Battery sensing</text>
+  <text
+     x="252"
+     y="618"
+     text-anchor="middle"
+     dy="4.1999998"
+     font-size="12px"
+     fill="#222222"
+     id="text30">( V / discharge I )</text>
+  <!-- CENTRE -->
+  <rect
+     x="362"
+     y="208"
+     width="450"
+     height="424"
+     rx="10"
+     fill="#a9ccf7"
+     stroke="#214f8f"
+     stroke-width="3"
+     id="rect30" />
+  <text
+     x="587"
+     y="316"
+     text-anchor="middle"
+     dy="5.5999999"
+     font-size="16px"
+     font-weight="700"
+     fill="#111111"
+     id="text31">Microcontroller</text>
+  <text
+     x="545.23724"
+     y="57.685833"
+     text-anchor="middle"
+     dy="0 0 0 0 0 0 0 0 0 0 0 0 0 0 0"
+     font-size="35.5282px"
+     font-weight="700"
+     fill="#111111"
+     id="text31-2"
+     transform="scale(0.91155269,1.0970293)"
+     style="stroke-width:2.22052">HYPER S3 ROCKET - Functional Block Diagram</text>
+  <text
+     x="587"
+     y="338"
+     text-anchor="middle"
+     dy="4.5499997"
+     font-size="13px"
+     fill="#222222"
+     id="text32"><tspan
+       style="font-weight:bold"
+       id="tspan106">ESP32-S3</tspan></text>
+  <text
+     x="587"
+     y="410"
+     text-anchor="middle"
+     dy="4.5499997"
+     font-size="13px"
+     fill="#222222"
+     id="text33">Wi-Fi + Bluetooth LE</text>
+  <text
+     x="587.35181"
+     y="394.32693"
+     text-anchor="middle"
+     font-size="13px"
+     fill="#222222"
+     id="text33-9">8MB Flash</text>
+  <text
+     x="587.46313"
+     y="435.87695"
+     text-anchor="middle"
+     font-size="13px"
+     fill="#222222"
+     id="text33-9-8">RTC Low Power Domain</text>
+  <text
+     x="587.9624"
+     y="458.62305"
+     text-anchor="middle"
+     font-size="13px"
+     fill="#222222"
+     id="text33-9-8-1">USB O-T-G / USB SERIAL / JTAG</text>
+  <text
+     x="587.84424"
+     y="481.87695"
+     text-anchor="middle"
+     font-size="13px"
+     fill="#222222"
+     id="text33-9-8-1-5">Touch / ADC / PWM / I2S / TWAI ( CAN 2.0B )</text>
+  <text
+     x="587.50586"
+     y="504.87695"
+     text-anchor="middle"
+     font-size="13px"
+     fill="#222222"
+     id="text33-9-8-1-5-7">Isolated World Controller / HMAC &amp; Digital Signature (DS)</text>
+  <text
+     x="588.9624"
+     y="373.62305"
+     text-anchor="middle"
+     font-size="13px"
+     fill="#222222"
+     id="text33-9-8-2">Dual-core 32-bit Xtensa LX7 up to 240 MHz</text>
+  <g
+     fill="#7fd6df"
+     stroke="#0f6773"
+     stroke-width="2"
+     id="g47"
+     transform="translate(32,84)">
+    <rect
+       x="342"
+       y="136"
+       width="54"
+       height="24"
+       rx="4"
+       id="rect33" />
+    <rect
+       x="435"
+       y="136"
+       width="54"
+       height="24"
+       rx="4"
+       id="rect34" />
+    <rect
+       x="528"
+       y="136"
+       width="54"
+       height="24"
+       rx="4"
+       id="rect35" />
+    <rect
+       x="621"
+       y="136"
+       width="54"
+       height="24"
+       rx="4"
+       id="rect36" />
+    <rect
+       x="714"
+       y="136"
+       width="54"
+       height="24"
+       rx="4"
+       id="rect37" />
+    <rect
+       x="342"
+       y="178"
+       width="54"
+       height="24"
+       rx="4"
+       id="rect38" />
+    <rect
+       x="342"
+       y="512"
+       width="54"
+       height="24"
+       rx="4"
+       id="rect39" />
+    <rect
+       x="714"
+       y="211"
+       width="54"
+       height="24"
+       rx="4"
+       id="rect40" />
+    <rect
+       x="714"
+       y="286"
+       width="54"
+       height="24"
+       rx="4"
+       id="rect41" />
+    <rect
+       x="714"
+       y="362"
+       width="54"
+       height="24"
+       rx="4"
+       id="rect42" />
+    <rect
+       x="714"
+       y="437"
+       width="54"
+       height="24"
+       rx="4"
+       id="rect43" />
+    <rect
+       x="409"
+       y="512"
+       width="54"
+       height="24"
+       rx="4"
+       id="rect44" />
+    <rect
+       x="533"
+       y="512"
+       width="54"
+       height="24"
+       rx="4"
+       id="rect45" />
+    <rect
+       x="619"
+       y="512"
+       width="66"
+       height="24"
+       rx="4"
+       id="rect46" />
+    <rect
+       x="713"
+       y="512"
+       width="54"
+       height="24"
+       rx="4"
+       id="rect47" />
+  </g>
+  <g
+     text-anchor="middle"
+     font-size="12px"
+     fill="#111111"
+     id="g61"
+     transform="translate(32,84)">
+    <text
+       dy="0.34999999em"
+       x="369"
+       y="148"
+       id="text47">USB</text>
+    <text
+       dy="0.34999999em"
+       x="462"
+       y="148"
+       id="text48">I2C</text>
+    <text
+       dy="0.34999999em"
+       x="555"
+       y="148"
+       id="text49">UART</text>
+    <text
+       dy="0.34999999em"
+       x="648"
+       y="148"
+       id="text50">GPIO</text>
+    <text
+       dy="0.34999999em"
+       x="741"
+       y="148"
+       id="text51">GPIO</text>
+    <text
+       dy="0.34999999em"
+       x="369"
+       y="190"
+       id="text52">I2C</text>
+    <text
+       dy="0.34999999em"
+       x="369"
+       y="524"
+       id="text53">ADC</text>
+    <text
+       dy="0.34999999em"
+       x="741"
+       y="223"
+       id="text54">GPIO</text>
+    <text
+       dy="0.34999999em"
+       x="741"
+       y="298"
+       id="text55">GPIO</text>
+    <text
+       dy="0.34999999em"
+       x="741"
+       y="374"
+       id="text56">EN</text>
+    <text
+       dy="0.34999999em"
+       x="741"
+       y="449"
+       id="text57">CLK</text>
+    <text
+       dy="0.34999999em"
+       x="436"
+       y="524"
+       id="text58">I2C</text>
+    <text
+       dy="0.34999999em"
+       x="560"
+       y="524"
+       id="text59">I2C</text>
+    <text
+       dy="0.34999999em"
+       x="652"
+       y="524"
+       id="text60">SDMMC</text>
+    <text
+       dy="0.34999999em"
+       x="740"
+       y="524"
+       id="text61">GPIO</text>
+  </g>
+  <!-- RIGHT -->
+  <rect
+     x="852"
+     y="287"
+     width="92"
+     height="40"
+     rx="8"
+     fill="#c9aedb"
+     stroke="#5a3280"
+     stroke-width="2.5"
+     id="rect61" />
+  <text
+     x="898"
+     y="307"
+     text-anchor="middle"
+     dy="4.9000001"
+     font-size="14px"
+     font-weight="600"
+     fill="#111111"
+     id="text62">3 LEDs</text>
+  <rect
+     x="852"
+     y="362"
+     width="92"
+     height="40"
+     rx="8"
+     fill="#c9aedb"
+     stroke="#5a3280"
+     stroke-width="2.5"
+     id="rect62" />
+  <text
+     x="898"
+     y="382"
+     text-anchor="middle"
+     dy="4.9000001"
+     font-size="14px"
+     font-weight="600"
+     fill="#111111"
+     id="text63">BOOT</text>
+  <rect
+     x="852"
+     y="438"
+     width="92"
+     height="40"
+     rx="8"
+     fill="#d6d6d6"
+     stroke="#3d3d3d"
+     stroke-width="2.5"
+     id="rect63" />
+  <text
+     x="898"
+     y="458"
+     text-anchor="middle"
+     dy="4.9000001"
+     font-size="14px"
+     font-weight="600"
+     fill="#111111"
+     id="text64">RESET</text>
+  <rect
+     x="852"
+     y="513"
+     width="92"
+     height="40"
+     rx="8"
+     fill="#c9aedb"
+     stroke="#5a3280"
+     stroke-width="2.5"
+     id="rect64" />
+  <text
+     x="898"
+     y="533"
+     text-anchor="middle"
+     dy="4.9000001"
+     font-size="14px"
+     font-weight="600"
+     fill="#111111"
+     id="text65">RTC</text>
+  <!-- BOTTOM: optional -->
+  <rect
+     x="210"
+     y="656"
+     width="612"
+     height="126"
+     rx="12"
+     fill="none"
+     stroke="#7a8590"
+     stroke-width="0.75"
+     stroke-dasharray="4, 3"
+     id="rect65" />
+  <text
+     font-size="12px"
+     fill="#444444"
+     x="806"
+     y="756"
+     text-anchor="end"
+     dy="4.1999998"
+     id="text66"><tspan
+       style="font-weight:bold"
+       id="tspan103">Optional</tspan></text>
+  <rect
+     x="220"
+     y="672"
+     width="124"
+     height="48"
+     rx="8"
+     fill="#f8a5d4"
+     stroke="#8c1f66"
+     stroke-width="2.5"
+     id="rect66" />
+  <text
+     x="282"
+     y="696"
+     text-anchor="middle"
+     dy="4.9000001"
+     font-size="14px"
+     font-weight="600"
+     fill="#111111"
+     id="text67">Magnetometer</text>
+  <rect
+     x="400"
+     y="672"
+     width="136"
+     height="98"
+     rx="8"
+     fill="#f8a5d4"
+     stroke="#8c1f66"
+     stroke-width="2.5"
+     id="rect67" />
+  <text
+     x="468"
+     y="686"
+     text-anchor="middle"
+     dy="4.9000001"
+     font-size="14px"
+     font-weight="600"
+     fill="#111111"
+     id="text68">IMU</text>
+  <rect
+     x="410"
+     y="700"
+     width="116"
+     height="26"
+     rx="5"
+     fill="#fcd3ea"
+     stroke="#8c1f66"
+     stroke-width="1.5"
+     id="rect68" />
+  <text
+     x="468"
+     y="713"
+     text-anchor="middle"
+     dy="4.1999998"
+     font-size="12px"
+     fill="#111111"
+     id="text69">Accelerometer</text>
+  <rect
+     x="410"
+     y="732"
+     width="116"
+     height="26"
+     rx="5"
+     fill="#fcd3ea"
+     stroke="#8c1f66"
+     stroke-width="1.5"
+     id="rect69" />
+  <text
+     x="468"
+     y="745"
+     text-anchor="middle"
+     dy="4.1999998"
+     font-size="12px"
+     fill="#111111"
+     id="text70">Gyroscope</text>
+  <rect
+     x="548"
+     y="672"
+     width="88"
+     height="48"
+     rx="8"
+     fill="#f8a5d4"
+     stroke="#8c1f66"
+     stroke-width="2.5"
+     id="rect70" />
+  <text
+     x="592"
+     y="696"
+     text-anchor="middle"
+     dy="4.9000001"
+     font-size="14px"
+     font-weight="600"
+     fill="#111111"
+     id="text71">Altimeter</text>
+  <rect
+     x="648"
+     y="672"
+     width="72"
+     height="48"
+     rx="8"
+     fill="#c9aedb"
+     fill-opacity="0.35"
+     stroke="#5a3280"
+     stroke-width="2.5"
+     stroke-dasharray="7, 4"
+     id="rect71" />
+  <text
+     x="684"
+     y="688"
+     text-anchor="middle"
+     dy="4.9000001"
+     font-size="14px"
+     font-weight="600"
+     fill="#111111"
+     id="text72">microSD</text>
+  <text
+     x="684"
+     y="704"
+     text-anchor="middle"
+     dy="4.9000001"
+     font-size="14px"
+     font-weight="600"
+     fill="#111111"
+     id="text73">card</text>
+  <rect
+     x="732"
+     y="672"
+     width="80"
+     height="48"
+     rx="8"
+     fill="#c9aedb"
+     stroke="#5a3280"
+     stroke-width="2.5"
+     id="rect73" />
+  <text
+     x="771.46326"
+     y="692.99719"
+     text-anchor="middle"
+     font-size="14px"
+     font-weight="600"
+     fill="#111111"
+     id="text74">Red</text>
+  <text
+     x="772"
+     y="704"
+     text-anchor="middle"
+     dy="4.9000001"
+     font-size="14px"
+     font-weight="600"
+     fill="#111111"
+     id="text75">LED</text>
+  <!-- legend -->
+  <polygon
+     points="32,617 20,617 20,605 32,605 32,600 44,611 32,622 "
+     fill="#dc2626"
+     id="polygon75"
+     transform="matrix(1.4799754,0,0,1.4799754,27.741972,-224.08448)" />
+  <text
+     font-size="17.7597px"
+     fill="#444444"
+     x="107.66064"
+     y="680.18048"
+     dy="6.2158961"
+     id="text76"
+     style="stroke-width:1.47998"><tspan
+       style="font-weight:bold;stroke-width:1.47998"
+       id="tspan104">Power</tspan></text>
+  <polygon
+     points="32,653 20,653 20,641 32,641 32,636 44,647 32,658 "
+     fill="#ffffff"
+     stroke="#111111"
+     stroke-width="1.5"
+     stroke-linejoin="round"
+     id="polygon76"
+     transform="matrix(1.4799754,0,0,1.4799754,27.741972,-224.08448)" />
+  <text
+     font-size="17.7597px"
+     fill="#444444"
+     x="107.66064"
+     y="733.45959"
+     dy="6.2158961"
+     id="text77"
+     style="stroke-width:1.47998"><tspan
+       style="font-weight:bold;stroke-width:1.47998"
+       id="tspan105">Signal</tspan></text>
+  <!-- red arrows -->
+  <g
+     fill="#dc2626"
+     id="g85"
+     transform="translate(32,84)">
+    <polygon
+       points="193,110 187,110 187,84 177,84 177,110 171,110 182,124 "
+       id="polygon77" />
+    <polygon
+       points="271,110 265,110 265,84 255,84 255,110 249,110 260,124 "
+       id="polygon78" />
+    <polygon
+       points="136,171 136,165 150,165 150,155 136,155 136,149 124,160 "
+       id="polygon79" />
+    <polygon
+       points="83,124 77,124 77,136 67,136 67,124 61,124 72,110 "
+       id="polygon80" />
+    <polygon
+       points="225,237 225,224 231,224 220,212 209,224 215,224 215,237 209,237 220,249 231,237 "
+       id="polygon81" />
+    <polygon
+       points="140,279 140,274.5 124,274.5 124,271.5 140,271.5 140,267 150,273 "
+       id="polygon82" />
+    <polygon
+       points="225,322 225,309 231,309 220,297 209,309 215,309 215,322 209,322 220,334 231,322 "
+       id="polygon83" />
+    <polygon
+       points="225,403 225,390 231,390 220,378 209,390 215,390 215,403 209,403 220,415 231,403 "
+       id="polygon84" />
+    <polygon
+       points="226,490 221.5,490 221.5,463 218.5,463 218.5,490 214,490 220,500 "
+       id="polygon85" />
+  </g>
+  <!-- signal arrows -->
+  <g
+     fill="#ffffff"
+     stroke="#111111"
+     stroke-width="1.5"
+     stroke-linejoin="round"
+     id="g101"
+     transform="translate(32,84)">
+    <polygon
+       points="328,535 328,529 290,529 290,519 328,519 328,513 342,524 "
+       id="polygon86" />
+    <polygon
+       points="374,122 374,98 380,98 369,84 358,98 364,98 364,122 358,122 369,136 380,122 "
+       id="polygon87" />
+    <polygon
+       points="328,195 304,195 304,201 290,190 304,179 304,185 328,185 328,179 342,190 328,201 "
+       id="polygon88" />
+    <polygon
+       points="467,122 467,98 473,98 462,84 451,98 457,98 457,122 451,122 462,136 473,122 "
+       id="polygon89" />
+    <polygon
+       points="560,122 560,98 566,98 555,84 544,98 550,98 550,122 544,122 555,136 566,122 "
+       id="polygon90" />
+    <polygon
+       points="653,122 653,98 659,98 648,84 637,98 643,98 643,122 637,122 648,136 659,122 "
+       id="polygon91" />
+    <polygon
+       points="746,122 746,98 752,98 741,84 730,98 736,98 736,122 730,122 741,136 752,122 "
+       id="polygon92" />
+    <polygon
+       points="806,234 806,228 768,228 768,218 806,218 806,212 820,223 "
+       id="polygon93" />
+    <polygon
+       points="782,309 782,303 820,303 820,293 782,293 782,287 768,298 "
+       id="polygon94" />
+    <polygon
+       points="782,385 782,379 820,379 820,369 782,369 782,363 768,374 "
+       id="polygon95" />
+    <polygon
+       points="782,460 782,454 820,454 820,444 782,444 782,438 768,449 "
+       id="polygon96" />
+    <polygon
+       points="441,574 441,550 447,550 436,536 425,550 431,550 431,574 425,574 436,588 447,574 "
+       id="polygon97" />
+    <polygon
+       points="565,574 565,550 571,550 560,536 549,550 555,550 555,574 549,574 560,588 571,574 "
+       id="polygon98" />
+    <polygon
+       points="657,574 657,550 663,550 652,536 641,550 647,550 647,574 641,574 652,588 663,574 "
+       id="polygon99" />
+    <polygon
+       points="751,574 745,574 745,536 735,536 735,574 729,574 740,588 "
+       id="polygon100" />
+    <polygon
+       points="354,617 326,617 326,623 312,612 326,601 326,607 354,607 354,601 368,612 354,623 "
+       id="polygon101" />
+  </g>
+</svg>

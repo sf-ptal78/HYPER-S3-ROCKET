@@ -30,9 +30,9 @@ The **HYPER S3 ROCKET™** is a compact, feature-rich ESP32-S3 telemetry platfor
 | | |
 | --- | --- |
 | **Form factor** | 20 mm × 33.5 mm castellated SMT module, 6-layer PCB |
-| **Processor** | Espressif ESP32-S3-MINI-1-N4R2, dual-core Xtensa LX7 @ 240 MHz |
-| **Memory** | 4 MB flash, 2 MB PSRAM |
-| **Power train** | TI TPS631000 buck-boost, 3.3 V output, up to 2 A continuous (accepts up to 3 A input current) |
+| **Processor** | Espressif ESP32-S3-MINI-1-N8, dual-core Xtensa LX7 @ 240 MHz |
+| **Memory** | 8 MB flash, no PSRAM |
+| **Power train** | TI TPS631000 buck-boost, 3.3 V output, 2 A continuous in buck mode, 1.5 A in boost mode |
 | **Charger** | TI BQ25188 power-path charger, USB-C and 5 V solar input, I²C configurable |
 | **Battery** | Single-cell (1S) Li-Ion, Li-Poly or LiFePO4 |
 | **Battery protection** | TI eFuse + TI supervisor + TI comparator, independent of firmware |
@@ -53,7 +53,7 @@ The **HYPER S3 ROCKET™** is a compact, feature-rich ESP32-S3 telemetry platfor
 
 | Capability | What you get | Why it matters |
 | --- | --- | --- |
-| **Onboard RTC** | SiTime nano-power MEMS oscillator, 14 RTC-domain GPIOs, ULP coprocessors, deep-sleep wake | Precise timestamps with no network, and months-long standby on a small cell |
+| **Onboard RTC** | SiTime nano-power MEMS oscillator, 14 RTC-domain GPIOs, ULP coprocessors, deep-sleep wake | Precise timestamps with no network, and deep-sleep wake for low-power standby |
 | **Double Safety Vault** | BQ25188 charger plus a discrete eFuse, supervisor and comparator, independent of firmware | Over-discharge, overvoltage, overcurrent and over-temperature faults are caught even if your code crashes |
 | **Battery telemetry** | Battery voltage and current discharge sensing through one analog line, I²C-configurable charger, dual NTC inputs | Report state of charge, load profile and thermal history, and adapt to battery chemistry |
 | **Data logging** | 4-bit MicroSD holder, 10-DoF sensor array, dual isolated I²C buses | High-rate, vibration-tolerant logs of motion, pressure, temperature and your own external sensors (Card not included) |
@@ -67,9 +67,9 @@ Every industry below has the same underlying need: a battery-powered node that r
 | Industry | Typical need | Features that apply |
 | --- | --- | --- |
 | **Aerospace and rocketry** | Flight and launch logging under high G and vibration | 10-DoF IMU, magnetometer and barometer; MicroSD holder that stays seated; RTC timestamps; 2 A rail for payloads |
-| **Medical and wearables** | Safe, small, long-life battery devices during prototyping and evaluation | Discharge lockout and shelf-safe 5.62 µA UVLO state; independent hardware protection; low-power standby |
+| **Medical and wearables** | Safe, small, long-life battery devices during prototyping and evaluation | Discharge lockout and shelf-safe UVLO state (calculated 5.62 µA); independent hardware protection; low-power standby |
 | **Automotive and EV** | Auxiliary pack monitoring, shock and vibration recording | Battery voltage and current analytics; dual NTC thermal monitoring; timestamped IMU logs |
-| **Consumer electronics** | Compact, USB-C rechargeable products | 20 × 33 mm footprint; power-path charging; TVS and reverse-polarity protection; keyed JST connector |
+| **Consumer electronics** | Compact, USB-C rechargeable products | 20 × 33.5 mm footprint; power-path charging; TVS and reverse-polarity protection; keyed JST connector |
 | **Energy storage and solar** | Solar-powered monitoring and battery health tracking | 5 V solar harvesting (VINDPM/IINDPM); Li-Ion/Li-Poly/LiFePO4 charger; voltage and current telemetry |
 | **Telecom and remote infrastructure** | Unattended sites with no reliable connectivity | Offline RTC timestamps; MicroSD logging; low-quiescent power train; hardware cutoff that survives firmware faults |
 | **Rail, marine and transport** | Condition monitoring on vibrating or sealed assets | Shock and vibration logging; discharge-side thermal protection; long standby; expansion I²C bus |
@@ -84,7 +84,7 @@ Every industry below has the same underlying need: a battery-powered node that r
 | Series | Edition | What's included | Notes |
 | --- | --- | --- | --- |
 | **MODULE** | Core SMT Module | All core charging, power and safety circuitry plus the ESP32-S3, on a single side with castellated edges | 10k and 100k NTCs must be soldered in place. `B+` is live, with onboard PMOS/NMOS reverse-polarity protection |
-| **CHARGE** | Breadboard Ready | Adds pre-soldered male headers and a JST PH-style battery connector | NTC chip thermistors supplied; remove before fitting custom thin-film NTCs. `B+` disabled |
+| **CHARGE** | Breadboard Ready | Adds pre-soldered male headers and a JST PH-style battery connector (PMOS/NMOS reverse-polarity protected, rated 2 A) | NTC chip thermistors supplied; remove before fitting custom thin-film NTCs. `B+` disabled |
 | **DATA** | Data Logger Edition | Adds the 4-bit MicroSD slot | Localized data acquisition |
 | **LOGGER** | Full Telemetry | MicroSD slot plus the 10-DoF sensor array | Flagship configuration |
 
@@ -108,7 +108,7 @@ Output ripple stays below 20 mV through a seamless 3-cycle buck-boost crossover.
 ### Charger and power path (TI BQ25188)
 
 - USB-C input up to **1.1 A**, passed to the system or split between load and charging
-- Battery-only mode up to **3 A** to the system, plus supplement mode when the input can't keep up
+- Battery-only mode up to **3 A** to the system, plus supplement mode when the input can't keep up. The JST connector limits CHARGE, DATA and LOGGER to 2 A; MODULE's `B+` pin supports the full 3 A
 - Nominal 5 V solar input with VINDPM/IINDPM maximum-power harvesting
 - I²C-configurable for Li-Ion, Li-Poly and LiFePO4; a battery is optional
 
@@ -123,9 +123,9 @@ A discrete **TI TPS259461A eFuse**, **TLV809EA26 supervisor** and **TLV4021 comp
 | **OCLO** | Dead shorts and motor stalls |
 
 - **Dual-zone thermal control:** the BQ25188 monitors a 10k NTC while charging; the eFuse, supervisor and comparator monitor an independent 100k NTC during discharge and shut the rail down on over-temperature.
-- **Micropower shelf safety:** at the **2.63 V** UVLO trip point the protection circuit draws only **5.62 µA**, so an exhausted cell isn't drained further in storage. Applying USB or 5 V solar releases the eFuse and charging resumes.
+- **Micropower shelf safety:** at the **2.63 V** UVLO trip point the protection circuit is calculated to draw only **5.62 µA**, so an exhausted cell isn't drained further in storage. Applying USB or 5 V solar releases the eFuse and charging resumes.
 - **Input protection:** TVS on USB, `VIN` and `VOUT`; Schottky reverse-polarity protection on the dual `VIN`/`Vusb` stage.
-- **Battery polarity:** CHARGE, DATA and LOGGER use the keyed JST PH connector (always confirm polarity); the `B+` pin is disabled so two batteries can't be connected at once. MODULE has a PMOS + NMOS reverse-polarity stage on `B+` (absolute maximum +20 V / −12 V).
+- **Battery polarity:** CHARGE, DATA and LOGGER use the keyed JST PH connector, rated 2 A, with a PMOS + NMOS reverse-polarity stage (always confirm polarity); their `B+` pin is disabled so two batteries can't be connected at once. MODULE has the same PMOS + NMOS stage on `B+` (absolute maximum +20 V / −12 V).
 
 ### Analog power sensing
 
@@ -182,7 +182,7 @@ GPIO 1–14 sit on the RTC domain, giving up to **12 touch channels**, **12 ADC 
 | Front green LED | GPIO 45 | Suggested: charge indicator with brightness control |
 | Rear red LED | GPIO 46 | Suggested: SD card activity |
 | Front blue LED | GPIO 48 | User defined |
-| Not available | GPIO 22–32 | Consumed by module flash and PSRAM |
+| Not available | GPIO 22–32 | Consumed by the module's flash |
 
 ### MicroSD, 4-bit SDMMC (DATA and LOGGER)
 
@@ -198,7 +198,7 @@ GPIO 39–42 and GPIO 47 are exposed as pads for additional GPIO. They may inter
 | --- | --- |
 | `VOUT` (pin 12) | 3.3 V, up to 2 A, same on every variant |
 | `VIN` (pin 10) | 5 V nominal (most efficient and thermally friendly); 18.5 V capable at low current; 23 V tolerant |
-| `B+` (pin 9) | Live on MODULE only; eFuse limited to 4.6 V |
+| `B+` (pin 9) | Live on MODULE only; up to 3 A; eFuse limited to 4.6 V |
 | `GND` (pin 11) | Unbroken ground planes on layers 2 and 5 provide return paths and EMI shielding |
 
 ### Thermal inputs (NTC)
@@ -227,7 +227,6 @@ Two 2.0 mm through-hole ports for thin-film, flexible beta 3435 NTCs (not suppli
 #define BATTERY_SENSE_PIN 16
 
 #define IMU_ADDR  0x6B  // LSM6DSV32X (LOGGER only)
-#define MAG_ADDR  0x30  // MMC5603NJ  (LOGGER only)
 #define PMIC_ADDR 0x6A  // BQ25188
 
 // Calibrate for your board's divider ratio. GPIO 16 is ADC2, so analog
@@ -249,7 +248,8 @@ void setup() {
   Serial.println("Internal I2C bus online (SCL 17 / SDA 18).");
 
   checkDevice("LSM6DSV32X IMU", IMU_ADDR);
-  checkDevice("MMC5603NJ Magnetometer", MAG_ADDR);
+  // The MMC5603NJ (0x30) sits behind the IMU sensor hub and only answers on
+  // this bus in pass-through mode, so it is not checked here.
   checkDevice("BQ25188 Battery Charger", PMIC_ADDR);
 
   pinMode(SENSE_SELECT_PIN, OUTPUT);

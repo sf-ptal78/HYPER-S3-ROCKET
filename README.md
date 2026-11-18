@@ -10,11 +10,11 @@
 
 ---
 
-The **HYPER S3 ROCKET™** is a compact, feature-rich ESP32-S3 telemetry platform with a fail-safe, dual-channel battery management system built in. Every version has castellated edges for surface mounting, and all but the narrower MODULE add through-holes for breadboard use (pin headers not supplied). It brings together USB-C and solar charging, peak-power supplementation from the battery, a 2 A buck-boost regulator, a precision onboard real-time clock, and an optional 10-DoF motion sensor array with high-speed MicroSD logging (Push-Push Holder - Card not included).
+The **HYPER S3 ROCKET™** is a compact, feature-rich ESP32-S3 development board with a fail-safe, dual-channel battery management system built in. Every version has castellated edges for surface mounting, and all but the narrower MODULE add through-holes for breadboard use (pin headers not supplied). It brings together USB-C and solar charging, peak-power supplementation from the battery, a 2 A buck-boost regulator, a precision onboard real-time clock, and an optional 10-DoF motion sensor array with high-speed MicroSD logging (Push-Push Holder - Card not included).
 
 **Battery safety you don't have to engineer yourself.** Two independent layers of protection guard every charge and discharge cycle against thermal stress, overcurrent, overvoltage and undervoltage. Battery diagnostics give your firmware what it needs for per-flight fuel-sensing: VIN and battery attach/detach detection, voltage and current sensing (discharge only), and fault-generated interrupts, available in both active and low-power operation so you can monitor the battery while the main cores sleep.
 
-**Skip the patchwork of breakout boards.** Charging, protection, regulation, timekeeping and sensing live on one board. It began in rocketry and high-G flight logging, and this intelligent BMS node now serves medical, automotive, energy, telecom, marine and rail development just as well, and of course rocket science and aerospace.
+**Skip the patchwork of breakout boards.** Charging, protection, regulation, timekeeping and sensing live on one board. It began in rocketry and high-G flight logging, and this intelligent BMS node now serves automotive, energy, telecom, marine and rail development just as well, and of course rocket science and aerospace.
 
 > 📄 Full engineering detail: [Hardware Architecture & Specifications](my-crowd-supply-project/HYPER-S3-ROCKET-Hardware-Architecture-Specifications.md)
 
@@ -38,7 +38,7 @@ The **HYPER S3 ROCKET™** is a compact, feature-rich ESP32-S3 telemetry platfor
 | **Charger** | TI BQ25188 power-path charger, USB-C and 5 V solar input, I²C configurable |
 | **Battery** | Single-cell (1S) Li-Ion, Li-Poly or LiFePO4 |
 | **Battery protection** | TI eFuse + TI supervisor + TI comparator, independent of firmware |
-| **Timekeeping** | SiTime SiT1532 nano-power MEMS oscillator for RTC |
+| **Timekeeping** | SiTime SiT1532 nano-power MEMS oscillator for RTC (rated ±100 ppm; measured at 6 ppm on one prototype board) |
 | **GPIO** | 14 external multi-role GPIOs (GPIO 1–14, on the RTC domain) on every version, plus UART Tx/Rx (GPIO 43/44). Internal GPIO pads: 5 on DATA and LOGGER, 15 on CHARGE and MODULE |
 | **I²C** | Two independent buses: internal sensors and external expansion |
 | **Storage** | 4-bit MicroSD holder (DATA and LOGGER variants) card not included |
@@ -77,7 +77,7 @@ Every industry below has the same underlying need: a battery-powered node that r
 | Industry | Typical need | Features that apply |
 | :--- | :--- | :--- |
 | **Aerospace and rocketry** | Flight and launch logging under high G and vibration | 10-DoF IMU, magnetometer and barometer; MicroSD holder that stays seated; RTC timestamps; 2 A rail for payloads |
-| **Medical and wearables** | Safe, small, long-life battery devices during prototyping and evaluation | Discharge lockout and shelf-safe UVLO state (calculated 5.62 µA); independent hardware protection; low-power standby |
+| **Wearables and prototyping** | Safe, small, long-life battery devices during prototyping and evaluation | Discharge lockout and shelf-safe UVLO state (calculated 5.62 µA); independent hardware protection; low-power standby |
 | **Automotive and EV** | Auxiliary pack monitoring, shock and vibration recording | Battery voltage and current analytics; dual NTC thermal monitoring; timestamped IMU logs |
 | **Consumer electronics** | Compact, USB-C rechargeable products | 20 × 33.5 mm footprint; power-path charging; TVS and reverse-polarity protection; keyed JST connector |
 | **Energy storage and solar** | Solar-powered monitoring and battery health tracking | 5 V solar harvesting (VINDPM/IINDPM); Li-Ion/Li-Poly/LiFePO4 charger; voltage and current telemetry |
@@ -261,7 +261,9 @@ GPIO 39–42 and GPIO 47 are exposed as bottom-layer pads for additional GPIO on
 
 ### Thermal inputs (NTC)
 
-Two 2.0 mm through-hole ports for thin-film, flexible beta 3435 NTCs (not supplied): **10k** for charge regulation and **100k** for charge and discharge limit/lockout.
+Two 2.0 mm through-hole ports for thin-film, flexible beta 3450 NTCs (not supplied): **10k** for charge regulation and **100k** for charge and discharge limit/lockout.
+
+LOGGER, DATA and CHARGE also carry onboard 0402 chip NTCs: 10k (beta 3450) for the BQ25188 and 100k (beta 3950) for the comparator. The MODULE has none; fit your own.
 
 ### Onboard sensors (LOGGER variant, internal I²C)
 

@@ -335,7 +335,7 @@ void checkDevice(const char* name, uint8_t addr) {
 | [`fault-finding`](fault-finding) | Troubleshooting and fault-finding guides |
 | [`support`](support) | Support resources |
 | [`licensing`](licensing) | Licensing details |
-| [`LICENSE`](LICENSE) | Apache-2.0 license text for software and firmware |
+| [`LICENSE`](LICENSE) | Apache-2.0 license text for the firmware examples |
 
 </div>
 
@@ -343,6 +343,7 @@ void checkDevice(const char* name, uint8_t addr) {
 
 ## License & Copyright
 
-- **Software / Firmware Examples:** Licensed under the **Apache License, Version 2.0**. You may not use these files except in compliance with the License. You may obtain a copy at <http://www.apache.org/licenses/LICENSE-2.0>. Unless required by applicable law or agreed to in writing, software distributed under the License is distributed on an "AS IS" BASIS, WITHOUT WARRANTIES OR CONDITIONS OF ANY KIND, either express or implied. See the License for the specific language governing permissions and limitations.
+- **Firmware Examples:** Licensed under the Apache License, Version 2.0 (see [`LICENSE`](LICENSE)). The Apache License applies only to the example files in this repository.
+- **Official STEMFORGE software (including LOGGER software):** Closed source and not licensed under Apache-2.0. It is not published or distributed as downloadable binaries. It is delivered to supported boards by encrypted over-the-air update, under STEMFORGE's licence terms. You may use it on the boards it is delivered to. To the extent permitted by law, you may not copy, extract, redistribute or reverse engineer it.
 - **Physical Hardware Design:** The circuit layouts, component placement, schematics, layer stackups and PCB architecture of the **HYPER S3 ROCKET** are proprietary intellectual property. Copyright © 2026 by **STEMFORGE**. All rights reserved. Commercial replication, hardware cloning or unauthorized reverse engineering of the physical board layout is strictly prohibited. **Exception:** the MODULE footprint published in [`manufacturing`](manufacturing) may be used in your own PCB designs to mount HYPER S3 ROCKET modules. It does not grant any right to copy or manufacture the module itself.
 - **Trademarks:** **STEMFORGE™**, **HYPER S3 ROCKET™** and associated logos are proprietary trademarks of **STEMFORGE**. Unauthorized commercial use of these marks to market unauthorized derivative hardware is strictly prohibited.

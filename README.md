@@ -39,7 +39,7 @@ The **HYPER S3 ROCKET™** is a compact, feature-rich ESP32-S3 telemetry platfor
 | **Battery** | Single-cell (1S) Li-Ion, Li-Poly or LiFePO4 |
 | **Battery protection** | TI eFuse + TI supervisor + TI comparator, independent of firmware |
 | **Timekeeping** | SiTime SiT1532 nano-power MEMS oscillator for RTC |
-| **GPIO** | 21 external (16 castellated, 5 SMD); 14 multi-role GPIOs (GPIO 1–14) on the RTC domain |
+| **GPIO** | 14 external multi-role GPIOs (GPIO 1–14, on the RTC domain) on every version, plus UART Tx/Rx (GPIO 43/44). Internal GPIO pads: 5 on DATA and LOGGER, 15 on CHARGE and MODULE |
 | **I²C** | Two independent buses: internal sensors and external expansion |
 | **Storage** | 4-bit MicroSD holder (DATA and LOGGER variants) card not included |
 | **Sensors** | 10-DoF array: IMU, magnetometer, barometer (LOGGER variant) |
@@ -214,21 +214,24 @@ GPIO 1–14 sit on the RTC domain, giving up to **12 touch channels**, **12 ADC 
 | 32.768 kHz RTC clock | GPIO 15 | Hardwired to the onboard SiTime oscillator |
 | Battery voltage / current | GPIO 16 | Analog, via the switched divider and eFuse sense |
 | USB D− / D+ | GPIO 19 / 20 | Native USB & JTAG, length-matched, 90 Ω |
-| Fault interrupt + front red LED | GPIO 21 | Hardwired to charger and IMU (suggested: fault indicator) |
+| Fault interrupt + front red LED | GPIO 21 | Hardwired to charger and IMU (suggested: fault indicator). Also exposed as a pad on CHARGE and MODULE |
 | Front green LED | GPIO 45 | Suggested: charge indicator with brightness control |
 | Rear red LED | GPIO 46 | Suggested: SD card activity |
 | Front blue LED | GPIO 48 | User defined |
-| Not available | GPIO 22–32 | Consumed by the module's flash |
+| Not available | GPIO 27–32 | Consumed by the module's flash (GPIO 22–25 do not exist on the ESP32-S3) |
+| Pad (CHARGE and MODULE) | GPIO 26 | Free with the N8 module (SPICS1; not an RTC or ADC pin). Not available on DATA and LOGGER |
 
 </div>
 
 ### MicroSD, 4-bit SDMMC (DATA and LOGGER)
 
-GPIO 33–38, hardwired to the push-push holder, with pull-ups on all but GPIO 36 (CLK).
+GPIO 33–38, hardwired to the push-push holder, with pull-ups on all but GPIO 36 (CLK). On CHARGE and MODULE there is no holder, and these six pads are free for careful hand soldering.
 
 ### SMD pads
 
-GPIO 39–42 and GPIO 47 are exposed as pads for additional GPIO. They may interfere with the push-push holder mechanism if used carelessly. GPIO 39–42 can be used as JTAG with eFuse burning (permanent).
+GPIO 39–42 and GPIO 47 are exposed as bottom-layer pads for additional GPIO on every version. On DATA and LOGGER the push-push holder limits access, and they may interfere with its mechanism if used carelessly. GPIO 39–42 can be used as JTAG with eFuse burning (permanent).
+
+**Internal GPIO pads by version:** DATA and LOGGER have 5 (GPIO 39–42, 47). CHARGE and MODULE have 15: those 5, plus the six former microSD pads (GPIO 33–38) and GPIO 17, 18, 21 and 26.
 
 ### Power and ground pins
 

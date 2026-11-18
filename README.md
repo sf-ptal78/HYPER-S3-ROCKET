@@ -253,9 +253,9 @@ Two 2.0 mm through-hole ports for thin-film, flexible beta 3435 NTCs (not suppli
 
 | Part | Function | I²C address |
 | :--- | :--- | :--- |
-| STMicroelectronics LSM6DSV32X | 6-DoF accelerometer and gyroscope | `0x6B` |
-| Memsic MMC5603NJ | 3-DoF magnetometer, routed via the LSM6DSV32X sensor hub | `0x30 when set as pass through only` |
-| Goertek SPL07-003 / 006 | Barometer with temperature (the 006 has a waterproof gel-filled cavity) | `0x76` |
+| STMicroelectronics LSM6DSV80X | 6-DoF accelerometer and gyroscope | `0x6B` |
+| Memsic MMC5603NJ | 3-DoF magnetometer, routed via the LSM6DSV80X sensor hub | `0x30 when set as pass through only` |
+| Goertek SPL07-003 | Barometer with temperature (the SPL07-006, which has a waterproof gel-filled cavity, may replace it before bulk production) | `0x76` |
 | TI BQ25188 (all variants) | Charger / power path | `0x6A` |
 
 </div>
@@ -272,7 +272,7 @@ Two 2.0 mm through-hole ports for thin-film, flexible beta 3435 NTCs (not suppli
 #define SENSE_SELECT_PIN  0    // HIGH = battery voltage, LOW = battery current
 #define BATTERY_SENSE_PIN 16
 
-#define IMU_ADDR  0x6B  // LSM6DSV32X (LOGGER only)
+#define IMU_ADDR  0x6B  // LSM6DSV80X (LOGGER only)
 #define PMIC_ADDR 0x6A  // BQ25188
 
 // Calibrate for your board's divider ratio. GPIO 16 is ADC2, so analog
@@ -293,7 +293,7 @@ void setup() {
   }
   Serial.println("Internal I2C bus online (SCL 17 / SDA 18).");
 
-  checkDevice("LSM6DSV32X IMU", IMU_ADDR);
+  checkDevice("LSM6DSV80X IMU", IMU_ADDR);
   // The MMC5603NJ (0x30) sits behind the IMU sensor hub and only answers on
   // this bus in pass-through mode, so it is not checked here.
   checkDevice("BQ25188 Battery Charger", PMIC_ADDR);

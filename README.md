@@ -31,7 +31,7 @@ The **HYPER S3 ROCKET™** is a compact, feature-rich ESP32-S3 telemetry platfor
 
 | | |
 | :--- | :--- |
-| **Form factor** | 20 mm × 33.5 mm castellated SMT board, 6-layer PCB (the MODULE is narrower) |
+| **Form factor** | 20 mm × 33.5 mm castellated SMT board, 6-layer PCB (the MODULE is narrower: 17.8 × 33.5 mm) |
 | **Processor** | Espressif ESP32-S3-MINI-1-N8, dual-core Xtensa LX7 @ 240 MHz |
 | **Memory** | 8 MB flash, no PSRAM |
 | **Power train** | TI TPS631000 buck-boost, 3.3 V output, 2 A continuous in buck mode, 1.5 A in boost mode |
@@ -97,8 +97,8 @@ Every industry below has the same underlying need: a battery-powered node that r
 
 | Series | Edition | What's included | Notes |
 | :--- | :--- | :--- | :--- |
-| **MODULE** | Core SMT Module | All core charging, power and safety circuitry plus the ESP32-S3, on a single side with castellated edges. No through-holes, so it is narrower than the other versions | 10k and 100k NTCs must be soldered in place. `B+` is live, with onboard PMOS/NMOS reverse-polarity protection |
-| **CHARGE** | Breadboard Capable | Adds through-holes for pin headers (not supplied) and a JST PH-style battery connector (PMOS/NMOS reverse-polarity protected, rated 2 A) | NTC chip thermistors supplied; remove before fitting custom thin-film NTCs. `B+` disabled |
+| **MODULE** | Core SMT Module | All core charging, power and safety circuitry plus the ESP32-S3, on a single side with castellated edges. No through-holes, so it is narrower than the other versions (17.8 × 33.5 mm). Single-sided, to be assembled onto your own PCB design | Your own thin-film NTCs (10k and 100k) must be fitted for charge and discharge temperature sensing. `B+` pad is live and 3 A capable, with onboard PMOS/NMOS reverse-polarity protection |
+| **CHARGE** | Breadboard Capable | Adds through-holes for pin headers (not supplied) and a JST PH-style battery connector (PMOS/NMOS reverse-polarity protected, rated 2 A) | NTC chip thermistors supplied; remove before fitting custom thin-film NTCs. `B+` pad not connected |
 | **DATA** | Data Logger Edition | Adds the 4-bit MicroSD slot | Localized data acquisition |
 | **LOGGER** | Full Telemetry | MicroSD slot plus the 10-DoF sensor array | Flagship configuration |
 
@@ -150,8 +150,8 @@ A discrete **TI TPS259461A eFuse**, **TLV809EA26 supervisor** and **TLV4021 comp
 
 - **Dual-zone thermal control:** the BQ25188 monitors a 10k NTC while charging; the eFuse, supervisor and comparator monitor an independent 100k NTC during discharge and shut the rail down on over-temperature.
 - **Micropower shelf safety:** at the **2.63 V** UVLO trip point the protection circuit is calculated to draw only **5.62 µA**, so an exhausted cell isn't drained further in storage. Applying USB or 5 V solar releases the eFuse and charging resumes.
-- **Input protection:** TVS on USB, `VIN` and `VOUT`; Schottky reverse-polarity protection on the dual `VIN`/`Vusb` stage.
-- **Battery polarity:** CHARGE, DATA and LOGGER use the keyed JST PH connector, rated 2 A, with a PMOS + NMOS reverse-polarity stage (always confirm polarity); their `B+` pin is disabled so two batteries can't be connected at once. MODULE has the same PMOS + NMOS stage on `B+` (absolute maximum +20 V / −12 V).
+- **Input protection:** TVS on USB (`VUSB`, `D+`, `D−`), `VIN` and `VOUT`, plus the battery input: the JST connector on LOGGER, DATA and CHARGE, or the `B+` pin on MODULE (a module is built into a larger product, so the final application should review battery-input protection for its own environment); Schottky reverse-polarity protection on the dual `VIN`/`Vusb` stage. GPIOs rely on the ESP32-S3's built-in ESD protection, and the microSD lines have no added protection.
+- **Battery polarity:** CHARGE, DATA and LOGGER use the keyed JST PH connector, rated 2 A, with a PMOS + NMOS reverse-polarity stage (always confirm polarity); their `B+` pad is not connected so two batteries can't be connected at once. MODULE has the same PMOS + NMOS stage on `B+` (absolute maximum +20 V / −12 V).
 
 ### Analog power sensing
 

@@ -173,6 +173,19 @@ A Diodes Inc. PMOS + NMOS array switches **GPIO 16** between two measurements, s
 
 </div>
 
+### Internal bus speed (measured)
+
+The internal bus was tested at **1 MHz (Fast-mode Plus)** on five prototype boards, with 100 data packets per test and a check that the data are valid. No I²C errors or FIFO overruns occurred on any board. The tests used the LSM6DSV32X prototype IMU, with the 10k pull-ups and the ESP32's internal pull-ups enabled. Boards with a sensor that did not work (a manufacturing fault on those prototypes) were counted only for the sensors that did.
+
+| Sensor | Highest rate that passed at 1 MHz |
+| :--- | :--- |
+| IMU, accelerometer and gyroscope together | 3840 Hz each |
+| IMU, accelerometer or gyroscope alone | 7680 Hz |
+| Barometer | 128 Hz |
+| Magnetometer | 255 Hz with auto set/reset on; up to 1000 Hz with it off (the readings then carry an offset that your software must correct) |
+
+Above 1 MHz the Arduino `Wire` library does not go faster, so 1.5 MHz was tested with the ESP-IDF driver. The IMU and barometer ran at 1.5 MHz on some boards, but the magnetometer did not answer, so **1 MHz is the verified speed** for the full sensor array. Use `Wire.setClock(1000000)`. Results are bench measurements, not guaranteed limits.
+
 ---
 
 ## Pinout
